@@ -29,7 +29,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 				return err
 			}
 
-			fmt.Printf("workspace '%s' created\n", args[0])
+			fmt.Fprintf(cmd.OutOrStdout(),"workspace '%s' created\n", args[0])
 			return nil
 		},
 	}
@@ -84,7 +84,7 @@ func newGetWorkspaceCmd() *cobra.Command {
 				return err
 			}
 
-			fmt.Printf("workspace info: %+v\n", ws)
+			fmt.Fprintf(cmd.OutOrStdout(),"workspace info: %+v\n", ws)
 			return nil
 		},
 	}
