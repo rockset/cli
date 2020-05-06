@@ -4,3 +4,23 @@
 [![License](https://img.shields.io/github/license/rockset/cli.svg?maxAge=2592000)](https://github.com/rockset/cli/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/rockset/cli.svg)](https://github.com/rockset/cli/issues)
 [![Release](https://img.shields.io/github/release/rockset/cli.svg?label=Release)](https://github.com/rockset/cli/releases)
+
+## Building
+
+```
+go build -o rock
+```
+
+## Testing
+
+```
+go test ./...
+```
+
+### Integration testing
+
+Requires the environment variable `ROCKSET_APIKEY` to be set
+
+```
+go test -tags=integration ./...
+```

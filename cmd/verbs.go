@@ -27,7 +27,11 @@ func addVerbs(root *cobra.Command) {
 		Long:  "get Rockset resource",
 	}
 
-	addWorkspaceCommands(createCmd, deleteCmd, getCmd, listCmd)
+	// add workspace commands
+	createCmd.AddCommand(newCreateWorkspaceCmd())
+	deleteCmd.AddCommand(newDeleteWorkspaceCmd())
+	getCmd.AddCommand(newGetWorkspaceCmd())
+	listCmd.AddCommand(newListWorkspaceCmd())
 
 	root.AddCommand(createCmd)
 	root.AddCommand(deleteCmd)
