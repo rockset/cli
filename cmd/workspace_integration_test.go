@@ -18,7 +18,7 @@ func TestGetWorkspaceCmd(t *testing.T) {
 	err := cmd.Execute()
 
 	require.Nil(t, err)
-	assert.Equal(t, buf.String(),
-		`workspace info: {CreatedAt:2020-02-04T18:53:28Z CreatedBy: Name:commons Description:default workspace CollectionCount:4}
-`)
+	assert.Equal(t,
+		`workspace info: {CreatedAt:2020-02-04T18:53:28Z CreatedBy: Name:commons Description:default workspace CollectionCount:4},
+`, buf.String())
 }

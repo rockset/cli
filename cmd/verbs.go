@@ -15,6 +15,13 @@ func addVerbs(root *cobra.Command) {
 		Long:  "delete Rockset resource",
 	}
 
+	executeCmd := &cobra.Command{
+		Use:   "execute",
+		Aliases: []string{"exec"},
+		Short: "execute sub-command",
+		Long:  "execute Rockset resource",
+	}
+
 	listCmd := &cobra.Command{
 		Use:   "list",
 		Short: "list sub-command",
@@ -33,8 +40,11 @@ func addVerbs(root *cobra.Command) {
 	getCmd.AddCommand(newGetWorkspaceCmd())
 	listCmd.AddCommand(newListWorkspaceCmd())
 
+	executeCmd.AddCommand(newExecuteLambdaCmd())
+
 	root.AddCommand(createCmd)
 	root.AddCommand(deleteCmd)
+	root.AddCommand(executeCmd)
 	root.AddCommand(getCmd)
 	root.AddCommand(listCmd)
 }
