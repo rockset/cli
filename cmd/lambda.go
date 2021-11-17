@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package cmd
 
 import (
@@ -6,7 +9,6 @@ import (
 	"github.com/antihax/optional"
 	"github.com/olekukonko/tablewriter"
 	"github.com/rockset/rockset-go-client"
-	models "github.com/rockset/rockset-go-client/lib/go"
 	"github.com/spf13/cobra"
 	"io"
 	"os"
@@ -16,13 +18,14 @@ import (
 
 func newExecuteLambdaCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lambda",
+		Use:     "lambda",
 		Aliases: []string{"ql"},
-		Short: "execute lambda",
-		Long:  "execute Rockset query lambda",
-		Args:  cobra.ExactArgs(1),
+		Short:   "execute lambda",
+		Long:    "execute Rockset query lambda",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			rs, err := rockset.NewClient(rockset.FromEnv())
+			ctx := cmd.Context()
+			rs, err := rockset.NewClient()
 			if err != nil {
 				return err
 			}
@@ -80,6 +83,7 @@ func newExecuteLambdaCmd() *cobra.Command {
 }
 
 func getLatestVersion(rs *rockset.RockClient, workspace, queryLambda string) (int32, error) {
+	ctx := cmd.Context()
 	rsp, _, err := rs.QueryLambdas.List_2(workspace, queryLambda)
 	if err != nil {
 		return 0, fmt.Errorf("failed to get latest version of %s.%s: %w", workspace, queryLambda, err)

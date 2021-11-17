@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/rockset/cli/cmd"
 	"os"
+
+	"github.com/rockset/cli/cmd"
 )
 
 func main() {
@@ -23,8 +23,7 @@ func main() {
 
 	root := cmd.NewRootCmd()
 	if err := root.ExecuteContext(ctx); err != nil {
-		red := color.New(color.FgRed).SprintFunc()
-		_, _ = fmt.Fprintf(os.Stderr, "%s: %v\n", red("ERROR"), err)
+		_, _ = fmt.Fprintf(os.Stderr, "\nERROR: %v\n", err)
 		os.Exit(1)
 	}
 }

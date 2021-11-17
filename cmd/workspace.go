@@ -2,34 +2,42 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/rockset/rockset-go-client"
+	"github.com/rockset/cli/format"
+
 	"github.com/spf13/cobra"
+
+	"github.com/rockset/rockset-go-client"
+	"github.com/rockset/rockset-go-client/option"
 )
 
 func newCreateWorkspaceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "workspace",
-		Short: "create workspace",
-		Long:  "create Rockset workspace",
-		Args:  cobra.ExactArgs(1),
+		Use:     "workspace",
+		Aliases: []string{"ws"},
+		Short:   "create workspace",
+		Long:    "create Rockset workspace",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			rs, err := rockset.NewClient(rockset.FromEnv())
+			ctx := cmd.Context()
+			rs, err := rockset.NewClient()
 			if err != nil {
 				return err
 			}
+
+			var opts []option.WorkspaceOption
 
 			// safe to ignore the error it is added below
 			desc, _ := cmd.Flags().GetString("description")
+			if desc != "" {
+				opts = append(opts, option.WithWorkspaceDescription(desc))
+			}
 
-			_, _, err = rs.CreateWorkspace(args[0], desc)
+			_, err = rs.CreateWorkspace(ctx, args[0], opts...)
 			if err != nil {
-				if err, ok := rockset.AsRocksetError(err); ok {
-					return fmt.Errorf("%s", err.Message)
-				}
 				return err
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(),"workspace '%s' created\n", args[0])
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "workspace '%s' created\n", args[0])
 			return nil
 		},
 	}
@@ -40,25 +48,24 @@ func newCreateWorkspaceCmd() *cobra.Command {
 
 func newDeleteWorkspaceCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "workspace",
-		Short: "delete workspace",
-		Long:  "delete Rockset workspace",
-		Args:  cobra.ExactArgs(1),
+		Use:     "workspace",
+		Aliases: []string{"ws"},
+		Short:   "delete workspace",
+		Long:    "delete Rockset workspace",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			rs, err := rockset.NewClient(rockset.FromEnv())
+			ctx := cmd.Context()
+			rs, err := rockset.NewClient()
 			if err != nil {
 				return err
 			}
 
-			_, _, err = rs.DeleteWorkspace(args[0])
+			err = rs.DeleteWorkspace(ctx, args[0])
 			if err != nil {
-				if err, ok := rockset.AsRocksetError(err); ok {
-					return fmt.Errorf("%s", err.Message)
-				}
 				return err
 			}
 
-			fmt.Printf("workspace '%s' deleted\n", args[0])
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "workspace '%s' deleted\n", args[0])
 			return nil
 		},
 	}
@@ -66,55 +73,59 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 
 func newGetWorkspaceCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "workspace",
-		Short: "get workspace",
-		Long:  "get Rockset workspace",
-		Args:  cobra.ExactArgs(1),
+		Use:     "workspace",
+		Aliases: []string{"ws"},
+		Short:   "get workspace",
+		Long:    "get Rockset workspace",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			rs, err := rockset.NewClient(rockset.FromEnv())
+			ctx := cmd.Context()
+			rs, err := rockset.NewClient()
 			if err != nil {
 				return err
 			}
 
-			ws, _, err := rs.GetWorkspace(args[0])
+			ws, err := rs.GetWorkspace(ctx, args[0])
 			if err != nil {
-				if err, ok := rockset.AsRocksetError(err); ok {
-					return fmt.Errorf("%s", err.Message)
-				}
 				return err
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(),"workspace info: %+v\n", ws)
+			f, err := format.FormatterFor(cmd.OutOrStdout(), "table", true)
+			if err != nil {
+				return err
+			}
+
+			f.Workspace(ws)
 			return nil
 		},
 	}
 }
 
-func newListWorkspaceCmd() *cobra.Command {
+func newListWorkspacesCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "workspaces",
-		Aliases: []string{"workspace"},
+		Aliases: []string{"workspace", "ws"},
 		Short:   "list workspaces",
-		Long:    "list Rockset workspace",
+		Long:    "list Rockset workspaces",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			rs, err := rockset.NewClient(rockset.FromEnv())
+			ctx := cmd.Context()
+			rs, err := rockset.NewClient()
 			if err != nil {
 				return err
 			}
 
-			list, _, err := rs.ListWorkspaces()
+			list, err := rs.ListWorkspaces(ctx)
 			if err != nil {
-				if err, ok := rockset.AsRocksetError(err); ok {
-					return fmt.Errorf("%s", err.Message)
-				}
 				return err
 			}
 
-			for _, ws := range list {
-				fmt.Printf("%+v\n", ws)
+			f, err := format.FormatterFor(cmd.OutOrStdout(), "table", true)
+			if err != nil {
+				return err
 			}
+
+			f.Workspaces(list)
 			return nil
 		},
 	}
 }
-

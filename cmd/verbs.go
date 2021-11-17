@@ -3,6 +3,12 @@ package cmd
 import "github.com/spf13/cobra"
 
 func addVerbs(root *cobra.Command) {
+	//addCmd := &cobra.Command{
+	//	Use:   "add",
+	//	Short: "add sub-command",
+	//	Long:  "add Rockset resource",
+	//}
+
 	createCmd := &cobra.Command{
 		Use:   "create",
 		Short: "create sub-command",
@@ -15,12 +21,12 @@ func addVerbs(root *cobra.Command) {
 		Long:  "delete Rockset resource",
 	}
 
-	executeCmd := &cobra.Command{
-		Use:   "execute",
-		Aliases: []string{"exec"},
-		Short: "execute sub-command",
-		Long:  "execute Rockset resource",
-	}
+	//executeCmd := &cobra.Command{
+	//	Use:   "execute",
+	//	Aliases: []string{"exec"},
+	//	Short: "execute sub-command",
+	//	Long:  "execute Rockset resource",
+	//}
 
 	listCmd := &cobra.Command{
 		Use:   "list",
@@ -34,17 +40,38 @@ func addVerbs(root *cobra.Command) {
 		Long:  "get Rockset resource",
 	}
 
-	// add workspace commands
+	streamCmd := &cobra.Command{
+		Use:   "stream",
+		Short: "stream sub-command",
+		Long:  "stream data to Rockset",
+	}
+
+	// workspace
 	createCmd.AddCommand(newCreateWorkspaceCmd())
 	deleteCmd.AddCommand(newDeleteWorkspaceCmd())
 	getCmd.AddCommand(newGetWorkspaceCmd())
-	listCmd.AddCommand(newListWorkspaceCmd())
+	listCmd.AddCommand(newListWorkspacesCmd())
 
-	executeCmd.AddCommand(newExecuteLambdaCmd())
+	// collection
+	deleteCmd.AddCommand(newDeleteCollectionCmd())
+	getCmd.AddCommand(newGetCollectionCmd())
+	listCmd.AddCommand(newListCollectionsCmd())
 
+	// integration
+	getCmd.AddCommand(newGetIntegrationCmd())
+	listCmd.AddCommand(newListIntegrationsCmd())
+
+	// user
+	getCmd.AddCommand(newGetUserCmd())
+	listCmd.AddCommand(newListUsersCmd())
+
+	//executeCmd.AddCommand(newExecuteLambdaCmd())
+
+	//root.AddCommand(addCmd)
 	root.AddCommand(createCmd)
 	root.AddCommand(deleteCmd)
-	root.AddCommand(executeCmd)
+	//root.AddCommand(executeCmd)
 	root.AddCommand(getCmd)
 	root.AddCommand(listCmd)
+	root.AddCommand(streamCmd)
 }

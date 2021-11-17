@@ -2,17 +2,17 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 func NewRootCmd() *cobra.Command {
 	var cfgFile string
 	root := &cobra.Command{
-		Use:   "rock",
+		Use:   "rockset",
 		Short: "A cli for Rockset",
 	}
 
@@ -22,6 +22,7 @@ func NewRootCmd() *cobra.Command {
 	root.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.rockset.yaml)")
 	root.PersistentFlags().Bool("debug", false, "enable debug output")
 	root.PersistentFlags().String("profile", "", "configuration profile")
+	root.PersistentFlags().String("format", "table", "output format")
 
 	// this binds the environment variable DEBUG to the flag debug
 	_ = viper.BindPFlag("debug", root.PersistentFlags().Lookup("debug"))
