@@ -43,7 +43,7 @@ func (s *Streamer) Stream(ctx context.Context, in io.Reader) (uint64, error) {
 
 		if err := d.Decode(&j); err != nil {
 			if err == io.EOF {
-				// flush remaining
+				// flush remaining documents
 				cnt, err := s.flush(ctx, buf)
 				if err != nil {
 					return counter, err
@@ -52,7 +52,7 @@ func (s *Streamer) Stream(ctx context.Context, in io.Reader) (uint64, error) {
 
 				return counter, nil
 			}
-			// should this just log the error so we skip incorrect json?
+			// should this just log the error, so we skip incorrect json?
 			return counter, err
 		}
 
