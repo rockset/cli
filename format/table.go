@@ -1,12 +1,8 @@
 package format
 
 import (
-	"io"
-	"log"
-
 	"github.com/olekukonko/tablewriter"
-
-	"github.com/rockset/rockset-go-client/openapi"
+	"io"
 )
 
 type Table struct {
@@ -21,66 +17,38 @@ func NewTableFormatter(out io.Writer, header bool) *Table {
 	}
 }
 
-func (t Table) Workspace(ws openapi.Workspace) {
-	t.foo(ws, true)
-}
-
-func (t Table) Workspaces(list []openapi.Workspace) {
-	if t.Header {
-		t.w.SetHeader(workspaceHeader())
-	}
-	for _, ws := range list {
-		t.w.Append(workspace(ws))
-	}
-	t.w.Render()
-}
-
-func (t Table) Collection(c openapi.Collection, wide bool) {
-	t.foo(c, wide)
-}
-
-func (t Table) Collections(list []openapi.Collection, wide bool) {
-	if t.Header {
-		t.w.SetHeader(collectionHeader(wide))
-	}
-	for _, c := range list {
-		t.w.Append(collection(c, wide))
-	}
-	t.w.Render()
-}
-
-func (t Table) User(user openapi.User) {
-	t.foo(user, true)
-}
-
-func (t Table) Users(list []openapi.User) {
-	if t.Header {
-		t.w.SetHeader(userHeader())
-	}
-	for _, u := range list {
-		t.w.Append(user(u))
-	}
-	t.w.Render()
-}
-
-func (t Table) foo(i interface{}, wide bool) {
-	var header []string
-	var row []string
-
-	switch u := i.(type) {
-	case openapi.User:
-		header = userHeader()
-		row = user(u)
-	case openapi.Collection:
-		header = collectionHeader(wide)
-		row = collection(u, wide)
-	default:
-		log.Panicf("unknown type %T: %+v", i, i)
+func (t Table) Format(wide bool, i interface{}) error {
+	f, err := StructFormatterFor(i)
+	if err != nil {
+		return err
 	}
 
 	if t.Header {
-		t.w.SetHeader(header)
+		t.w.SetHeader(f.Headers(wide))
 	}
-	t.w.Append(row)
+	t.w.Append(f.Fields(wide, i))
 	t.w.Render()
+
+	return nil
+}
+
+func (t Table) FormatList(wide bool, items []interface{}) error {
+	if items == nil || len(items) == 0 {
+		t.w.Render()
+	}
+
+	f, err := StructFormatterFor(items[0])
+	if err != nil {
+		return err
+	}
+	if t.Header {
+		t.w.SetHeader(f.Headers(wide))
+	}
+
+	for _, i := range items {
+		t.w.Append(f.Fields(wide, i))
+	}
+	t.w.Render()
+
+	return nil
 }

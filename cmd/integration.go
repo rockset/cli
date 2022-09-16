@@ -14,7 +14,7 @@ func newGetIntegrationCmd() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rocksetAPI(cmd))
 			if err != nil {
 				return err
 			}
@@ -53,7 +53,7 @@ func newListIntegrationsCmd() *cobra.Command {
 		Long:    "list Rockset integrations",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rocksetAPI(cmd))
 			if err != nil {
 				return err
 			}

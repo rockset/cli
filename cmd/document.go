@@ -1,91 +1,113 @@
 package cmd
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
-	"github.com/rockset/rockset-go-client/openapi"
-	"io"
+	"github.com/rockset/rockset-go-client"
+	"github.com/spf13/cobra"
 	"log"
 )
 
-type DocumentAdder interface {
-	AddDocuments(ctx context.Context, workspace, collection string,
-		docs []interface{}) ([]openapi.DocumentStatus, error)
-}
+func newDeleteDocumentsCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:     "documents",
+		Aliases: []string{"doc", "docs"},
+		Short:   "delete documents",
+		Long:    "delete documents from a collection",
+		Args:    cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ws, _ := cmd.Flags().GetString("workspace")
+			coll, _ := cmd.Flags().GetString("collection")
 
-type StreamConfig struct {
-	Workspace  string
-	Collection string
-	BatchSize  uint64
-}
-
-type Streamer struct {
-	adder DocumentAdder
-	StreamConfig
-}
-
-func NewStreamer(s DocumentAdder, cfg StreamConfig) Streamer {
-	return Streamer{
-		adder:        s,
-		StreamConfig: cfg,
-	}
-}
-
-func (s *Streamer) Stream(ctx context.Context, in io.Reader) (uint64, error) {
-	var counter uint64
-	buf := make([]interface{}, 0, s.BatchSize)
-	d := json.NewDecoder(in)
-
-	for {
-		// this is a generic way to describe a json object
-		var j map[string]interface{}
-
-		if err := d.Decode(&j); err != nil {
-			if err == io.EOF {
-				// flush remaining documents
-				cnt, err := s.flush(ctx, buf)
-				if err != nil {
-					return counter, err
-				}
-				counter += cnt
-
-				return counter, nil
+			ctx := cmd.Context()
+			rs, err := rockset.NewClient(rocksetAPI(cmd))
+			if err != nil {
+				return err
 			}
-			// should this just log the error, so we skip incorrect json?
-			return counter, err
-		}
 
-		buf = append(buf, j)
-		if uint64(len(buf)) < s.BatchSize {
-			continue
-		}
+			res, err := rs.DeleteDocuments(ctx, ws, coll, args)
+			if err != nil {
+				return err
+			}
 
-		cnt, err := s.flush(ctx, buf)
-		if err != nil {
-			return counter, err
-		}
-		counter += cnt
+			var count, failed int
+			for _, d := range res {
+				if d.GetStatus() != "DELETED" {
+					failed++
+					fmt.Printf("failed to delete document %s\n", d.GetId())
+					continue
+				}
+				count++
+			}
 
-		buf = make([]interface{}, 0, s.BatchSize)
+			fmt.Printf("deleted %d documents\n", count)
+			if failed > 0 {
+				fmt.Printf("failed to delete %d documents\n", failed)
+			}
+
+			return nil
+		},
 	}
+
+	cmd.Flags().String("workspace", "commons", "workspace name")
+	cmd.Flags().String("collection", "", "collection name")
+	_ = cmd.MarkFlagRequired("collection")
+
+	return &cmd
 }
 
-// flush the buffered docs and return how many were added
-func (s *Streamer) flush(ctx context.Context, buf []interface{}) (uint64, error) {
-	res, err := s.adder.AddDocuments(ctx, s.Workspace, s.Collection, buf)
-	if err != nil {
-		return 0, fmt.Errorf("failed to flush %d documents: %w", len(buf), err)
+func newStreamDocumentsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "documents",
+		Aliases: []string{"doc", "docs", "document"},
+		Short:   "stream documents to a collection",
+		Long:    "stream documents to a collection from either a list of files or from stdin",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ws, _ := cmd.Flags().GetString("workspace")
+			coll, _ := cmd.Flags().GetString("collection")
+			batchSize, _ := cmd.Flags().GetUint64("batch-size")
+
+			if coll == "" {
+				return fmt.Errorf("must specify --collection")
+			}
+
+			ctx := cmd.Context()
+			rs, err := rockset.NewClient(rocksetAPI(cmd))
+			if err != nil {
+				return err
+			}
+
+			cfg := StreamConfig{
+				Workspace:  ws,
+				Collection: coll,
+				BatchSize:  batchSize,
+			}
+
+			s := NewStreamer(rs, cfg)
+
+			if len(args) == 0 {
+				log.Printf("streaming data from stdin to %s.%s", cfg.Workspace, cfg.Collection)
+				count, err := s.Stream(ctx, cmd.InOrStdin())
+				log.Printf("wrote %d records", count)
+				return err
+			}
+
+			for _, a := range args {
+				log.Printf("reading from file %s", a)
+				count, err := s.Stream(ctx, cmd.InOrStdin())
+				log.Printf("wrote %d records", count)
+				if err != nil {
+					log.Printf("failed to write")
+				}
+			}
+
+			return nil
+		},
 	}
 
-	var count uint64
-	for i, r := range res {
-		if r.GetStatus() == "ADDED" {
-			count++
-			continue
-		}
-		log.Printf("result %d: %s", i, r.GetStatus())
-	}
+	cmd.Flags().String("workspace", "common", "workspace name")
+	cmd.Flags().String("collection", "", "collection name")
+	cmd.Flags().Uint64("batch-size", 100,
+		"number of documents to batch together each write")
 
-	return count, nil
+	return cmd
 }

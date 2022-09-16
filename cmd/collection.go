@@ -19,7 +19,7 @@ func newDeleteCollectionCmd() *cobra.Command {
 		Args:    cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rocksetAPI(cmd))
 			if err != nil {
 				return err
 			}
@@ -51,7 +51,7 @@ func newGetCollectionCmd() *cobra.Command {
 			ctx := cmd.Context()
 			wide, _ := cmd.Flags().GetBool("wide")
 
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rocksetAPI(cmd))
 			if err != nil {
 				return err
 			}
@@ -66,12 +66,9 @@ func newGetCollectionCmd() *cobra.Command {
 				return err
 			}
 
-			f, err := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-			if err != nil {
-				return err
-			}
+			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
 
-			f.Collection(c, wide)
+			f.Format(wide, c)
 			return nil
 		},
 	}
@@ -90,7 +87,7 @@ func newListCollectionsCmd() *cobra.Command {
 			ctx := cmd.Context()
 			wide, _ := cmd.Flags().GetBool("wide")
 
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rocksetAPI(cmd))
 			if err != nil {
 				return err
 			}
@@ -100,12 +97,9 @@ func newListCollectionsCmd() *cobra.Command {
 				return err
 			}
 
-			f, err := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-			if err != nil {
-				return err
-			}
+			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
 
-			f.Collections(list, wide)
+			f.FormatList(wide, format.ToInterfaceArray(list))
 			return nil
 		},
 	}
