@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package cmd
 
 import (
@@ -11,10 +8,14 @@ import (
 )
 
 func TestExecuteLambdaCmd(t *testing.T) {
+	t.Skipf("skip for now")
+	skipUnlessIntegrationTest(t)
+
 	params := "testdata/params.json"
 	buf := bytes.NewBufferString("")
 	cmd := newExecuteLambdaCmd()
-	cmd.SetArgs([]string{"--params", params, "commons.events"})
+	cmd.Flags().Set("region", "usw2a1")
+	cmd.SetArgs([]string{"--params", params, "commons.events2"})
 	cmd.SetOut(buf)
 
 	err := cmd.Execute()

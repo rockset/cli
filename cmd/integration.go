@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"github.com/rockset/rockset-go-client"
 	"github.com/spf13/cobra"
 	"log"
+
+	"github.com/rockset/rockset-go-client"
 )
 
 func newGetIntegrationCmd() *cobra.Command {
@@ -14,7 +15,7 @@ func newGetIntegrationCmd() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rockOption(cmd))
 			if err != nil {
 				return err
 			}
@@ -53,7 +54,7 @@ func newListIntegrationsCmd() *cobra.Command {
 		Long:    "list Rockset integrations",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rockOption(cmd))
 			if err != nil {
 				return err
 			}

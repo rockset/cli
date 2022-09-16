@@ -1,0 +1,42 @@
+package cmd
+
+import (
+	"github.com/rockset/cli/format"
+	"github.com/spf13/cobra"
+	"log"
+
+	"github.com/rockset/rockset-go-client"
+)
+
+func newGetOrganizationCmd() *cobra.Command {
+	c := cobra.Command{
+		Use:     "organization",
+		Aliases: []string{"org"},
+		Short:   "get organization",
+		Long:    "get Rockset organization",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+			wide, _ := cmd.Flags().GetBool("wide")
+
+			rs, err := rockset.NewClient(rockOption(cmd))
+			if err != nil {
+				return err
+			}
+
+			c, err := rs.GetOrganization(ctx)
+			if err != nil {
+				return err
+			}
+
+			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
+
+			if err = f.Format(wide, c); err != nil {
+				log.Printf("failed to format data: %v", err)
+			}
+			return nil
+		},
+	}
+	c.Flags().Bool("wide", false, "display more information")
+
+	return &c
+}

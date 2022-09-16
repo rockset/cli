@@ -19,7 +19,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rockOption(cmd))
 			if err != nil {
 				return err
 			}
@@ -55,7 +55,7 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rockOption(cmd))
 			if err != nil {
 				return err
 			}
@@ -80,7 +80,7 @@ func newGetWorkspaceCmd() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rockOption(cmd))
 			if err != nil {
 				return err
 			}
@@ -90,13 +90,9 @@ func newGetWorkspaceCmd() *cobra.Command {
 				return err
 			}
 
-			f, err := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-			if err != nil {
-				return err
-			}
+			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
 
-			f.Workspace(ws)
-			return nil
+			return f.Format(true, ws)
 		},
 	}
 }
@@ -109,7 +105,7 @@ func newListWorkspacesCmd() *cobra.Command {
 		Long:    "list Rockset workspaces",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rockOption(cmd))
 			if err != nil {
 				return err
 			}
@@ -119,13 +115,9 @@ func newListWorkspacesCmd() *cobra.Command {
 				return err
 			}
 
-			f, err := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-			if err != nil {
-				return err
-			}
+			f := format.FormatterFor(cmd.OutOrStdout(), format.TableFormat, true)
 
-			f.Workspaces(list)
-			return nil
+			return f.FormatList(true, format.ToInterfaceArray(list))
 		},
 	}
 }

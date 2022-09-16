@@ -15,6 +15,7 @@ func TestStreamDocuments(t *testing.T) {
 	ctx := context.TODO()
 	//in := bytes.NewBufferString(`{}`)
 	in, err := os.Open("testdata/test.json")
+	require.NoError(t, err)
 
 	f := &fake{}
 

@@ -1,64 +1,91 @@
 package cmd
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
-	"github.com/rockset/rockset-go-client"
-	"github.com/spf13/cobra"
+	"github.com/rockset/rockset-go-client/openapi"
+	"io"
 	"log"
 )
 
-func newStreamCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "stream",
-		Short: "stream data to a collection",
-		Long:  "stream data to a collection from either a list of files or from stdin",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, _ := cmd.Flags().GetString("workspace")
-			coll, _ := cmd.Flags().GetString("collection")
-			batchSize, _ := cmd.Flags().GetUint64("batch-size")
+type DocumentAdder interface {
+	AddDocuments(ctx context.Context, workspace, collection string,
+		docs []interface{}) ([]openapi.DocumentStatus, error)
+}
 
-			if coll == "" {
-				return fmt.Errorf("must specify --collection")
-			}
+type StreamConfig struct {
+	Workspace  string
+	Collection string
+	BatchSize  uint64
+}
 
-			ctx := cmd.Context()
-			rs, err := rockset.NewClient()
-			if err != nil {
-				return err
-			}
+type Streamer struct {
+	adder DocumentAdder
+	StreamConfig
+}
 
-			cfg := StreamConfig{
-				Workspace:  ws,
-				Collection: coll,
-				BatchSize:  batchSize,
-			}
+func NewStreamer(s DocumentAdder, cfg StreamConfig) Streamer {
+	return Streamer{
+		adder:        s,
+		StreamConfig: cfg,
+	}
+}
 
-			s := NewStreamer(rs, cfg)
+func (s *Streamer) Stream(ctx context.Context, in io.Reader) (uint64, error) {
+	var counter uint64
+	buf := make([]interface{}, 0, s.BatchSize)
+	d := json.NewDecoder(in)
 
-			if len(args) == 0 {
-				log.Printf("streaming data from stdin to %s.%s", cfg.Workspace, cfg.Collection)
-				count, err := s.Stream(ctx, cmd.InOrStdin())
-				log.Printf("wrote %d records", count)
-				return err
-			}
+	for {
+		// this is a generic way to describe a json object
+		var j map[string]interface{}
 
-			for _, a := range args {
-				log.Printf("reading from file %s", a)
-				count, err := s.Stream(ctx, cmd.InOrStdin())
-				log.Printf("wrote %d records", count)
+		if err := d.Decode(&j); err != nil {
+			if err == io.EOF {
+				// flush remaining documents
+				cnt, err := s.flush(ctx, buf)
 				if err != nil {
-					log.Printf("failed to write")
+					return counter, err
 				}
-			}
+				counter += cnt
 
-			return nil
-		},
+				return counter, nil
+			}
+			// should this just log the error, so we skip incorrect json?
+			return counter, err
+		}
+
+		buf = append(buf, j)
+		if uint64(len(buf)) < s.BatchSize {
+			continue
+		}
+
+		cnt, err := s.flush(ctx, buf)
+		if err != nil {
+			return counter, err
+		}
+		counter += cnt
+
+		buf = make([]interface{}, 0, s.BatchSize)
+	}
+}
+
+// flush the buffered docs and return how many were added
+func (s *Streamer) flush(ctx context.Context, buf []interface{}) (uint64, error) {
+	res, err := s.adder.AddDocuments(ctx, s.Workspace, s.Collection, buf)
+	if err != nil {
+		return 0, fmt.Errorf("failed to flush %d documents: %w", len(buf), err)
 	}
 
-	cmd.Flags().String("workspace", "common", "workspace name")
-	cmd.Flags().String("collection", "", "collection name")
-	cmd.Flags().Uint64("batch-size", 100,
-		"number of documents to batch together each write")
+	var count uint64
+	for i, r := range res {
+		if r.GetStatus() == "ADDED" {
+			count++
+			continue
+		}
+		log.Printf("result %d: %s", i, r.GetStatus())
+	}
 
-	return cmd
+	return count, nil
 }

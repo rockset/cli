@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"github.com/rockset/cli/format"
-	"github.com/rockset/rockset-go-client"
 	"github.com/spf13/cobra"
+
+	"github.com/rockset/rockset-go-client"
 )
 
 func newListUsersCmd() *cobra.Command {
@@ -14,7 +15,7 @@ func newListUsersCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rockOption(cmd))
 			if err != nil {
 				return err
 			}
@@ -24,12 +25,8 @@ func newListUsersCmd() *cobra.Command {
 				return err
 			}
 
-			f, err := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-			if err != nil {
-				return err
-			}
-
-			f.Users(list)
+			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
+			f.FormatList(true, format.ToInterfaceArray(list))
 			return nil
 		},
 	}
@@ -47,7 +44,7 @@ func newGetUserCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockset.NewClient()
+			rs, err := rockset.NewClient(rockOption(cmd))
 			if err != nil {
 				return err
 			}
@@ -57,12 +54,9 @@ func newGetUserCmd() *cobra.Command {
 				return err
 			}
 
-			f, err := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-			if err != nil {
-				return err
-			}
+			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
 
-			f.User(u)
+			f.Format(true, u)
 			return nil
 		},
 	}

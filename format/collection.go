@@ -1,48 +1,47 @@
 package format
 
-import (
-	"strconv"
-	"time"
-
-	"github.com/rockset/rockset-go-client/openapi"
-)
-
-func collection(c openapi.Collection, wide bool) []string {
-	r := "forever"
-	if c.GetRetentionSecs() != 0 {
-		r = (time.Second * time.Duration(c.GetRetentionSecs())).String()
-	}
-
-	fields := []string{
-		c.GetName(),
-		c.GetWorkspace(),
-		c.GetDescription(),
-		c.GetStatus(),
-		c.GetCreatedBy(),
-		c.GetCreatedAt(),
-		r,
-	}
-
-	if wide {
-		fields = append(fields, strconv.FormatInt(c.Stats.GetTotalSize(), 10))
-	}
-
-	return fields
-}
-
-func collectionHeader(wide bool) []string {
-	headers := []string{
-		"name",
-		"workspace",
-		"description",
-		"status",
-		"created by",
-		"created at",
-		"retention",
-	}
-	if wide {
-		headers = append(headers, "size")
-	}
-
-	return headers
+var CollectionFormatter = StructFormatter{
+	[]Header{
+		{
+			FieldName: "Workspace",
+			FieldFn:   getFieldByName,
+		},
+		{
+			FieldName: "Name",
+			FieldFn:   getFieldByName,
+		},
+		{
+			FieldName: "Description",
+			FieldFn:   getFieldByName,
+		},
+		{
+			DisplayName: "Retention in Secs",
+			FieldName:   "RetentionSecs",
+			FieldFn:     getFieldByName,
+		},
+		{
+			FieldName: "Status",
+			FieldFn:   getFieldByName,
+		},
+		{
+			DisplayName: "Insert Only",
+			FieldName:   "InsertOnly",
+			FieldFn:     getFieldByName,
+		},
+		{
+			DisplayName: "Read Only",
+			FieldName:   "ReadOnly",
+			FieldFn:     getFieldByName,
+		},
+		{
+			DisplayName: "Created By",
+			FieldName:   "CreatedBy",
+			FieldFn:     getFieldByName,
+		},
+		{
+			DisplayName: "Created At",
+			FieldName:   "CreatedAt",
+			FieldFn:     getFieldByName,
+		},
+	},
 }

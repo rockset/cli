@@ -40,11 +40,11 @@ func addVerbs(root *cobra.Command) {
 		Long:  "get Rockset resource",
 	}
 
-	//streamCmd := &cobra.Command{
-	//	Use:   "stream",
-	//	Short: "stream sub-command",
-	//	Long:  "stream data to Rockset",
-	//}
+	streamCmd := &cobra.Command{
+		Use:   "stream",
+		Short: "stream sub-command",
+		Long:  "stream data to Rockset",
+	}
 
 	// workspace
 	createCmd.AddCommand(newCreateWorkspaceCmd())
@@ -61,11 +61,20 @@ func addVerbs(root *cobra.Command) {
 	getCmd.AddCommand(newGetIntegrationCmd())
 	listCmd.AddCommand(newListIntegrationsCmd())
 
+	// org
+	getCmd.AddCommand(newGetOrganizationCmd())
+
 	// user
 	getCmd.AddCommand(newGetUserCmd())
 	listCmd.AddCommand(newListUsersCmd())
 
+	// query lambda
 	//executeCmd.AddCommand(newExecuteLambdaCmd())
+	listCmd.AddCommand(newListLambdaCmd())
+
+	// documents
+	deleteCmd.AddCommand(newDeleteDocumentsCmd())
+	streamCmd.AddCommand(newStreamDocumentsCmd())
 
 	//root.AddCommand(addCmd)
 	root.AddCommand(createCmd)
@@ -73,5 +82,6 @@ func addVerbs(root *cobra.Command) {
 	//root.AddCommand(executeCmd)
 	root.AddCommand(getCmd)
 	root.AddCommand(listCmd)
-	root.AddCommand(newStreamCmd())
+	root.AddCommand(streamCmd)
+
 }
