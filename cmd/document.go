@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"log"
-
-	"github.com/rockset/rockset-go-client"
 )
 
 func newDeleteDocumentsCmd() *cobra.Command {
@@ -16,11 +14,11 @@ func newDeleteDocumentsCmd() *cobra.Command {
 		Long:    "delete documents from a collection",
 		Args:    cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, _ := cmd.Flags().GetString("workspace")
+			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 			coll, _ := cmd.Flags().GetString("collection")
 
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -49,21 +47,20 @@ func newDeleteDocumentsCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String("workspace", "commons", "workspace name")
+	cmd.Flags().String(WorkspaceFlag, DefaultWorkspace, "workspace name")
 	cmd.Flags().String("collection", "", "collection name")
 	_ = cmd.MarkFlagRequired("collection")
 
 	return &cmd
 }
 
-func newStreamDocumentsCmd() *cobra.Command {
+func newIngestCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "documents",
-		Aliases: []string{"doc", "docs", "document"},
-		Short:   "stream documents to a collection",
-		Long:    "stream documents to a collection from either a list of files or from stdin",
+		Use:   "ingest",
+		Short: "ingest documents to a collection",
+		Long:  "ingest documents to a collection from either a list of files or from stdin",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, _ := cmd.Flags().GetString("workspace")
+			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 			coll, _ := cmd.Flags().GetString("collection")
 			batchSize, _ := cmd.Flags().GetUint64("batch-size")
 
@@ -72,7 +69,7 @@ func newStreamDocumentsCmd() *cobra.Command {
 			}
 
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -105,7 +102,7 @@ func newStreamDocumentsCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String("workspace", "common", "workspace name")
+	cmd.Flags().String(WorkspaceFlag, "common", "workspace name")
 	cmd.Flags().String("collection", "", "collection name")
 	cmd.Flags().Uint64("batch-size", 100,
 		"number of documents to batch together each write")

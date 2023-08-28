@@ -4,7 +4,7 @@ import (
 	"github.com/rockset/cli/format"
 	"github.com/spf13/cobra"
 
-	"github.com/rockset/rockset-go-client"
+	"github.com/rockset/rockset-go-client/openapi"
 )
 
 func newListUsersCmd() *cobra.Command {
@@ -15,7 +15,7 @@ func newListUsersCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -25,43 +25,47 @@ func newListUsersCmd() *cobra.Command {
 				return err
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-			f.FormatList(true, format.ToInterfaceArray(list))
-			return nil
+			f := format.FormatterFor(cmd.OutOrStdout(), FormatFromCommand(cmd), true)
+			return f.FormatList(true, format.ToInterfaceArray(list))
 		},
 	}
 
-	c.Flags().Bool("wide", false, "display more information")
+	c.Flags().Bool(WideFlag, false, "display more information")
 
 	return &c
 }
 
 func newGetUserCmd() *cobra.Command {
 	c := cobra.Command{
-		Use:   "user",
-		Short: "get user",
-		Long:  "get current Rockset user",
+		Use:   "user [EMAIL]",
+		Short: "get user information",
+		Long:  "get Rockset user, if no email address is specified the current user is returned",
+		Args:  cobra.RangeArgs(0, 1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}
 
-			u, err := rs.GetCurrentUser(ctx)
+			var u openapi.User
+			if len(args) == 0 {
+				u, err = rs.GetCurrentUser(ctx)
+			} else {
+				u, err = rs.GetUser(ctx, args[0])
+			}
 			if err != nil {
 				return err
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
+			f := format.FormatterFor(cmd.OutOrStdout(), FormatFromCommand(cmd), true)
 
-			f.Format(true, u)
-			return nil
+			return f.Format(true, u)
 		},
 	}
 
-	c.Flags().Bool("wide", false, "display more information")
+	c.Flags().Bool(WideFlag, false, "display more information")
 
 	return &c
 }

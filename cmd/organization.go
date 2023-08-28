@@ -4,8 +4,6 @@ import (
 	"github.com/rockset/cli/format"
 	"github.com/spf13/cobra"
 	"log"
-
-	"github.com/rockset/rockset-go-client"
 )
 
 func newGetOrganizationCmd() *cobra.Command {
@@ -18,7 +16,7 @@ func newGetOrganizationCmd() *cobra.Command {
 			ctx := cmd.Context()
 			wide, _ := cmd.Flags().GetBool("wide")
 
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}

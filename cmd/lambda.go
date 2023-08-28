@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rockset/rockset-go-client"
 	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/rockset/rockset-go-client/option"
 )
@@ -21,10 +20,10 @@ func newListLambdaCmd() *cobra.Command {
 		Aliases: []string{"ql"},
 		Short:   "list lambda",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, _ := cmd.Flags().GetString("workspace")
+			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -45,7 +44,7 @@ func newListLambdaCmd() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().String("workspace", "", "only show query lambdas for the selected workspace")
+	cmd.Flags().String(WorkspaceFlag, "", "only show query lambdas for the selected workspace")
 
 	return cmd
 }
@@ -59,7 +58,7 @@ func newExecuteLambdaCmd() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}

@@ -3,12 +3,13 @@ package cmd_test
 import (
 	"context"
 	"github.com/rockset/cli/cmd"
-	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/rockset/rockset-go-client/openapi"
 )
 
 func TestStreamDocuments(t *testing.T) {
@@ -20,7 +21,7 @@ func TestStreamDocuments(t *testing.T) {
 	f := &fake{}
 
 	s := cmd.NewStreamer(f, cmd.StreamConfig{
-		Workspace:  "commons",
+		Workspace:  DefaultWorkspace,
 		Collection: "writetest",
 		BatchSize:  3,
 	})

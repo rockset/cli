@@ -13,7 +13,7 @@ func TestGetWorkspaceCmd(t *testing.T) {
 
 	buf := &bytes.Buffer{}
 	cmd := newGetWorkspaceCmd()
-	cmd.SetArgs([]string{"commons"})
+	cmd.SetArgs([]string{DefaultWorkspace})
 	cmd.Flags().Set("region", "usw2a1")
 	cmd.SetOut(buf)
 

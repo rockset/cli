@@ -6,7 +6,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/rockset/rockset-go-client"
 	"github.com/rockset/rockset-go-client/option"
 )
 
@@ -19,7 +18,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -27,7 +26,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 			var opts []option.WorkspaceOption
 
 			// safe to ignore the error it is added below
-			desc, _ := cmd.Flags().GetString("description")
+			desc, _ := cmd.Flags().GetString(DescriptionFlag)
 			if desc != "" {
 				opts = append(opts, option.WithWorkspaceDescription(desc))
 			}
@@ -42,7 +41,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP("description", "d", "", "workspace description")
+	cmd.Flags().StringP(DescriptionFlag, "d", "", "workspace description")
 	return cmd
 }
 
@@ -55,7 +54,7 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -80,7 +79,7 @@ func newGetWorkspaceCmd() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -105,7 +104,7 @@ func newListWorkspacesCmd() *cobra.Command {
 		Long:    "list Rockset workspaces",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockset.NewClient(rockOption(cmd))
+			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}

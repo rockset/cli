@@ -3,47 +3,40 @@ package cmd
 import "github.com/spf13/cobra"
 
 func addVerbs(root *cobra.Command) {
-	//addCmd := &cobra.Command{
-	//	Use:   "add",
-	//	Short: "add sub-command",
-	//	Long:  "add Rockset resource",
-	//}
-
 	createCmd := &cobra.Command{
 		Use:   "create",
-		Short: "create sub-command",
-		Long:  "create Rockset resource",
+		Short: "create resources",
+		Long:  "create Rockset resources",
 	}
 
 	deleteCmd := &cobra.Command{
 		Use:   "delete",
-		Short: "delete sub-command",
+		Short: "delete resources",
 		Long:  "delete Rockset resource",
-	}
-
-	//executeCmd := &cobra.Command{
-	//	Use:   "execute",
-	//	Aliases: []string{"exec"},
-	//	Short: "execute sub-command",
-	//	Long:  "execute Rockset resource",
-	//}
-
-	listCmd := &cobra.Command{
-		Use:   "list",
-		Short: "list sub-command",
-		Long:  "list Rockset resources",
 	}
 
 	getCmd := &cobra.Command{
 		Use:   "get",
-		Short: "get sub-command",
-		Long:  "get Rockset resource",
+		Short: "get resources",
+		Long:  "get Rockset resources",
 	}
 
-	streamCmd := &cobra.Command{
-		Use:   "stream",
-		Short: "stream sub-command",
-		Long:  "stream data to Rockset",
+	listCmd := &cobra.Command{
+		Use:   "list",
+		Short: "list resources",
+		Long:  "list Rockset resources",
+	}
+
+	s3Cmd := &cobra.Command{
+		Use:   "s3",
+		Short: "create s3 resources",
+		Long:  "s3 integration and collection commands",
+	}
+
+	sampleCmd := &cobra.Command{
+		Use:   "sample",
+		Short: "create sample collections",
+		Long:  "create sample collections",
 	}
 
 	// workspace
@@ -52,12 +45,23 @@ func addVerbs(root *cobra.Command) {
 	getCmd.AddCommand(newGetWorkspaceCmd())
 	listCmd.AddCommand(newListWorkspacesCmd())
 
+	// sample
+	createCmd.AddCommand(sampleCmd)
+	sampleCmd.AddCommand(newCreateSampleCollectionCmd())
+
+	// s3
+	createCmd.AddCommand(s3Cmd)
+	s3Cmd.AddCommand(newCreateS3CollectionCmd())
+	s3Cmd.AddCommand(newCreateS3IntegrationsCmd())
+
 	// collection
+	createCmd.AddCommand(newCreateCollectionCmd())
 	deleteCmd.AddCommand(newDeleteCollectionCmd())
 	getCmd.AddCommand(newGetCollectionCmd())
 	listCmd.AddCommand(newListCollectionsCmd())
 
 	// integration
+	deleteCmd.AddCommand(newDeleteIntegrationsCmd())
 	getCmd.AddCommand(newGetIntegrationCmd())
 	listCmd.AddCommand(newListIntegrationsCmd())
 
@@ -69,19 +73,18 @@ func addVerbs(root *cobra.Command) {
 	listCmd.AddCommand(newListUsersCmd())
 
 	// query lambda
-	//executeCmd.AddCommand(newExecuteLambdaCmd())
 	listCmd.AddCommand(newListLambdaCmd())
 
 	// documents
 	deleteCmd.AddCommand(newDeleteDocumentsCmd())
-	streamCmd.AddCommand(newStreamDocumentsCmd())
 
-	//root.AddCommand(addCmd)
+	root.AddCommand(newConfigCmd())
+
 	root.AddCommand(createCmd)
 	root.AddCommand(deleteCmd)
-	//root.AddCommand(executeCmd)
 	root.AddCommand(getCmd)
 	root.AddCommand(listCmd)
-	root.AddCommand(streamCmd)
 
+	root.AddCommand(newQueryCmd())
+	root.AddCommand(newIngestCmd())
 }

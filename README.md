@@ -5,10 +5,31 @@
 [![GitHub issues](https://img.shields.io/github/issues/rockset/cli.svg)](https://github.com/rockset/rockset-go-cli/issues)
 [![Release](https://img.shields.io/github/release/rockset/cli.svg?label=Release)](https://github.com/rockset/rockset-go-cli/releases)
 
+## Usage
+
+### Configuration
+
+Environment variables
+
+* `ROCKSET_APIKEY`
+* `ROCKSET_APISERVER`
+
+Configuration file
+`~/.config/rockset/cli.yaml`
+
+```yaml
+---
+current: demo
+configs:
+  demo:
+    apikey: ...
+    apiserver: api.usw2a1.rockset.com
+```
+
 ## Building
 
 ```
-go build -o rock
+go build -o rockset
 ```
 
 ## Testing
