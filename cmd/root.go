@@ -11,10 +11,15 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-var logger = slog.New(slog.NewTextHandler(io.Discard, nil))
+var (
+	Version = "development"
+	logger  = slog.New(slog.NewTextHandler(io.Discard, nil))
+)
 
-func NewRootCmd() *cobra.Command {
+func NewRootCmd(version string) *cobra.Command {
 	var cfgFile string
+	Version = version
+
 	root := &cobra.Command{
 		Use:   "rockset",
 		Short: "A cli for Rockset",

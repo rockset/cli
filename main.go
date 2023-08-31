@@ -21,7 +21,7 @@ func main() {
 		os.Exit(1)
 	}()
 
-	root := cmd.NewRootCmd()
+	root := cmd.NewRootCmd(Version)
 	if err := root.ExecuteContext(ctx); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "\nERROR: %v\n", err)
 		os.Exit(1)

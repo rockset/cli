@@ -128,5 +128,9 @@ func rockClient(cmd *cobra.Command) (*rockset.RockClient, error) {
 		apiserver = fmt.Sprintf("https://api.%s.rockset.com", cluster)
 	}
 
-	return rockset.NewClient(rockset.WithAPIKey(apikey), rockset.WithAPIServer(apiserver))
+	return rockset.NewClient(
+		rockset.WithAPIKey(apikey),
+		rockset.WithAPIServer(apiserver),
+		// TODO add rockset.WithCustomHeader("rockset-go-cli", Version) once the new client it released
+	)
 }

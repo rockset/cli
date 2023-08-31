@@ -115,6 +115,7 @@ func addVerbs(root *cobra.Command) {
 	root.AddCommand(resumeCmd)
 	root.AddCommand(suspendCmd)
 	root.AddCommand(updateCmd)
+	root.AddCommand(newVersionCmd())
 
 	root.AddCommand(newQueryCmd())
 	root.AddCommand(newIngestCmd())
