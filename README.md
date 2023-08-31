@@ -7,14 +7,20 @@
 
 ## Usage
 
-### Configuration
+![screen recording](vhs/demo.gif)
 
-Environment variables
+## Configuration
+
+The Rockset CLI requires having access to an API key and an API server, which can be configured using either
+environment variables or a configuration file.
+
+### Environment variables
 
 * `ROCKSET_APIKEY`
 * `ROCKSET_APISERVER`
 
-Configuration file
+### Configuration File
+
 `~/.config/rockset/cli.yaml`
 
 ```yaml
@@ -24,6 +30,9 @@ configs:
   demo:
     apikey: ...
     apiserver: api.usw2a1.rockset.com
+  demo2:
+    apikey: ...
+    apiserver: api.use1a1.rockset.com
 ```
 
 ## Building
@@ -45,3 +54,12 @@ Requires the environment variable `ROCKSET_APIKEY` to be set
 ```
 go test ./...
 ```
+
+### Create recordings
+
+We use [vhs](https://github.com/charmbracelet/vhs) to record terminal sessions
+
+```
+vhs vhs/demo.tape
+```
+

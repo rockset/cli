@@ -1,5 +1,7 @@
 package format
 
+import "github.com/rockset/rockset-go-client/openapi"
+
 var OrgFormatter = StructFormatter{
 	[]Header{
 		{
@@ -21,11 +23,13 @@ var OrgFormatter = StructFormatter{
 			DisplayName: "External ID",
 			FieldName:   "ExternalId",
 			FieldFn:     getFieldByName,
+			Wide:        true,
 		},
 		{
 			DisplayName: "Created At",
 			FieldName:   "CreatedAt",
 			FieldFn:     getFieldByName,
+			Wide:        true,
 		},
 		// []openapi.Cluster
 		//{
@@ -33,4 +37,16 @@ var OrgFormatter = StructFormatter{
 		//	FieldFn:   getArrayFieldByName,
 		//},
 	},
+}
+
+// just to list available fields
+var _ = openapi.Organization{
+	Clusters:      nil,
+	CreatedAt:     nil,
+	DisplayName:   nil,
+	ExternalId:    nil,
+	Id:            nil,
+	RocksetUser:   nil,
+	SsoConnection: nil,
+	SsoOnly:       nil,
 }

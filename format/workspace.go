@@ -1,5 +1,7 @@
 package format
 
+import "github.com/rockset/rockset-go-client/openapi"
+
 var WorkspaceFormatter = StructFormatter{
 	[]Header{
 		{
@@ -9,9 +11,10 @@ var WorkspaceFormatter = StructFormatter{
 		{
 			FieldName: "Description",
 			FieldFn:   getFieldByName,
+			Wide:      true,
 		},
 		{
-			DisplayName: "Collection Count",
+			DisplayName: "Collections",
 			FieldName:   "CollectionCount",
 			FieldFn:     getFieldByName,
 		},
@@ -24,6 +27,16 @@ var WorkspaceFormatter = StructFormatter{
 			DisplayName: "Created At",
 			FieldName:   "CreatedAt",
 			FieldFn:     getFieldByName,
+			Wide:        true,
 		},
 	},
+}
+
+// just to list available fields
+var _ = openapi.Workspace{
+	CollectionCount: nil,
+	CreatedAt:       nil,
+	CreatedBy:       nil,
+	Description:     nil,
+	Name:            nil,
 }
