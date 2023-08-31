@@ -6,6 +6,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"os"
 	"path"
+	"sort"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slog"
@@ -14,25 +15,79 @@ import (
 	"github.com/rockset/rockset-go-client"
 )
 
-func newConfigCmd() *cobra.Command {
-	c := cobra.Command{
-		Use:     "configuration",
-		Aliases: []string{"config", "cfg"},
-		Short:   "configuration",
-		Long:    "configuration command",
+func newListConfigCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:     "configurations",
+		Aliases: []string{"configuration", "configs", "config", "cfg"},
+		Short:   "list configurations",
+		Long: `list configurations and show the currently selected
+
+YAML file located in ~/.config/rockset/cli.yaml of the format 
+---
+current: dev
+configs:
+  dev:
+    apikey: ...
+    apiserver: api.usw2a1.rockset.com
+  prod:
+    apikey: ...
+    apiserver: api.use1a1.rockset.com`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := loadConfig()
 			if err != nil {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "selected config is '%s'\n", cfg.Current)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "available configs:\n")
+			var names []string
+			for name := range cfg.Configs {
+				names = append(names, name)
+			}
+			sort.Strings(names)
+			for _, name := range names {
+				var arrow = "  "
+				if cfg.Current == name {
+					arrow = "->"
+				}
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s %s (%s)\n", arrow, name, cfg.Configs[name].APIServer)
+			}
 
 			return nil
 		},
 	}
 
-	return &c
+	return &cmd
+}
+
+func newUpdateConfigCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:     "configuration",
+		Aliases: []string{"config", "cfg"},
+		Short:   "configuration",
+		Long:    "configuration command",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cfg, err := loadConfig()
+			if err != nil {
+				return err
+			}
+
+			if _, found := cfg.Configs[args[0]]; !found {
+				return fmt.Errorf("configuration %s not found", args[0])
+			}
+
+			cfg.Current = args[0]
+			if err = storeConfig(cfg); err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "using %s\n", args[0])
+
+			return nil
+		},
+	}
+
+	return &cmd
 }
 
 const (
@@ -64,6 +119,29 @@ func rocksetFile(name string) (string, error) {
 		return "", err
 	}
 	return path.Join(home, ".config", "rockset", name), nil
+}
+
+func storeConfig(cfg *Configs) error {
+	file, err := configFile()
+	if err != nil {
+		return err
+	}
+
+	f, err := os.OpenFile(file, os.O_TRUNC|os.O_WRONLY, 0600)
+	if err != nil {
+		return err
+	}
+
+	enc := yaml.NewEncoder(f)
+	if err = enc.Encode(cfg); err != nil {
+		return err
+	}
+
+	if err = enc.Close(); err != nil {
+		logger.Error("failed to close config", "err", err)
+	}
+
+	return nil
 }
 
 func loadConfig() (*Configs, error) {

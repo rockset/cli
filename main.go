@@ -33,7 +33,7 @@ func main() {
 	root := cmd.NewRootCmd(Version)
 	if err := root.ExecuteContext(ctx); err != nil {
 		errorf := color.New(color.Bold, color.FgRed).FprintfFunc()
-		errorf(os.Stderr, "\nERROR: %v\n", err, err)
+		errorf(os.Stderr, "\nERROR: %v\n", err)
 		os.Exit(1)
 	}
 

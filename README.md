@@ -14,6 +14,19 @@
 The Rockset CLI requires having access to an API key and an API server, which can be configured using either
 environment variables or a configuration file.
 
+```
+$ rockset list config
+available configs:
+-> dev (api.usw2a1.rockset.com)
+   prod (api.usw2a1.rockset.com)
+$ rockset update config prod
+using prod
+$ rockset list config
+available configs:
+   dev (api.usw2a1.rockset.com)
+-> prod (api.usw2a1.rockset.com)
+```
+
 ### Environment variables
 
 * `ROCKSET_APIKEY`
@@ -25,12 +38,12 @@ environment variables or a configuration file.
 
 ```yaml
 ---
-current: demo
+current: dev
 configs:
-  demo:
+  dev:
     apikey: ...
     apiserver: api.usw2a1.rockset.com
-  demo2:
+  prod:
     apikey: ...
     apiserver: api.use1a1.rockset.com
 ```

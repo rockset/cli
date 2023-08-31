@@ -106,7 +106,8 @@ func addVerbs(root *cobra.Command) {
 	// documents
 	deleteCmd.AddCommand(newDeleteDocumentsCmd())
 
-	root.AddCommand(newConfigCmd())
+	listCmd.AddCommand(newListConfigCmd())
+	updateCmd.AddCommand(newUpdateConfigCmd())
 
 	root.AddCommand(createCmd)
 	root.AddCommand(deleteCmd)
