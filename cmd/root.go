@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
@@ -13,7 +12,7 @@ import (
 
 var (
 	Version = "development"
-	logger  = slog.New(slog.NewTextHandler(io.Discard, nil))
+	logger  = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelError}))
 )
 
 func NewRootCmd(version string) *cobra.Command {

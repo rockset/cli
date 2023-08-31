@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
+	"net/http"
 	"runtime/debug"
 )
 
@@ -51,4 +54,42 @@ func newVersionCmd() *cobra.Command {
 	}
 
 	return &cmd
+}
+
+// TODO change to HTTPS
+
+const VersionURL = "http://rockset.sh/install/version.json"
+
+type Versions struct {
+	Stable string `json:"stable"`
+	Beta   string `json:"beta"`
+}
+
+func VersionCheck(ctx context.Context, ch chan string) {
+	// always send something on the channel
+	defer func() { ch <- "" }()
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, VersionURL, nil)
+	if err != nil {
+		logger.Error("failed to create http request", "err", err)
+		return
+	}
+
+	c := http.Client{}
+	response, err := c.Do(request)
+	if err != nil {
+		logger.Error("failed to perform http request", "err", err)
+		return
+	}
+
+	var v Versions
+	dec := json.NewDecoder(response.Body)
+	if err = dec.Decode(&v); err != nil {
+		logger.Error("failed to unmarshal json", "err", err)
+		return
+	}
+
+	if v.Stable != Version {
+		ch <- fmt.Sprintf("version %s is available", v.Stable)
+	}
 }

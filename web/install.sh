@@ -6,8 +6,8 @@ OS=$(uname -s)
 ARCH=$(uname -m)
 
 # TODO enable CloudFront and change to https once we are done testing
-URL="http://rockset.sh/install/${OS}/${ARCH}/rockset"
 BINARY="rockset"
+URL="https://rockset.sh/install/${OS}/${ARCH}/${BINARY}"
 
 curl -o "${BINARY}" "${URL}"
 chmod 755 "${BINARY}"
