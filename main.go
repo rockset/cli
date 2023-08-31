@@ -26,7 +26,7 @@ func main() {
 	// TODO should this be done in a PersistentPreRun & PersistentPostRun instead?
 	// fire off a go routine to get the latest version
 	version := make(chan string, 1)
-	versionCtx, tc := context.WithTimeout(ctx, 3*time.Millisecond)
+	versionCtx, tc := context.WithTimeout(ctx, time.Second)
 	defer tc()
 	go cmd.VersionCheck(versionCtx, version)
 
