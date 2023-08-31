@@ -4,9 +4,10 @@ import "github.com/spf13/cobra"
 
 func addVerbs(root *cobra.Command) {
 	createCmd := &cobra.Command{
-		Use:   "create",
-		Short: "create resources",
-		Long:  "create Rockset resources",
+		Use:     "create",
+		Aliases: []string{"c"},
+		Short:   "create resources",
+		Long:    "create Rockset resources",
 	}
 
 	deleteCmd := &cobra.Command{
@@ -16,33 +17,23 @@ func addVerbs(root *cobra.Command) {
 	}
 
 	getCmd := &cobra.Command{
-		Use:   "get",
-		Short: "get resources",
-		Long:  "get Rockset resources",
+		Use:     "get",
+		Aliases: []string{"g"},
+		Short:   "get resources",
+		Long:    "get Rockset resources",
 	}
 
 	listCmd := &cobra.Command{
-		Use:   "list",
-		Short: "list resources",
-		Long:  "list Rockset resources",
+		Use:     "list",
+		Aliases: []string{"l"},
+		Short:   "list resources",
+		Long:    "list Rockset resources",
 	}
 
 	resumeCmd := &cobra.Command{
 		Use:   "resume",
 		Short: "resume resources",
 		Long:  "resume Rockset resources",
-	}
-
-	s3Cmd := &cobra.Command{
-		Use:   "s3",
-		Short: "create s3 resources",
-		Long:  "s3 integration and collection commands",
-	}
-
-	sampleCmd := &cobra.Command{
-		Use:   "sample",
-		Short: "create sample collections",
-		Long:  "create sample collections",
 	}
 
 	suspendCmd := &cobra.Command{
@@ -64,10 +55,22 @@ func addVerbs(root *cobra.Command) {
 	listCmd.AddCommand(newListWorkspacesCmd())
 
 	// sample
+	sampleCmd := &cobra.Command{
+		Use:   "sample",
+		Short: "create sample collections",
+		Long:  "create sample collections",
+	}
+
 	createCmd.AddCommand(sampleCmd)
 	sampleCmd.AddCommand(newCreateSampleCollectionCmd())
 
 	// s3
+	s3Cmd := &cobra.Command{
+		Use:   "s3",
+		Short: "create s3 resources",
+		Long:  "s3 integration and collection commands",
+	}
+
 	createCmd.AddCommand(s3Cmd)
 	s3Cmd.AddCommand(newCreateS3CollectionCmd())
 	s3Cmd.AddCommand(newCreateS3IntegrationsCmd())

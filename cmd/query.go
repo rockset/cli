@@ -110,7 +110,7 @@ func newQueryCmd() *cobra.Command {
 				return err
 			}
 
-			err = showResult(cmd.OutOrStdout(), result)
+			err = showQueryResult(cmd.OutOrStdout(), result)
 			if err != nil {
 				return err
 			}
@@ -127,7 +127,7 @@ func newQueryCmd() *cobra.Command {
 	return &c
 }
 
-func showResult(out io.Writer, result openapi.QueryResponse) error {
+func showQueryResult(out io.Writer, result openapi.QueryResponse) error {
 	switch result.GetStatus() {
 	case "ERROR":
 		var errs []string
@@ -242,7 +242,7 @@ func interactive(ctx context.Context, out io.Writer, rs *rockset.RockClient) err
 			continue
 		}
 
-		if err = showResult(out, result); err != nil {
+		if err = showQueryResult(out, result); err != nil {
 			slog.Error("failed to show result", err)
 		}
 	}

@@ -100,6 +100,7 @@ func newListWorkspacesCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "workspaces",
 		Aliases: []string{"workspace", "ws"},
+		Args:    cobra.NoArgs,
 		Short:   "list workspaces",
 		Long:    "list Rockset workspaces",
 		RunE: func(cmd *cobra.Command, args []string) error {

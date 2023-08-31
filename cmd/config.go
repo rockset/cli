@@ -19,6 +19,7 @@ func newListConfigCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "configurations",
 		Aliases: []string{"configuration", "configs", "config", "cfg"},
+		Args:    cobra.NoArgs,
 		Short:   "list configurations",
 		Long: `list configurations and show the currently selected
 

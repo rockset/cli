@@ -84,6 +84,7 @@ func newListCollectionsCmd() *cobra.Command {
 		Aliases: []string{"collection", "coll"},
 		Short:   "list collections",
 		Long:    "list Rockset collections",
+		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			wide, _ := cmd.Flags().GetBool(WideFlag)
@@ -122,6 +123,7 @@ func newCreateCollectionCmd() *cobra.Command {
 		Aliases: []string{"coll"},
 		Short:   "create collection for use with the write API",
 		Long:    "create collection for use with the write API",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			name := args[0]
@@ -156,6 +158,7 @@ func newCreateS3CollectionCmd() *cobra.Command {
 		Aliases: []string{"coll"},
 		Short:   "create S3 collection",
 		Long:    "create S3 collection",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			name := args[0]
@@ -210,6 +213,7 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 	c := cobra.Command{
 		Use:     "collection NAME",
 		Aliases: []string{"coll"},
+		Args:    cobra.ExactArgs(1),
 		Short:   "create sample collection",
 		Long:    "create collection with sample data",
 		Example: `	## create a sample collection using the movies dataset and wait for the collection to be ready 

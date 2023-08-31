@@ -10,6 +10,7 @@ import (
 func newListUsersCmd() *cobra.Command {
 	c := cobra.Command{
 		Use:   "users",
+		Args:  cobra.NoArgs,
 		Short: "list users",
 		Long:  "list Rockset users",
 		RunE: func(cmd *cobra.Command, args []string) error {

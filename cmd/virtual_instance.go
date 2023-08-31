@@ -102,6 +102,7 @@ func newListVirtualInstancesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "virtualinstances",
 		Aliases: []string{"vi", "vis"},
+		Args:    cobra.NoArgs,
 		Short:   "list virtual instances",
 		Long:    "list Rockset virtual instances",
 		RunE: func(cmd *cobra.Command, args []string) error {

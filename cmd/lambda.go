@@ -18,6 +18,7 @@ func newListLambdaCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "lambda",
 		Aliases: []string{"ql"},
+		Args:    cobra.NoArgs,
 		Short:   "list lambda",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)

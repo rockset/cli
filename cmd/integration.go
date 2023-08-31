@@ -49,6 +49,7 @@ func newListIntegrationsCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "integrations",
 		Aliases: []string{"integration"},
+		Args:    cobra.NoArgs,
 		Short:   "list integration",
 		Long:    "list Rockset integrations",
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -10,6 +10,7 @@ func newGetOrganizationCmd() *cobra.Command {
 	c := cobra.Command{
 		Use:     "organization",
 		Aliases: []string{"org"},
+		Args:    cobra.NoArgs,
 		Short:   "get organization",
 		Long:    "get Rockset organization",
 		RunE: func(cmd *cobra.Command, args []string) error {

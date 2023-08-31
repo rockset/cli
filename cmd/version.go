@@ -12,6 +12,7 @@ import (
 func newVersionCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:   "version",
+		Args:  cobra.NoArgs,
 		Short: "show version",
 		Long:  "show version information",
 		RunE: func(cmd *cobra.Command, args []string) error {
