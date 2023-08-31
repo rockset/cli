@@ -212,6 +212,12 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 		Aliases: []string{"coll"},
 		Short:   "create sample collection",
 		Long:    "create collection with sample data",
+		Example: `	## create a sample collection using the movies dataset and wait for the collection to be ready 
+	rockset create sample collection --wait --dataset movies movies
+
+	## create a sample collection using the movies dataset with an ingest transformation
+	rockset create sample collection --ingest-transformation ingest.sql --dataset movies movies
+`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			name := args[0]

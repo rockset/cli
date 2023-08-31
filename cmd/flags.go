@@ -23,6 +23,8 @@ const (
 	ValidateFlag    = "validate"
 	FileFlag        = "file"
 	ContextFLag     = "context"
+	DebugFlag       = "debug"
+	SizeFlag        = "size"
 )
 
 const (

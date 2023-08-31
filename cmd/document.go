@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"log"
+	"golang.org/x/exp/slog"
 )
 
 func newDeleteDocumentsCmd() *cobra.Command {
@@ -83,18 +83,18 @@ func newIngestCmd() *cobra.Command {
 			s := NewStreamer(rs, cfg)
 
 			if len(args) == 0 {
-				log.Printf("streaming data from stdin to %s.%s", cfg.Workspace, cfg.Collection)
+				slog.Debug("streaming data from stdin to", "workspace", cfg.Workspace, "collection", cfg.Collection)
 				count, err := s.Stream(ctx, cmd.InOrStdin())
-				log.Printf("wrote %d records", count)
+				slog.Debug("wrote records", "count", count)
 				return err
 			}
 
 			for _, a := range args {
-				log.Printf("reading from file %s", a)
+				slog.Debug("reading", "file", a)
 				count, err := s.Stream(ctx, cmd.InOrStdin())
-				log.Printf("wrote %d records", count)
+				slog.Debug("wrote records", "count", count)
 				if err != nil {
-					log.Printf("failed to write")
+					slog.Error("failed to write", err)
 				}
 			}
 

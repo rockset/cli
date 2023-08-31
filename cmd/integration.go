@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"log"
+	"golang.org/x/exp/slog"
 
 	"github.com/rockset/rockset-go-client/option"
 )
@@ -32,16 +32,14 @@ func newGetIntegrationCmd() *cobra.Command {
 			//}
 			//
 			//f.Workspace(ws)
-			log.Printf("integration: %+v", i)
+			slog.Debug("integration: %+v", i)
 			if i.S3 != nil {
-				log.Printf("s3: %+v", *i.S3)
+				slog.Debug("s3", "struct", *i.S3)
 				if i.S3.AwsAccessKey != nil {
-					log.Printf("aws key: %+v", *i.S3.AwsAccessKey)
+					slog.Debug("aws", "key", *i.S3.AwsAccessKey)
 				}
 			}
-			if i.Gcs != nil {
-				log.Printf("gcs: %+v", i.Gcs.GcpServiceAccount.ServiceAccountKeyFileJson)
-			}
+
 			return nil
 		},
 	}
@@ -72,7 +70,7 @@ func newListIntegrationsCmd() *cobra.Command {
 			//
 			//f.Workspace(ws)
 			for _, i := range list {
-				log.Printf("integration: %+v", i)
+				slog.Debug("integration", "struct", i)
 			}
 			return nil
 		},

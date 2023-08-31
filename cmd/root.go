@@ -2,31 +2,43 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/exp/slog"
 )
+
+var logger = slog.New(slog.NewTextHandler(io.Discard, nil))
 
 func NewRootCmd() *cobra.Command {
 	var cfgFile string
 	root := &cobra.Command{
 		Use:   "rockset",
 		Short: "A cli for Rockset",
-		Long: `The rockset cli is used to...
+		Long: `The Rockset cli is used as an alternative to the console. 
 
 To use the CLI you need an API Key, which you initially have to create using the console:
 https://console.rockset.com/apikeys
 
 It should either be stored as an environment variable ROCKSET_APIKEY.
 
-For more configuration options, see the 'rockset config' command.
+For more configuration options, see the 'rockset config' command.`,
+		Example: `	## Create a sample collection and run a query against it
+	rockset create sample collection --wait --dataset movies movies
+	rockset query "SELECT COUNT(*) FROM movies"`,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if debug, _ := cmd.Flags().GetBool(DebugFlag); debug {
+				logger = slog.New(slog.NewTextHandler(cmd.ErrOrStderr(), &slog.HandlerOptions{
+					Level: slog.LevelDebug,
+				}))
+				slog.SetDefault(logger)
+			}
 
-  rockset create sample collection --wait --dataset movies movies
-  rockset query "SELECT COUNT(*) FROM movies"
-
-`,
+			return nil
+		},
 	}
 
 	cobra.OnInitialize(initConfig(cfgFile))
@@ -39,7 +51,7 @@ For more configuration options, see the 'rockset config' command.
 
 	// any persistent flag defined here will be visible in all commands
 	root.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.rockset.yaml)")
-	root.PersistentFlags().Bool("debug", false, "enable debug output")
+	root.PersistentFlags().Bool(DebugFlag, false, "enable debug output")
 	root.PersistentFlags().String(FormatFlag, DefaultFormat, "output format")
 	root.PersistentFlags().String(ContextFLag, "", fmt.Sprintf("override currently selected configuration context%s", current))
 	root.PersistentFlags().String(ClusterFLag, "", "override Rockset cluster")

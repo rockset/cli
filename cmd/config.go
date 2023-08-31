@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/mitchellh/go-homedir"
-	"log"
 	"os"
 	"path"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
 
 	"github.com/rockset/rockset-go-client"
@@ -21,6 +21,12 @@ func newConfigCmd() *cobra.Command {
 		Short:   "configuration",
 		Long:    "configuration command",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			cfg, err := loadConfig()
+			if err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "selected config is '%s'\n", cfg.Current)
 
 			return nil
 		},
@@ -94,31 +100,31 @@ func rockClient(cmd *cobra.Command) (*rockset.RockClient, error) {
 	if cfg != nil {
 		context, _ := cmd.Flags().GetString(ContextFLag)
 		if context == "" {
-			log.Printf("using context from file")
+			slog.Debug("using context from file")
 			context = cfg.Current
 		}
 		if ctx, found := cfg.Configs[context]; found {
-			log.Printf("using context %s", context)
+			slog.Debug("using", context, context)
 			apikey = ctx.APIKey
 			apiserver = ctx.APIServer
 		} else {
-			log.Printf("context %s not found", context)
+			slog.Debug("not found", "context", context)
 		}
 	}
 
 	// load from environment
 	if key, found := os.LookupEnv(rockset.APIKeyEnvironmentVariableName); found {
-		log.Printf("set apikey")
+		slog.Debug("set apikey")
 		apikey = key
 	}
 	if server, found := os.LookupEnv(rockset.APIServerEnvironmentVariableName); found {
-		log.Printf("set apiserver")
+		slog.Debug("set apiserver")
 		apiserver = server
 	}
 
 	// let the --cluster flag override the apiserver
 	if cluster, _ := cmd.Flags().GetString(ClusterFLag); cluster != "" {
-		log.Printf("override apiserver")
+		slog.Debug("override apiserver")
 		apiserver = fmt.Sprintf("https://api.%s.rockset.com", cluster)
 	}
 

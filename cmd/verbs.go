@@ -27,6 +27,12 @@ func addVerbs(root *cobra.Command) {
 		Long:  "list Rockset resources",
 	}
 
+	resumeCmd := &cobra.Command{
+		Use:   "resume",
+		Short: "resume resources",
+		Long:  "resume Rockset resources",
+	}
+
 	s3Cmd := &cobra.Command{
 		Use:   "s3",
 		Short: "create s3 resources",
@@ -37,6 +43,18 @@ func addVerbs(root *cobra.Command) {
 		Use:   "sample",
 		Short: "create sample collections",
 		Long:  "create sample collections",
+	}
+
+	suspendCmd := &cobra.Command{
+		Use:   "suspend",
+		Short: "suspend resources",
+		Long:  "suspend Rockset resources",
+	}
+
+	updateCmd := &cobra.Command{
+		Use:   "update",
+		Short: "update resources",
+		Long:  "update Rockset resources",
 	}
 
 	// workspace
@@ -68,9 +86,19 @@ func addVerbs(root *cobra.Command) {
 	// org
 	getCmd.AddCommand(newGetOrganizationCmd())
 
+	listCmd.AddCommand(newListQueryCmd())
+
 	// user
 	getCmd.AddCommand(newGetUserCmd())
 	listCmd.AddCommand(newListUsersCmd())
+
+	// virtual instance
+	createCmd.AddCommand(newCreateVirtualInstanceCmd())
+	deleteCmd.AddCommand(newDeleteVirtualInstanceCmd())
+	listCmd.AddCommand(newListVirtualInstancesCmd())
+	resumeCmd.AddCommand(newResumeVirtualInstanceCmd())
+	suspendCmd.AddCommand(newSuspendVirtualInstanceCmd())
+	updateCmd.AddCommand(newUpdateVirtualInstanceCmd())
 
 	// query lambda
 	listCmd.AddCommand(newListLambdaCmd())
@@ -84,6 +112,9 @@ func addVerbs(root *cobra.Command) {
 	root.AddCommand(deleteCmd)
 	root.AddCommand(getCmd)
 	root.AddCommand(listCmd)
+	root.AddCommand(resumeCmd)
+	root.AddCommand(suspendCmd)
+	root.AddCommand(updateCmd)
 
 	root.AddCommand(newQueryCmd())
 	root.AddCommand(newIngestCmd())

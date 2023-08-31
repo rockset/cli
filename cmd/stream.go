@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/rockset/rockset-go-client/openapi"
 	"io"
-	"log"
+
+	"golang.org/x/exp/slog"
+
+	"github.com/rockset/rockset-go-client/openapi"
 )
 
 type DocumentAdder interface {
@@ -84,7 +86,7 @@ func (s *Streamer) flush(ctx context.Context, buf []interface{}) (uint64, error)
 			count++
 			continue
 		}
-		log.Printf("result %d: %s", i, r.GetStatus())
+		slog.Debug("result", "i", i, "status", r.GetStatus())
 	}
 
 	return count, nil

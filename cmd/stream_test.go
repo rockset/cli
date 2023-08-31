@@ -2,12 +2,13 @@ package cmd_test
 
 import (
 	"context"
-	"github.com/rockset/cli/cmd"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"log"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/rockset/cli/cmd"
 
 	"github.com/rockset/rockset-go-client/openapi"
 )
@@ -18,10 +19,10 @@ func TestStreamDocuments(t *testing.T) {
 	in, err := os.Open("testdata/test.json")
 	require.NoError(t, err)
 
-	f := &fake{}
+	f := &fake{t}
 
 	s := cmd.NewStreamer(f, cmd.StreamConfig{
-		Workspace:  DefaultWorkspace,
+		Workspace:  cmd.DefaultWorkspace,
 		Collection: "writetest",
 		BatchSize:  3,
 	})
@@ -31,11 +32,13 @@ func TestStreamDocuments(t *testing.T) {
 	assert.Equal(t, uint64(5), cnt)
 }
 
-type fake struct{}
+type fake struct {
+	t *testing.T
+}
 
 func (f *fake) AddDocuments(ctx context.Context, workspace, collection string,
 	docs []interface{}) ([]openapi.DocumentStatus, error) {
-	log.Printf("%d docs added", len(docs))
+	f.t.Logf("%d docs added", len(docs))
 	res := make([]openapi.DocumentStatus, len(docs))
 	added := "ADDED"
 	for i := range docs {

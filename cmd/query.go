@@ -3,18 +3,51 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/chzyer/readline"
-	"github.com/olekukonko/tablewriter"
+	"github.com/rockset/cli/format"
 	"io"
-	"io/ioutil"
-	"log"
+	"os"
 	"strings"
 
+	"github.com/chzyer/readline"
+	"github.com/fatih/color"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slog"
 
 	"github.com/rockset/rockset-go-client"
 	"github.com/rockset/rockset-go-client/openapi"
 )
+
+func newListQueryCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:   "query ID",
+		Short: "list queries",
+		Long:  "list queries on a virtual instance",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+			wide, _ := cmd.Flags().GetBool(WideFlag)
+
+			rs, err := rockClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			list, err := rs.GetVirtualInstanceQueries(ctx, args[0])
+			if err != nil {
+				return err
+			}
+
+			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
+
+			return f.FormatList(wide, format.ToInterfaceArray(list))
+		},
+	}
+
+	cmd.Flags().Bool(WideFlag, false, "display more information")
+
+	return &cmd
+}
 
 func newQueryCmd() *cobra.Command {
 	c := cobra.Command{
@@ -28,7 +61,8 @@ func newQueryCmd() *cobra.Command {
 				return err
 			}
 
-			file, _ := cmd.Flags().GetString("file")
+			vi, _ := cmd.Flags().GetString("vi")
+			file, _ := cmd.Flags().GetString(FileFlag)
 			validate, _ := cmd.Flags().GetBool(ValidateFlag)
 
 			// TODO handle a parameterized query
@@ -47,7 +81,7 @@ func newQueryCmd() *cobra.Command {
 			}
 
 			if file != "" {
-				data, err := ioutil.ReadFile(file)
+				data, err := os.ReadFile(file)
 				if err != nil {
 					return err
 				}
@@ -65,7 +99,13 @@ func newQueryCmd() *cobra.Command {
 				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "SQL is valid\n")
 			}
 
-			result, err := rs.Query(ctx, sql)
+			var result openapi.QueryResponse
+			if vi == "" {
+				result, err = rs.Query(ctx, sql)
+			} else {
+				result, err = rs.ExecuteQueryOnVirtualInstance(ctx, vi, sql)
+			}
+
 			if err != nil {
 				return err
 			}
@@ -80,7 +120,8 @@ func newQueryCmd() *cobra.Command {
 	}
 
 	c.Flags().Bool(ValidateFlag, false, "validate SQL")
-	c.Flags().String("file", "", "read SQL from file")
+	c.Flags().String(FileFlag, "", "read SQL from file")
+	c.Flags().String("vi", "", "execute query on virtual instance")
 	_ = cobra.MarkFlagFilename(c.Flags(), FileFlag, ".sql")
 
 	return &c
@@ -140,7 +181,10 @@ func showResult(out io.Writer, result openapi.QueryResponse) error {
 	return nil
 }
 
-const prompt = "rockset> "
+var (
+	prompt             = color.CyanString("[") + color.MagentaString("R") + color.CyanString("]") + "> "
+	continuationPrompt = color.CyanString(">") + color.MagentaString(">") + "> "
+)
 
 func interactive(ctx context.Context, out io.Writer, rs *rockset.RockClient) error {
 	histFile, err := historyFile()
@@ -157,7 +201,7 @@ func interactive(ctx context.Context, out io.Writer, rs *rockset.RockClient) err
 	}
 	defer func() {
 		if err := rl.Close(); err != nil {
-			log.Printf("failed to close readline: %v", err)
+			slog.Error("failed to close readline", err)
 		}
 	}()
 
@@ -175,7 +219,7 @@ func interactive(ctx context.Context, out io.Writer, rs *rockset.RockClient) err
 
 		cmds = append(cmds, line)
 		if !strings.HasSuffix(line, ";") {
-			rl.SetPrompt(">>> ")
+			rl.SetPrompt(continuationPrompt)
 			continue
 		}
 
@@ -189,17 +233,17 @@ func interactive(ctx context.Context, out io.Writer, rs *rockset.RockClient) err
 		}
 
 		if err = rl.SaveHistory(sql); err != nil {
-			log.Printf("failed to save history: %v", err)
+			slog.Error("failed to save history", err)
 		}
 
 		result, err := rs.Query(ctx, sql)
 		if err != nil {
-			log.Printf("query failed: %v", err)
+			slog.Error("query failed", err)
 			continue
 		}
 
 		if err = showResult(out, result); err != nil {
-			log.Printf("failed to show result: %v", err)
+			slog.Error("failed to show result", err)
 		}
 	}
 

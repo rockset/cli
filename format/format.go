@@ -67,8 +67,12 @@ func StructFormatterFor[T any](f T) (StructFormatter, error) {
 		return WorkspaceFormatter, nil
 	case openapi.Collection:
 		return CollectionFormatter, nil
+	case openapi.QueryInfo:
+		return QueryInfoFormatter, nil
 	case openapi.QueryLambda:
 		return QueryLambdaFormatter, nil
+	case openapi.VirtualInstance:
+		return VirtualInstanceFormatter, nil
 	default:
 		return StructFormatter{}, fmt.Errorf("no formatter for %T", t)
 	}
@@ -114,6 +118,10 @@ func (s StructFormatter) Fields(wide bool, i interface{}) []string {
 func getFieldByName(name string, i interface{}) string {
 	v := reflect.Indirect(reflect.ValueOf(i))
 	f := v.FieldByName(name)
+
+	if !f.IsValid() {
+		return fmt.Sprintf("unknown field name %s", name)
+	}
 
 	// dereference pointer, if we got one
 	if f.Kind() == reflect.Ptr {

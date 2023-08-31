@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/rockset/cli/format"
 	"github.com/spf13/cobra"
-	"log"
+	"golang.org/x/exp/slog"
 )
 
 func newGetOrganizationCmd() *cobra.Command {
@@ -29,7 +29,7 @@ func newGetOrganizationCmd() *cobra.Command {
 			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
 
 			if err = f.Format(wide, c); err != nil {
-				log.Printf("failed to format data: %v", err)
+				slog.Error("failed to format data", err)
 			}
 			return nil
 		},
