@@ -39,7 +39,6 @@ func main() {
 
 	// show a warning if there is a new version available
 	if v := <-version; v != "" {
-		warning := color.New(color.Bold, color.FgYellow).PrintfFunc()
-		warning("\n%s\n", v)
+		fmt.Printf("\n%s\n", v)
 	}
 }

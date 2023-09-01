@@ -13,10 +13,10 @@ func newVersionCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:   "version",
 		Args:  cobra.NoArgs,
-		Short: "show version",
-		Long:  "show version information",
+		Short: "show cli version",
+		Long:  "show cli version information, use the --debug flag to see detailed information",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Rockset CLI version: %s\n", Version)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", Rockset, Version)
 
 			if d, _ := cmd.Flags().GetBool(DebugFlag); !d {
 				return nil
@@ -91,6 +91,6 @@ func VersionCheck(ctx context.Context, ch chan string) {
 	}
 
 	if v.Stable != Version {
-		ch <- fmt.Sprintf("version %s is available", v.Stable)
+		ch <- fmt.Sprintf("A new release of %s is available: %s → %s", Rockset, Version, v.Stable)
 	}
 }

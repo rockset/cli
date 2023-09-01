@@ -1,6 +1,8 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+)
 
 func addVerbs(root *cobra.Command) {
 	createCmd := &cobra.Command{
@@ -124,4 +126,6 @@ func addVerbs(root *cobra.Command) {
 
 	root.AddCommand(newQueryCmd())
 	root.AddCommand(newIngestCmd())
+
+	// TODO set help func for the root command to show commands grouped by the resource they operate on
 }

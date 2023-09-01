@@ -73,7 +73,7 @@ func newQueryCmd() *cobra.Command {
 				if validate {
 					return fmt.Errorf("can't validate interactive commands")
 				}
-				return interactive(ctx, cmd.OutOrStdout(), rs)
+				return interactiveQuery(ctx, cmd.OutOrStdout(), rs)
 			}
 
 			if file != "" && len(args) > 0 {
@@ -174,6 +174,7 @@ func showQueryResult(out io.Writer, result openapi.QueryResponse) error {
 		}
 
 		t.Render()
+		_, _ = fmt.Fprintf(out, "Elapsed time: %d ms\n\n", result.Stats.GetElapsedTimeMs())
 	default:
 		return fmt.Errorf("unexpected query status: %s", result.GetStatus())
 	}
@@ -182,15 +183,17 @@ func showQueryResult(out io.Writer, result openapi.QueryResponse) error {
 }
 
 var (
-	prompt             = color.CyanString("[") + color.MagentaString("R") + color.CyanString("]") + "> "
+	prompt             = R + "> "
 	continuationPrompt = color.CyanString(">") + color.MagentaString(">") + "> "
 )
 
-func interactive(ctx context.Context, out io.Writer, rs *rockset.RockClient) error {
+func interactiveQuery(ctx context.Context, out io.Writer, rs *rockset.RockClient) error {
 	histFile, err := historyFile()
 	if err != nil {
 		return err
 	}
+
+	_, _ = fmt.Fprintf(out, "%s interactive console. End your SQL with ;\n", Rockset)
 
 	rl, err := readline.NewEx(&readline.Config{
 		Prompt:      prompt,

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
@@ -11,6 +12,8 @@ import (
 )
 
 var (
+	R       = color.CyanString("[") + color.MagentaString("R") + color.CyanString("]")
+	Rockset = color.CyanString("[") + color.MagentaString("Rockset") + color.CyanString("]")
 	Version = "development"
 	logger  = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelError}))
 )
