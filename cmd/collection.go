@@ -38,7 +38,7 @@ func newDeleteCollectionCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().String(WorkspaceFlag, DefaultWorkspace, "workspace for the collection")
+	c.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
 
 	return &c
 }
@@ -73,7 +73,7 @@ func newGetCollectionCmd() *cobra.Command {
 	}
 
 	c.Flags().Bool(WideFlag, false, "display more information")
-	c.Flags().String(WorkspaceFlag, DefaultWorkspace, "workspace for the collection")
+	c.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
 
 	return &c
 }
@@ -112,7 +112,7 @@ func newListCollectionsCmd() *cobra.Command {
 	}
 
 	c.Flags().Bool(WideFlag, false, "display more information")
-	c.Flags().String(WorkspaceFlag, DefaultWorkspace, "workspace for the collection")
+	c.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
 
 	return &c
 }
@@ -269,7 +269,7 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 }
 
 func addCommonCollectionFlags(cmd *cobra.Command) {
-	cmd.Flags().String(WorkspaceFlag, DefaultWorkspace, "workspace for the collection")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
 	cmd.Flags().String(DescriptionFlag, "", "collection description")
 	cmd.Flags().Duration(RetentionFlag, 0, "collection retention")
 	cmd.Flags().Bool(WaitFlag, false, "wait until collection is ready")

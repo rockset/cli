@@ -47,7 +47,7 @@ func newDeleteDocumentsCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(WorkspaceFlag, DefaultWorkspace, "workspace name")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace name")
 	cmd.Flags().String("collection", "", "collection name")
 	_ = cmd.MarkFlagRequired("collection")
 
@@ -102,7 +102,7 @@ func newIngestCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(WorkspaceFlag, "common", "workspace name")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace name")
 	cmd.Flags().String("collection", "", "collection name")
 	cmd.Flags().Uint64("batch-size", 100,
 		"number of documents to batch together each write")

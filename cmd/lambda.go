@@ -45,7 +45,7 @@ func newListLambdaCmd() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().String(WorkspaceFlag, "", "only show query lambdas for the selected workspace")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show query lambdas for the selected workspace")
 
 	return cmd
 }
