@@ -98,6 +98,7 @@ func addVerbs(root *cobra.Command) {
 	// virtual instance
 	createCmd.AddCommand(newCreateVirtualInstanceCmd())
 	deleteCmd.AddCommand(newDeleteVirtualInstanceCmd())
+	getCmd.AddCommand(newGetVirtualInstancesCmd())
 	listCmd.AddCommand(newListVirtualInstancesCmd())
 	resumeCmd.AddCommand(newResumeVirtualInstanceCmd())
 	suspendCmd.AddCommand(newSuspendVirtualInstanceCmd())
