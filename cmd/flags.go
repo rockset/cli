@@ -10,8 +10,6 @@ const (
 	DescriptionFlag    = "description"
 	WorkspaceFlag      = "workspace"
 	WorkspaceShortFlag = "W"
-	FormatFlag         = "format"
-	WideFlag           = "wide"
 	RetentionFlag      = "retention"
 	CompressionFlag    = "compression"
 	IntegrationFlag    = "integration"
@@ -26,6 +24,10 @@ const (
 	ContextFLag        = "context"
 	DebugFlag          = "debug"
 	SizeFlag           = "size"
+
+	FormatFlag = "format"
+	WideFlag   = "wide"
+	HeaderFlag = "header"
 )
 
 const (

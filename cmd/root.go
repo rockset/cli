@@ -59,7 +59,11 @@ For more configuration options, see the 'rockset config' command.`,
 	// any persistent flag defined here will be visible in all commands
 	root.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.rockset.yaml)")
 	root.PersistentFlags().Bool(DebugFlag, false, "enable debug output")
+
 	root.PersistentFlags().String(FormatFlag, DefaultFormat, "output format")
+	root.PersistentFlags().Bool(HeaderFlag, true, "show header")
+	root.PersistentFlags().Bool(WideFlag, false, "show extended fields")
+
 	root.PersistentFlags().String(ContextFLag, "", fmt.Sprintf("override currently selected configuration context%s", current))
 	root.PersistentFlags().String(ClusterFLag, "", "override Rockset cluster")
 

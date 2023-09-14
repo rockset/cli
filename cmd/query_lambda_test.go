@@ -13,7 +13,7 @@ func TestExecuteLambdaCmd(t *testing.T) {
 
 	params := "testdata/params.json"
 	buf := bytes.NewBufferString("")
-	cmd := newExecuteLambdaCmd()
+	cmd := newExecuteQueryLambdaCmd()
 	cmd.Flags().Set("region", "usw2a1")
 	cmd.SetArgs([]string{"--params", params, "commons.events2"})
 	cmd.SetOut(buf)

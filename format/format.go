@@ -71,6 +71,8 @@ func StructFormatterFor[T any](f T) (StructFormatter, error) {
 		return QueryInfoFormatter, nil
 	case openapi.QueryLambda:
 		return QueryLambdaFormatter, nil
+	case openapi.QueryLambdaTag:
+		return QueryLambdaTagFormatter, nil
 	case openapi.VirtualInstance:
 		return VirtualInstanceFormatter, nil
 	default:
@@ -140,6 +142,14 @@ func getFieldByName(name string, i interface{}) string {
 		return strconv.FormatInt(f.Int(), 10)
 	case reflect.Uint64:
 		return strconv.FormatUint(f.Uint(), 10)
+	case reflect.Slice:
+		a := make([]string, f.Len())
+		for i := 0; i < f.Len(); i++ {
+			x := f.Index(i)
+			a[i] = fmt.Sprintf("%v", x)
+		}
+
+		return strings.Join(a, ", ")
 	default:
 		return fmt.Sprintf("[%T: unhandled kind %s for field %s]", i, k, name)
 	}
@@ -157,10 +167,40 @@ func getArrayFieldByName(name string, i interface{}) string {
 		}
 		f = f.Elem()
 	}
+	if !f.IsValid() {
+		return "not valid"
+	}
 
 	for i := 0; i < f.Len(); i++ {
 		item := f.Index(i)
 		a = append(a, item.String())
 	}
 	return strings.Join(a, ", ")
+}
+
+func getStructFieldByName(name string) func(string, any) string {
+	return func(s string, a any) string {
+		v := reflect.Indirect(reflect.ValueOf(a))
+		f := v.FieldByName(s)
+
+		if f.Kind() == reflect.Ptr {
+			if f.IsNil() {
+				return ""
+			}
+			f = f.Elem()
+		}
+		if !f.IsValid() {
+			return "not valid"
+		}
+
+		sf := f.FieldByName(name)
+		if sf.Kind() == reflect.Ptr {
+			if sf.IsNil() {
+				return ""
+			}
+			sf = sf.Elem()
+		}
+
+		return sf.String()
+	}
 }

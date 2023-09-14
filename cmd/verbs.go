@@ -18,6 +18,13 @@ func addVerbs(root *cobra.Command) {
 		Long:  "delete Rockset resource",
 	}
 
+	executeCmd := &cobra.Command{
+		Use:     "execute",
+		Aliases: []string{"e"},
+		Short:   "execute query",
+		Long:    "execute Rockset query",
+	}
+
 	getCmd := &cobra.Command{
 		Use:     "get",
 		Aliases: []string{"g"},
@@ -107,7 +114,10 @@ func addVerbs(root *cobra.Command) {
 	updateCmd.AddCommand(newUpdateVirtualInstanceCmd())
 
 	// query lambda
-	listCmd.AddCommand(newListLambdaCmd())
+	createCmd.AddCommand(newCreateQueryLambdaCmd())
+	executeCmd.AddCommand(newExecuteQueryLambdaCmd())
+	getCmd.AddCommand(newGetQueryLambdaCmd())
+	listCmd.AddCommand(newListQueryLambdaCmd())
 
 	// documents
 	deleteCmd.AddCommand(newDeleteDocumentsCmd())
@@ -117,6 +127,7 @@ func addVerbs(root *cobra.Command) {
 
 	root.AddCommand(createCmd)
 	root.AddCommand(deleteCmd)
+	root.AddCommand(executeCmd)
 	root.AddCommand(getCmd)
 	root.AddCommand(listCmd)
 	root.AddCommand(resumeCmd)
