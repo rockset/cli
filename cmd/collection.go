@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/rockset/cli/format"
 	"github.com/spf13/cobra"
+	"os"
 	"strings"
 
 	"github.com/rockset/rockset-go-client/dataset"
@@ -44,7 +46,7 @@ func newDeleteCollectionCmd() *cobra.Command {
 }
 
 func newGetCollectionCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:     "collection",
 		Aliases: []string{"coll"},
 		Short:   "get collection",
@@ -54,6 +56,7 @@ func newGetCollectionCmd() *cobra.Command {
 			ctx := cmd.Context()
 			wide, _ := cmd.Flags().GetBool(WideFlag)
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			output, _ := cmd.Flags().GetString("output")
 			name := args[0]
 
 			rs, err := rockClient(cmd)
@@ -66,20 +69,35 @@ func newGetCollectionCmd() *cobra.Command {
 				return err
 			}
 
+			if output != "" {
+				var out = cmd.OutOrStdout()
+
+				if output != "-" {
+					out, err = os.OpenFile(output, os.O_CREATE|os.O_WRONLY, 0600)
+					if err != nil {
+						return err
+					}
+				}
+
+				return json.NewEncoder(out).Encode(translate(c))
+			}
+
 			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
 
 			return f.Format(wide, c)
 		},
 	}
 
-	c.Flags().Bool(WideFlag, false, "display more information")
-	c.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
+	cmd.Flags().Bool(WideFlag, false, "display more information")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
+	cmd.Flags().String("output", "", "save json for create collection request to output file, use `-` for stdout")
+	_ = cobra.MarkFlagFilename(cmd.Flags(), "output")
 
-	return &c
+	return &cmd
 }
 
 func newListCollectionsCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:     "collections",
 		Aliases: []string{"collection", "coll"},
 		Short:   "list collections",
@@ -111,14 +129,14 @@ func newListCollectionsCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().Bool(WideFlag, false, "display more information")
-	c.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
+	cmd.Flags().Bool(WideFlag, false, "display more information")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
 
-	return &c
+	return &cmd
 }
 
 func newCreateCollectionCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:     "collection NAME",
 		Aliases: []string{"coll"},
 		Short:   "create collection for use with the write API",
@@ -128,6 +146,10 @@ func newCreateCollectionCmd() *cobra.Command {
 			ctx := cmd.Context()
 			name := args[0]
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			retention, _ := cmd.Flags().GetDuration(RetentionFlag)
+			transform, _ := cmd.Flags().GetString(IngestTransformation)
+
+			input, _ := cmd.Flags().GetString("input")
 
 			options := getCommonCollectionFlags(cmd)
 
@@ -136,9 +158,35 @@ func newCreateCollectionCmd() *cobra.Command {
 				return err
 			}
 
+			if input != "" {
+				var in = cmd.InOrStdin()
+				if input != "-" {
+					in, err = os.Open(input)
+					if err != nil {
+						return err
+					}
+				}
+
+				dec := json.NewDecoder(in)
+				var request openapi.CreateCollectionRequest
+				if err = dec.Decode(&request); err != nil {
+					return err
+				}
+
+				request.Name = &name
+				options = append(options, option.WithCollectionRequest(request))
+			}
+
+			if retention != 0 {
+				options = append(options, option.WithCollectionRetention(retention))
+			}
+			if transform != "" {
+				options = append(options, option.WithIngestTransformation(transform))
+			}
+
 			result, err := rs.CreateCollection(ctx, ws, name, options...)
 			if err != nil {
-				return err
+				return fmt.Errorf("failed to create collection: %w", err)
 			}
 
 			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "collection '%s.%s' is %s\n", ws, name, result.GetStatus())
@@ -147,13 +195,15 @@ func newCreateCollectionCmd() *cobra.Command {
 		},
 	}
 
-	addCommonCollectionFlags(&c)
+	cmd.Flags().String("input", "", "input file for create collection request, use `-` to read from stdin")
+	_ = cobra.MarkFlagFilename(cmd.Flags(), "input")
+	addCommonCollectionFlags(&cmd)
 
-	return &c
+	return &cmd
 }
 
 func newCreateS3CollectionCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:     "collection NAME",
 		Aliases: []string{"coll"},
 		Short:   "create S3 collection",
@@ -195,22 +245,22 @@ func newCreateS3CollectionCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().String(IntegrationFlag, "", "integration name")
-	c.Flags().String(BucketFlag, "", "S3 bucket")
-	c.Flags().String(PatternFlag, "", "S3 pattern")
-	c.Flags().String(RegionFlag, "", "AWS region of the S3 bucket")
-	c.Flags().String("source-format", "json", "data source format")
+	cmd.Flags().String(IntegrationFlag, "", "integration name")
+	cmd.Flags().String(BucketFlag, "", "S3 bucket")
+	cmd.Flags().String(PatternFlag, "", "S3 pattern")
+	cmd.Flags().String(RegionFlag, "", "AWS region of the S3 bucket")
+	cmd.Flags().String("source-format", "json", "data source format")
 
-	_ = cobra.MarkFlagRequired(c.Flags(), IntegrationFlag)
-	_ = cobra.MarkFlagRequired(c.Flags(), BucketFlag)
+	_ = cobra.MarkFlagRequired(cmd.Flags(), IntegrationFlag)
+	_ = cobra.MarkFlagRequired(cmd.Flags(), BucketFlag)
 
-	addCommonCollectionFlags(&c)
+	addCommonCollectionFlags(&cmd)
 
-	return &c
+	return &cmd
 }
 
 func newCreateSampleCollectionCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:     "collection NAME",
 		Aliases: []string{"coll"},
 		Args:    cobra.ExactArgs(1),
@@ -260,18 +310,20 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().String(DatasetFlag, "", "create sample collection from this dataset")
-	_ = cobra.MarkFlagRequired(c.Flags(), DatasetFlag)
+	cmd.Flags().String(DatasetFlag, "", "create sample collection from this dataset")
+	_ = cobra.MarkFlagRequired(cmd.Flags(), DatasetFlag)
 
-	addCommonCollectionFlags(&c)
+	addCommonCollectionFlags(&cmd)
 
-	return &c
+	return &cmd
 }
 
 func addCommonCollectionFlags(cmd *cobra.Command) {
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
 	cmd.Flags().String(DescriptionFlag, "", "collection description")
 	cmd.Flags().Duration(RetentionFlag, 0, "collection retention")
+	cmd.Flags().String(IngestTransformation, "", "ingest transformation SQL")
+	cmd.Flags().StringP("ingest-transformation-file", "I", "", "read ingest transformation SQL from file")
 	cmd.Flags().Bool(WaitFlag, false, "wait until collection is ready")
 }
 
@@ -290,4 +342,20 @@ func getCommonCollectionFlags(cmd *cobra.Command) []option.CollectionOption {
 	}
 
 	return options
+}
+
+func translate(in openapi.Collection) openapi.CreateCollectionRequest {
+	out := openapi.CreateCollectionRequest{
+		Description:       in.Description,
+		FieldMappingQuery: in.FieldMappingQuery,
+		RetentionSecs:     in.RetentionSecs,
+		Sources:           nil,
+	}
+
+	for _, s := range in.Sources {
+		s.Status = nil
+		out.Sources = append(out.Sources, s)
+	}
+
+	return out
 }
