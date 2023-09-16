@@ -15,7 +15,7 @@ var CollectionFormatter = StructFormatter{
 			FieldFn:   getFieldByName,
 		},
 		{
-			DisplayName: "Retention in Secs",
+			DisplayName: "Retention",
 			FieldName:   "RetentionSecs",
 			FieldFn:     getFieldByName,
 		},

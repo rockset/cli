@@ -46,7 +46,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 }
 
 func newDeleteWorkspaceCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := cobra.Command{
 		Use:     "workspace",
 		Aliases: []string{"ws"},
 		Short:   "delete workspace",
@@ -54,20 +54,101 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
+			ws := args[0]
+			recurse, _ := cmd.Flags().GetBool("recurse")
+
 			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}
 
-			err = rs.DeleteWorkspace(ctx, args[0])
+			if recurse {
+				// TODO these should be moved into the go client
+
+				collections, err := rs.ListCollections(ctx, option.WithWorkspace(ws))
+				if err != nil {
+					return err
+				}
+				for _, collection := range collections {
+					if err = rs.DeleteCollection(ctx, ws, collection.GetName()); err != nil {
+						return err
+					}
+
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "deleted collection %s\n", collection.GetName())
+				}
+
+				views, err := rs.ListViews(ctx, option.WithViewWorkspace(ws))
+				if err != nil {
+					return err
+				}
+				for _, view := range views {
+					if err = rs.DeleteView(ctx, ws, view.GetName()); err != nil {
+						return err
+					}
+
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "deleted view %s\n", view.GetName())
+				}
+
+				qls, err := rs.ListQueryLambdas(ctx, option.WithQueryLambdaWorkspace(ws))
+				if err != nil {
+					return err
+				}
+				for _, ql := range qls {
+					if err = rs.DeleteQueryLambda(ctx, ws, ql.GetName()); err != nil {
+						return err
+					}
+
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "deleted query lambda %s\n", ql.GetName())
+				}
+
+				aliases, err := rs.ListAliases(ctx, option.WithAliasWorkspace(ws))
+				if err != nil {
+					return err
+				}
+				for _, alias := range aliases {
+					if err = rs.DeleteAlias(ctx, ws, alias.GetName()); err != nil {
+						return err
+					}
+
+					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "deleted alias %s\n", alias.GetName())
+				}
+
+				// wait until all resources are gone...
+
+				for _, collection := range collections {
+					if err = rs.WaitUntilCollectionGone(ctx, ws, collection.GetName()); err != nil {
+						return err
+					}
+				}
+
+				for _, view := range views {
+					if err = rs.WaitUntilViewGone(ctx, ws, view.GetName()); err != nil {
+						return err
+					}
+				}
+
+				for _, alias := range aliases {
+					if err = rs.WaitUntilAliasGone(ctx, ws, alias.GetName()); err != nil {
+						return err
+					}
+				}
+
+				// TODO wait until QLs are gone (missing support in go client)
+			}
+
+			err = rs.DeleteWorkspace(ctx, ws)
 			if err != nil {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "workspace '%s' deleted\n", args[0])
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "workspace '%s' deleted\n", ws)
 			return nil
 		},
 	}
+
+	cmd.Flags().Bool("recurse", false, "recursively delete everything in the workspace, i.e. collections, query lambdas and views")
+
+	return &cmd
 }
 
 func newGetWorkspaceCmd() *cobra.Command {

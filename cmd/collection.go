@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/rockset/cli/format"
@@ -8,6 +9,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/rockset/rockset-go-client"
 	"github.com/rockset/rockset-go-client/dataset"
 	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/rockset/rockset-go-client/option"
@@ -189,6 +191,9 @@ func newCreateCollectionCmd() *cobra.Command {
 				return fmt.Errorf("failed to create collection: %w", err)
 			}
 
+			if err = waitForCollection(ctx, cmd, rs, ws, name); err != nil {
+				return err
+			}
 			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "collection '%s.%s' is %s\n", ws, name, result.GetStatus())
 
 			return nil
@@ -277,7 +282,6 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 			name := args[0]
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 			from, _ := cmd.Flags().GetString(DatasetFlag)
-			wait, _ := cmd.Flags().GetBool(WaitFlag)
 			ds := dataset.Sample(from)
 
 			options := getCommonCollectionFlags(cmd)
@@ -299,10 +303,8 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 				return err
 			}
 
-			if wait {
-				if err = rs.WaitUntilCollectionReady(ctx, ws, name); err != nil {
-					return fmt.Errorf("failed to wait for %s.%s to be ready: %v", ws, name, err)
-				}
+			if err = waitForCollection(ctx, cmd, rs, ws, name); err != nil {
+				return err
 			}
 			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "collection '%s.%s' is %s\n", ws, name, result.GetStatus())
 
@@ -316,6 +318,19 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 	addCommonCollectionFlags(&cmd)
 
 	return &cmd
+}
+
+func waitForCollection(ctx context.Context, cmd *cobra.Command, rs *rockset.RockClient, ws, name string) error {
+	wait, _ := cmd.Flags().GetBool(WaitFlag)
+
+	if wait {
+		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "waiting for collection '%s.%s' to be READY\n", ws, name)
+		if err := rs.WaitUntilCollectionReady(ctx, ws, name); err != nil {
+			return fmt.Errorf("failed to wait for %s.%s to be ready: %v", ws, name, err)
+		}
+	}
+
+	return nil
 }
 
 func addCommonCollectionFlags(cmd *cobra.Command) {
