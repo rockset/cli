@@ -5,6 +5,11 @@ Set FontSize 14
 Set Width 1200
 Set Height 600
 
+Type "rockset version"
+Sleep 500ms
+Enter
+Sleep 1s
+
 Type "rockset get org"
 Sleep 500ms
 Enter
@@ -14,25 +19,23 @@ Type "rockset list workspaces"
 Sleep 500ms
 Enter
 
+Sleep 1s
+
+Type "rockset create workspace demo --description 'for demos'"
+Sleep 500ms
+Enter
+
 Sleep 3s
 
 Type "clear"
 Enter
 
-Type "rockset query 'SELECT COUNT(*) FROM _events'"
-Sleep 500ms
+Type "cat vhs/movie_releases_ingest_transform.sql"
+Sleep 1s
 Enter
 
-Sleep 2s
-
-Type "rockset query"
-Sleep 500ms
-Enter
-
-Type "SELECT COUNT(*)"
-Sleep 500ms
-Enter
-Type "FROM _events;"
+# create movie collection with
+Type "rockset create sample collection --dataset movies --workspace demo --retention 1h --ingest-transformation-file vhs/movie_releases_ingest_transform.sql movies"
 Sleep 500ms
 Enter
 
