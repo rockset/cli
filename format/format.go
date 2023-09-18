@@ -59,6 +59,8 @@ func (h Header) Field(i interface{}) string {
 func StructFormatterFor[T any](f T) (StructFormatter, error) {
 	var i interface{} = f
 	switch t := i.(type) {
+	case openapi.Alias:
+		return AliasFormatter, nil
 	case openapi.User:
 		return UserFormatter, nil
 	case openapi.Organization:

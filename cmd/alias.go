@@ -7,13 +7,13 @@ import (
 	"github.com/rockset/rockset-go-client/option"
 )
 
-func newListViewsCmd() *cobra.Command {
+func newListAliasesCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:         "view",
-		Aliases:     []string{"v"},
+		Use:         "ailases",
+		Aliases:     []string{"a", "alias"},
 		Args:        cobra.NoArgs,
-		Short:       "list views",
-		Annotations: group("view"),
+		Short:       "list aliases",
+		Annotations: group("alias"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 
@@ -23,31 +23,31 @@ func newListViewsCmd() *cobra.Command {
 				return err
 			}
 
-			var opts []option.ListViewOption
+			var opts []option.ListAliasesOption
 			if ws != "" && ws != AllWorkspaces {
-				opts = append(opts, option.WithViewWorkspace(ws))
+				opts = append(opts, option.WithAliasWorkspace(ws))
 			}
 
-			views, err := rs.ListViews(ctx, opts...)
+			aliases, err := rs.ListAliases(ctx, opts...)
 			if err != nil {
 				return err
 			}
 
-			return formatList(cmd, format.ToInterfaceArray(views))
+			return formatList(cmd, format.ToInterfaceArray(aliases))
 		},
 	}
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show views for the selected workspace")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show aliases for the selected workspace")
 
 	return cmd
 }
 
-func newGetViewCmd() *cobra.Command {
+func newGetAliasCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:         "view NAME",
-		Aliases:     []string{"v"},
+		Use:         "alias NAME",
+		Aliases:     []string{"a"},
 		Args:        cobra.ExactArgs(1),
-		Short:       "get view information",
-		Annotations: group("view"),
+		Short:       "get alias information",
+		Annotations: group("alias"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 
@@ -57,12 +57,12 @@ func newGetViewCmd() *cobra.Command {
 				return err
 			}
 
-			view, err := rs.GetView(ctx, ws, args[0])
+			alias, err := rs.GetAlias(ctx, ws, args[0])
 			if err != nil {
 				return err
 			}
 
-			return formatOne(cmd, view)
+			return formatOne(cmd, alias)
 		},
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show views for the selected workspace")

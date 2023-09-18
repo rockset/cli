@@ -117,6 +117,9 @@ func addVerbs(root *cobra.Command) {
 	suspendCmd.AddCommand(newSuspendVirtualInstanceCmd())
 	updateCmd.AddCommand(newUpdateVirtualInstanceCmd())
 
+	getCmd.AddCommand(newGetAliasCmd())
+	listCmd.AddCommand(newListAliasesCmd())
+
 	// query lambda
 	createCmd.AddCommand(newCreateQueryLambdaCmd())
 	executeCmd.AddCommand(newExecuteQueryLambdaCmd())
