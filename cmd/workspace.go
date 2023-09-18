@@ -11,11 +11,12 @@ import (
 
 func newCreateWorkspaceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "workspace",
-		Aliases: []string{"ws"},
-		Short:   "create workspace",
-		Long:    "create Rockset workspace",
-		Args:    cobra.ExactArgs(1),
+		Use:         "workspace",
+		Aliases:     []string{"ws"},
+		Short:       "create workspace",
+		Long:        "create Rockset workspace",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("workspace"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -47,11 +48,12 @@ func newCreateWorkspaceCmd() *cobra.Command {
 
 func newDeleteWorkspaceCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "workspace",
-		Aliases: []string{"ws"},
-		Short:   "delete workspace",
-		Long:    "delete Rockset workspace",
-		Args:    cobra.ExactArgs(1),
+		Use:         "workspace",
+		Aliases:     []string{"ws"},
+		Short:       "delete workspace",
+		Long:        "delete Rockset workspace",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("workspace"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			ws := args[0]
@@ -153,11 +155,12 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 
 func newGetWorkspaceCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:     "workspace",
-		Aliases: []string{"ws"},
-		Short:   "get workspace",
-		Long:    "get Rockset workspace",
-		Args:    cobra.ExactArgs(1),
+		Use:         "workspace",
+		Aliases:     []string{"ws"},
+		Short:       "get workspace",
+		Long:        "get Rockset workspace",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("workspace"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -179,11 +182,12 @@ func newGetWorkspaceCmd() *cobra.Command {
 
 func newListWorkspacesCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:     "workspaces",
-		Aliases: []string{"workspace", "ws"},
-		Args:    cobra.NoArgs,
-		Short:   "list workspaces",
-		Long:    "list Rockset workspaces",
+		Use:         "workspaces",
+		Aliases:     []string{"workspace", "ws"},
+		Args:        cobra.NoArgs,
+		Short:       "list workspaces",
+		Long:        "list Rockset workspaces",
+		Annotations: group("workspace"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)

@@ -9,10 +9,11 @@ import (
 
 func newListUsersCmd() *cobra.Command {
 	c := cobra.Command{
-		Use:   "users",
-		Args:  cobra.NoArgs,
-		Short: "list users",
-		Long:  "list Rockset users",
+		Use:         "users",
+		Args:        cobra.NoArgs,
+		Short:       "list users",
+		Long:        "list Rockset users",
+		Annotations: group("user"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -38,10 +39,11 @@ func newListUsersCmd() *cobra.Command {
 
 func newGetUserCmd() *cobra.Command {
 	c := cobra.Command{
-		Use:   "user [EMAIL]",
-		Short: "get user information",
-		Long:  "get Rockset user, if no email address is specified the current user is returned",
-		Args:  cobra.RangeArgs(0, 1),
+		Use:         "user [EMAIL]",
+		Short:       "get user information",
+		Long:        "get Rockset user, if no email address is specified the current user is returned",
+		Args:        cobra.RangeArgs(0, 1),
+		Annotations: group("user"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 

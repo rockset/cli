@@ -10,10 +10,11 @@ import (
 
 func newGetIntegrationCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "integration",
-		Short: "get integration",
-		Long:  "get Rockset integration",
-		Args:  cobra.ExactArgs(1),
+		Use:         "integration",
+		Short:       "get integration",
+		Long:        "get Rockset integration",
+		Annotations: group("integration"),
+		Args:        cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -47,11 +48,12 @@ func newGetIntegrationCmd() *cobra.Command {
 
 func newListIntegrationsCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:     "integrations",
-		Aliases: []string{"integration"},
-		Args:    cobra.NoArgs,
-		Short:   "list integration",
-		Long:    "list Rockset integrations",
+		Use:         "integrations",
+		Aliases:     []string{"integration"},
+		Args:        cobra.NoArgs,
+		Short:       "list integration",
+		Long:        "list Rockset integrations",
+		Annotations: group("integration"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -80,10 +82,11 @@ func newListIntegrationsCmd() *cobra.Command {
 
 func newCreateS3IntegrationsCmd() *cobra.Command {
 	c := cobra.Command{
-		Use:   "integration NAME",
-		Short: "create S3 integration",
-		Long:  "create S3 integration",
-		Args:  cobra.ExactArgs(1),
+		Use:         "integration NAME",
+		Short:       "create S3 integration",
+		Long:        "create S3 integration",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("integration"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -111,10 +114,11 @@ func newCreateS3IntegrationsCmd() *cobra.Command {
 
 func newDeleteIntegrationsCmd() *cobra.Command {
 	c := cobra.Command{
-		Use:   "integration NAME",
-		Short: "delete integration",
-		Long:  "delete an integration",
-		Args:  cobra.ExactArgs(1),
+		Use:         "integration NAME",
+		Short:       "delete integration",
+		Long:        "delete an integration",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("integration"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)

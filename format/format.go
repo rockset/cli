@@ -73,6 +73,8 @@ func StructFormatterFor[T any](f T) (StructFormatter, error) {
 		return QueryLambdaFormatter, nil
 	case openapi.QueryLambdaTag:
 		return QueryLambdaTagFormatter, nil
+	case openapi.View:
+		return ViewFormatter, nil
 	case openapi.VirtualInstance:
 		return VirtualInstanceFormatter, nil
 	default:

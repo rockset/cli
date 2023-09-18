@@ -17,10 +17,11 @@ import (
 
 func newListConfigCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "configurations",
-		Aliases: []string{"configuration", "configs", "config", "cfg"},
-		Args:    cobra.NoArgs,
-		Short:   "list configurations",
+		Use:         "configurations",
+		Aliases:     []string{"configuration", "configs", "config", "cfg"},
+		Annotations: group("config"),
+		Args:        cobra.NoArgs,
+		Short:       "list configurations",
 		Long: `list configurations and show the currently selected
 
 YAML file located in ~/.config/rockset/cli.yaml of the format 
@@ -62,11 +63,12 @@ configs:
 
 func newUpdateConfigCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "configuration",
-		Aliases: []string{"config", "cfg"},
-		Short:   "configuration",
-		Long:    "configuration command",
-		Args:    cobra.ExactArgs(1),
+		Use:         "configuration",
+		Aliases:     []string{"config", "cfg"},
+		Short:       "configuration",
+		Long:        "configuration command",
+		Annotations: group("config"),
+		Args:        cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := loadConfig()
 			if err != nil {

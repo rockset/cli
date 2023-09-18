@@ -14,11 +14,12 @@ import (
 
 func newCreateVirtualInstanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "virtualinstance NAME",
-		Aliases: []string{"vi"},
-		Short:   "create a virtual instance",
-		Long:    "create a Rockset virtual instance",
-		Args:    cobra.ExactArgs(1),
+		Use:         "virtualinstance NAME",
+		Aliases:     []string{"vi"},
+		Short:       "create a virtual instance",
+		Long:        "create a Rockset virtual instance",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("virtual instance"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			size, _ := cmd.Flags().GetString(SizeFlag)
@@ -65,11 +66,12 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 
 func newUpdateVirtualInstanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "virtualinstance ID",
-		Aliases: []string{"vi"},
-		Short:   "update a virtual instance",
-		Long:    "update a Rockset virtual instance",
-		Args:    cobra.ExactArgs(1),
+		Use:         "virtualinstance ID",
+		Aliases:     []string{"vi"},
+		Short:       "update a virtual instance",
+		Long:        "update a Rockset virtual instance",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("virtual instance"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			size, _ := cmd.Flags().GetString(SizeFlag)
@@ -109,11 +111,12 @@ func newUpdateVirtualInstanceCmd() *cobra.Command {
 
 func newListVirtualInstancesCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "virtualinstances",
-		Aliases: []string{"vi", "vis"},
-		Args:    cobra.NoArgs,
-		Short:   "list virtual instances",
-		Long:    "list Rockset virtual instances",
+		Use:         "virtualinstances",
+		Aliases:     []string{"vi", "vis"},
+		Args:        cobra.NoArgs,
+		Short:       "list virtual instances",
+		Long:        "list Rockset virtual instances",
+		Annotations: group("virtual instance"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			wide, _ := cmd.Flags().GetBool(WideFlag)
@@ -141,11 +144,12 @@ func newListVirtualInstancesCmd() *cobra.Command {
 
 func newGetVirtualInstancesCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "virtualinstance ID",
-		Aliases: []string{"vi"},
-		Args:    cobra.ExactArgs(1),
-		Short:   "get virtual instance",
-		Long:    "get Rockset virtual instances",
+		Use:         "virtualinstance ID",
+		Aliases:     []string{"vi"},
+		Args:        cobra.ExactArgs(1),
+		Short:       "get virtual instance",
+		Long:        "get Rockset virtual instances",
+		Annotations: group("virtual instance"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			wide, _ := cmd.Flags().GetBool(WideFlag)
@@ -178,11 +182,12 @@ func newGetVirtualInstancesCmd() *cobra.Command {
 
 func newDeleteVirtualInstanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "virtualinstance ID",
-		Aliases: []string{"vi"},
-		Short:   "delete virtual instance",
-		Long:    "delete Rockset virtual instance",
-		Args:    cobra.ExactArgs(1),
+		Use:         "virtualinstance ID",
+		Aliases:     []string{"vi"},
+		Short:       "delete virtual instance",
+		Long:        "delete Rockset virtual instance",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("virtual instance"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -212,11 +217,12 @@ func newDeleteVirtualInstanceCmd() *cobra.Command {
 
 func newSuspendVirtualInstanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "virtualinstance ID",
-		Aliases: []string{"vi"},
-		Short:   "suspend virtual instance",
-		Long:    "suspend Rockset virtual instance",
-		Args:    cobra.ExactArgs(1),
+		Use:         "virtualinstance ID",
+		Aliases:     []string{"vi"},
+		Short:       "suspend virtual instance",
+		Long:        "suspend Rockset virtual instance",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("virtual instance"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -246,11 +252,12 @@ func newSuspendVirtualInstanceCmd() *cobra.Command {
 
 func newResumeVirtualInstanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "virtualinstance ID",
-		Aliases: []string{"vi"},
-		Short:   "resume virtual instance",
-		Long:    "resume Rockset virtual instance",
-		Args:    cobra.ExactArgs(1),
+		Use:         "virtualinstance ID",
+		Aliases:     []string{"vi"},
+		Short:       "resume virtual instance",
+		Long:        "resume Rockset virtual instance",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("virtual instance"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 

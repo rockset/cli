@@ -34,6 +34,7 @@ const (
 const (
 	DefaultFormat    = "table"
 	DefaultWorkspace = "commons"
+	AllWorkspaces    = "all"
 )
 
 func FormatFromCommand(cmd *cobra.Command) format.Format {

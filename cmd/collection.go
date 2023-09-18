@@ -17,11 +17,12 @@ import (
 
 func newDeleteCollectionCmd() *cobra.Command {
 	c := cobra.Command{
-		Use:     "collection",
-		Aliases: []string{"coll"},
-		Short:   "delete collection",
-		Long:    "delete Rockset collection",
-		Args:    cobra.ExactArgs(1),
+		Use:         "collection",
+		Aliases:     []string{"coll"},
+		Short:       "delete collection",
+		Long:        "delete Rockset collection",
+		Annotations: group("collection"),
+		Args:        cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -49,11 +50,12 @@ func newDeleteCollectionCmd() *cobra.Command {
 
 func newGetCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "collection",
-		Aliases: []string{"coll"},
-		Short:   "get collection",
-		Long:    "get Rockset collection",
-		Args:    cobra.ExactArgs(1),
+		Use:         "collection",
+		Aliases:     []string{"coll"},
+		Short:       "get collection",
+		Long:        "get Rockset collection",
+		Annotations: group("collection"),
+		Args:        cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			wide, _ := cmd.Flags().GetBool(WideFlag)
@@ -100,11 +102,12 @@ func newGetCollectionCmd() *cobra.Command {
 
 func newListCollectionsCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "collections",
-		Aliases: []string{"collection", "coll"},
-		Short:   "list collections",
-		Long:    "list Rockset collections",
-		Args:    cobra.NoArgs,
+		Use:         "collections",
+		Aliases:     []string{"collection", "coll"},
+		Short:       "list collections",
+		Long:        "list Rockset collections",
+		Annotations: group("collection"),
+		Args:        cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			wide, _ := cmd.Flags().GetBool(WideFlag)
@@ -116,7 +119,7 @@ func newListCollectionsCmd() *cobra.Command {
 			}
 
 			var list []openapi.Collection
-			if ws == "" {
+			if ws == "" || ws == AllWorkspaces {
 				list, err = rs.ListCollections(ctx)
 			} else {
 				list, err = rs.ListCollections(ctx, option.WithWorkspace(ws))
@@ -132,18 +135,19 @@ func newListCollectionsCmd() *cobra.Command {
 	}
 
 	cmd.Flags().Bool(WideFlag, false, "display more information")
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "workspace for the collection")
 
 	return &cmd
 }
 
 func newCreateCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "collection NAME",
-		Aliases: []string{"coll"},
-		Short:   "create collection for use with the write API",
-		Long:    "create collection for use with the write API",
-		Args:    cobra.ExactArgs(1),
+		Use:         "collection NAME",
+		Aliases:     []string{"coll"},
+		Short:       "create collection for use with the write API",
+		Long:        "create collection for use with the write API",
+		Annotations: group("collection"),
+		Args:        cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			name := args[0]
@@ -209,11 +213,12 @@ func newCreateCollectionCmd() *cobra.Command {
 
 func newCreateS3CollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "collection NAME",
-		Aliases: []string{"coll"},
-		Short:   "create S3 collection",
-		Long:    "create S3 collection",
-		Args:    cobra.ExactArgs(1),
+		Use:         "collection NAME",
+		Aliases:     []string{"coll"},
+		Short:       "create S3 collection",
+		Long:        "create S3 collection",
+		Annotations: group("collection"),
+		Args:        cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			name := args[0]
@@ -266,11 +271,12 @@ func newCreateS3CollectionCmd() *cobra.Command {
 
 func newCreateSampleCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "collection NAME",
-		Aliases: []string{"coll"},
-		Args:    cobra.ExactArgs(1),
-		Short:   "create sample collection",
-		Long:    "create collection with sample data",
+		Use:         "collection NAME",
+		Aliases:     []string{"coll"},
+		Annotations: group("collection"),
+		Args:        cobra.ExactArgs(1),
+		Short:       "create sample collection",
+		Long:        "create collection with sample data",
 		Example: `	## create a sample collection using the movies dataset and wait for the collection to be ready 
 	rockset create sample collection --wait --dataset movies movies
 

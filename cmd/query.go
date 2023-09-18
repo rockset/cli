@@ -20,10 +20,11 @@ import (
 
 func newListQueryCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:   "query ID",
-		Short: "list queries",
-		Long:  "list queries on a virtual instance",
-		Args:  cobra.ExactArgs(1),
+		Use:         "query ID",
+		Short:       "list queries",
+		Long:        "list queries on a virtual instance",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("query"), // TODO shoudl this be in the VI group too?
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			wide, _ := cmd.Flags().GetBool(WideFlag)
@@ -51,9 +52,10 @@ func newListQueryCmd() *cobra.Command {
 
 func newQueryCmd() *cobra.Command {
 	c := cobra.Command{
-		Use:   "query SQL",
-		Short: "execute SQL query",
-		Long:  "query Rockset collections",
+		Use:         "query SQL",
+		Short:       "execute SQL query",
+		Long:        "query Rockset collections",
+		Annotations: group("query"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)

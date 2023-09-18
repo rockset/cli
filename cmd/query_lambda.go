@@ -12,10 +12,11 @@ import (
 
 func newListQueryLambdaCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "lambda",
-		Aliases: []string{"ql"},
-		Args:    cobra.NoArgs,
-		Short:   "list lambda",
+		Use:         "lambda",
+		Aliases:     []string{"ql"},
+		Args:        cobra.NoArgs,
+		Short:       "list lambda",
+		Annotations: group("lambda"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 
@@ -25,29 +26,30 @@ func newListQueryLambdaCmd() *cobra.Command {
 				return err
 			}
 			var opts []option.ListQueryLambdaOption
-			if ws != "" {
+			if ws != "" && ws != AllWorkspaces {
 				opts = append(opts, option.WithQueryLambdaWorkspace(ws))
 			}
 
 			lambdas, err := rs.ListQueryLambdas(ctx, opts...)
 			if err != nil {
-				return nil
+				return err
 			}
 
 			return formatList(cmd, format.ToInterfaceArray(lambdas))
 		},
 	}
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show query lambdas for the selected workspace")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show query lambdas for the selected workspace")
 
 	return cmd
 }
 
 func newGetQueryLambdaCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "lambda",
-		Aliases: []string{"ql"},
-		Args:    cobra.ExactArgs(1),
-		Short:   "get query lambda",
+		Use:         "lambda",
+		Aliases:     []string{"ql"},
+		Args:        cobra.ExactArgs(1),
+		Short:       "get query lambda",
+		Annotations: group("lambda"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 			tag, _ := cmd.Flags().GetString("tag")
@@ -74,11 +76,12 @@ func newGetQueryLambdaCmd() *cobra.Command {
 
 func newExecuteQueryLambdaCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "lambda",
-		Aliases: []string{"ql"},
-		Short:   "execute lambda",
-		Long:    "execute Rockset query lambda",
-		Args:    cobra.ExactArgs(1),
+		Use:         "lambda",
+		Aliases:     []string{"ql"},
+		Short:       "execute lambda",
+		Long:        "execute Rockset query lambda",
+		Args:        cobra.ExactArgs(1),
+		Annotations: group("lambda"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
@@ -138,10 +141,11 @@ func newExecuteQueryLambdaCmd() *cobra.Command {
 
 func newCreateQueryLambdaCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "lambda",
-		Aliases: []string{"ql"},
-		Args:    cobra.ExactArgs(1),
-		Short:   "create query lambda",
+		Use:         "lambda",
+		Aliases:     []string{"ql"},
+		Args:        cobra.ExactArgs(1),
+		Short:       "create query lambda",
+		Annotations: group("lambda"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 			sql, _ := cmd.Flags().GetString("sql")

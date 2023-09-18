@@ -104,6 +104,10 @@ func addVerbs(root *cobra.Command) {
 	getCmd.AddCommand(newGetUserCmd())
 	listCmd.AddCommand(newListUsersCmd())
 
+	// view
+	getCmd.AddCommand(newGetViewCmd())
+	listCmd.AddCommand(newListViewsCmd())
+
 	// virtual instance
 	createCmd.AddCommand(newCreateVirtualInstanceCmd())
 	deleteCmd.AddCommand(newDeleteVirtualInstanceCmd())
