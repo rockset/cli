@@ -24,23 +24,36 @@ type Formatter interface {
 }
 
 type Format string
+type Formats []Format
+
+func (f Formats) ToStringArray() []string {
+	var strs = make([]string, len(f))
+	for i, s := range f {
+		strs[i] = string(s)
+	}
+
+	return strs
+}
 
 const (
 	CSVFormat   Format = "csv"
-	TableFormat        = "table"
-	JSONFormat         = "json"
+	TableFormat Format = "table"
+	JSONFormat  Format = "json"
 )
 
-func FormatterFor(out io.Writer, f Format, header bool) Formatter {
+var SupportedFormats = Formats{CSVFormat, JSONFormat, TableFormat}
+
+func FormatterFor(out io.Writer, f Format, header bool) (Formatter, error) {
 	switch f {
 	case CSVFormat:
-		return NewCSVFormat(out, header)
+		return NewCSVFormat(out, header), nil
 	case TableFormat:
-		return NewTableFormatter(out, header)
+		return NewTableFormatter(out, header), nil
 	case JSONFormat:
-		return NewJSONFormatter(out, header)
+		return NewJSONFormatter(out, header), nil
 	default:
-		return nil
+		return nil, fmt.Errorf("unknown formatter '%s', possible values are %s", f,
+			strings.Join(SupportedFormats.ToStringArray(), ", "))
 	}
 }
 

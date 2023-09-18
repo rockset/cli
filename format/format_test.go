@@ -105,7 +105,8 @@ func TestFormatter(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%T", tc.i), func(t *testing.T) {
 			buf := bytes.NewBufferString("")
-			f := format.FormatterFor(buf, format.CSVFormat, false)
+			f, err := format.FormatterFor(buf, format.CSVFormat, false)
+			assert.NoError(t, err)
 			f.Format(true, tc.i)
 			assert.Equal(t, tc.s, buf.String())
 		})
@@ -133,7 +134,8 @@ func TestNewFormatter(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%T", tc.i), func(t *testing.T) {
 			buf := bytes.NewBufferString("")
-			f := format.FormatterFor(buf, format.CSVFormat, false)
+			f, err := format.FormatterFor(buf, format.CSVFormat, false)
+			assert.NoError(t, err)
 			f.Format(true, tc.i)
 			assert.Equal(t, tc.s, buf.String())
 		})

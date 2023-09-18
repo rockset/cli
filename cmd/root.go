@@ -3,7 +3,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/fatih/color"
+	"github.com/rockset/cli/format"
 	"os"
+	"strings"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -60,7 +62,8 @@ For more configuration options, see the 'rockset config' command.`,
 	root.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.rockset.yaml)")
 	root.PersistentFlags().Bool(DebugFlag, false, "enable debug output")
 
-	root.PersistentFlags().String(FormatFlag, DefaultFormat, "output format")
+	root.PersistentFlags().String(FormatFlag, DefaultFormat, fmt.Sprintf("output format (%s)",
+		strings.Join(format.SupportedFormats.ToStringArray(), ", ")))
 	root.PersistentFlags().Bool(HeaderFlag, true, "show header")
 	root.PersistentFlags().Bool(WideFlag, false, "show extended fields")
 
