@@ -27,7 +27,6 @@ func newListQueryCmd() *cobra.Command {
 		Annotations: group("query"), // TODO shoudl this be in the VI group too?
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			wide, _ := cmd.Flags().GetBool(WideFlag)
 
 			rs, err := rockClient(cmd)
 			if err != nil {
@@ -39,9 +38,7 @@ func newListQueryCmd() *cobra.Command {
 				return err
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-
-			return f.FormatList(wide, format.ToInterfaceArray(list))
+			return formatList(cmd, format.ToInterfaceArray(list))
 		},
 	}
 

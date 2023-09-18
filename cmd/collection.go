@@ -58,7 +58,6 @@ func newGetCollectionCmd() *cobra.Command {
 		Args:        cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			wide, _ := cmd.Flags().GetBool(WideFlag)
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 			output, _ := cmd.Flags().GetString("output")
 			name := args[0]
@@ -68,7 +67,7 @@ func newGetCollectionCmd() *cobra.Command {
 				return err
 			}
 
-			c, err := rs.GetCollection(ctx, ws, name)
+			collection, err := rs.GetCollection(ctx, ws, name)
 			if err != nil {
 				return err
 			}
@@ -83,12 +82,10 @@ func newGetCollectionCmd() *cobra.Command {
 					}
 				}
 
-				return json.NewEncoder(out).Encode(translate(c))
+				return json.NewEncoder(out).Encode(translate(collection))
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-
-			return f.Format(wide, c)
+			return formatOne(cmd, collection)
 		},
 	}
 
@@ -110,7 +107,6 @@ func newListCollectionsCmd() *cobra.Command {
 		Args:        cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			wide, _ := cmd.Flags().GetBool(WideFlag)
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 
 			rs, err := rockClient(cmd)
@@ -128,9 +124,7 @@ func newListCollectionsCmd() *cobra.Command {
 				return err
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-
-			return f.FormatList(wide, format.ToInterfaceArray(list))
+			return formatList(cmd, format.ToInterfaceArray(list))
 		},
 	}
 

@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/rockset/cli/format"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slog"
 
 	"github.com/rockset/rockset-go-client/option"
 )
@@ -27,21 +27,7 @@ func newGetIntegrationCmd() *cobra.Command {
 				return err
 			}
 
-			//f, err := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//f.Workspace(ws)
-			slog.Debug("integration: %+v", i)
-			if i.S3 != nil {
-				slog.Debug("s3", "struct", *i.S3)
-				if i.S3.AwsAccessKey != nil {
-					slog.Debug("aws", "key", *i.S3.AwsAccessKey)
-				}
-			}
-
-			return nil
+			return formatOne(cmd, i)
 		},
 	}
 }
@@ -66,16 +52,7 @@ func newListIntegrationsCmd() *cobra.Command {
 				return err
 			}
 
-			//f, err := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//f.Workspace(ws)
-			for _, i := range list {
-				slog.Debug("integration", "struct", i)
-			}
-			return nil
+			return formatList(cmd, format.ToInterfaceArray(list))
 		},
 	}
 }

@@ -119,7 +119,6 @@ func newListVirtualInstancesCmd() *cobra.Command {
 		Annotations: group("virtual instance"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			wide, _ := cmd.Flags().GetBool(WideFlag)
 
 			rs, err := rockClient(cmd)
 			if err != nil {
@@ -131,9 +130,7 @@ func newListVirtualInstancesCmd() *cobra.Command {
 				return err
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-
-			return f.FormatList(wide, format.ToInterfaceArray(list))
+			return formatList(cmd, format.ToInterfaceArray(list))
 		},
 	}
 
@@ -152,7 +149,6 @@ func newGetVirtualInstancesCmd() *cobra.Command {
 		Annotations: group("virtual instance"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			wide, _ := cmd.Flags().GetBool(WideFlag)
 
 			rs, err := rockClient(cmd)
 			if err != nil {
@@ -169,9 +165,7 @@ func newGetVirtualInstancesCmd() *cobra.Command {
 				return err
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-
-			return f.Format(wide, vi)
+			return formatOne(cmd, vi)
 		},
 	}
 

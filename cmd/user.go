@@ -8,7 +8,7 @@ import (
 )
 
 func newListUsersCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:         "users",
 		Args:        cobra.NoArgs,
 		Short:       "list users",
@@ -27,18 +27,17 @@ func newListUsersCmd() *cobra.Command {
 				return err
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), FormatFromCommand(cmd), true)
-			return f.FormatList(true, format.ToInterfaceArray(list))
+			return formatList(cmd, format.ToInterfaceArray(list))
 		},
 	}
 
-	c.Flags().Bool(WideFlag, false, "display more information")
+	cmd.Flags().Bool(WideFlag, false, "display more information")
 
-	return &c
+	return &cmd
 }
 
 func newGetUserCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:         "user [EMAIL]",
 		Short:       "get user information",
 		Long:        "get Rockset user, if no email address is specified the current user is returned",
@@ -52,23 +51,21 @@ func newGetUserCmd() *cobra.Command {
 				return err
 			}
 
-			var u openapi.User
+			var user openapi.User
 			if len(args) == 0 {
-				u, err = rs.GetCurrentUser(ctx)
+				user, err = rs.GetCurrentUser(ctx)
 			} else {
-				u, err = rs.GetUser(ctx, args[0])
+				user, err = rs.GetUser(ctx, args[0])
 			}
 			if err != nil {
 				return err
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), FormatFromCommand(cmd), true)
-
-			return f.Format(true, u)
+			return formatOne(cmd, user)
 		},
 	}
 
-	c.Flags().Bool(WideFlag, false, "display more information")
+	cmd.Flags().Bool(WideFlag, false, "display more information")
 
-	return &c
+	return &cmd
 }

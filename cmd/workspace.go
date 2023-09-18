@@ -173,9 +173,7 @@ func newGetWorkspaceCmd() *cobra.Command {
 				return err
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), "table", true)
-
-			return f.Format(true, ws)
+			return formatOne(cmd, ws)
 		},
 	}
 }
@@ -200,9 +198,7 @@ func newListWorkspacesCmd() *cobra.Command {
 				return err
 			}
 
-			f := format.FormatterFor(cmd.OutOrStdout(), format.TableFormat, true)
-
-			return f.FormatList(true, format.ToInterfaceArray(list))
+			return formatList(cmd, format.ToInterfaceArray(list))
 		},
 	}
 }

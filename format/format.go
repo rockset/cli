@@ -28,6 +28,7 @@ type Format string
 const (
 	CSVFormat   Format = "csv"
 	TableFormat        = "table"
+	JSONFormat         = "json"
 )
 
 func FormatterFor(out io.Writer, f Format, header bool) Formatter {
@@ -36,6 +37,8 @@ func FormatterFor(out io.Writer, f Format, header bool) Formatter {
 		return NewCSVFormat(out, header)
 	case TableFormat:
 		return NewTableFormatter(out, header)
+	case JSONFormat:
+		return NewJSONFormatter(out, header)
 	default:
 		return nil
 	}
