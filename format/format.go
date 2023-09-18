@@ -61,6 +61,8 @@ func StructFormatterFor[T any](f T) (StructFormatter, error) {
 	switch t := i.(type) {
 	case openapi.Alias:
 		return AliasFormatter, nil
+	case openapi.ApiKey:
+		return APIKeyFormatter, nil
 	case openapi.User:
 		return UserFormatter, nil
 	case openapi.Organization:
