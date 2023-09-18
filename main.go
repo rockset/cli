@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/getsentry/sentry-go"
+
 	"github.com/rockset/cli/cmd"
 )
 

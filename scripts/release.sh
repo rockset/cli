@@ -7,18 +7,7 @@ set -e
 BINARY="rockset"
 VERSION_FILE="version.json"
 
-VERSION=$(grep -ohE 'v\d+\.\d+\.\d+' version.go)
-cat > "${VERSION_FILE}" <<EOT
-{
-  "stable": "${VERSION}"
-}
-EOT
-
-aws s3 cp web/index.html "s3://rockset.sh/index.html"
-aws s3 cp web/install.sh "s3://rockset.sh/install"
-
-aws s3 cp version.json "s3://rockset.sh/install/${VERSION_FILE}"
-rm "${VERSION_FILE}"
+go vet ./...
 
 BUILD=""
 if [ -z "${SENTRY_DSN}" ]; then
@@ -34,3 +23,16 @@ for OS in Darwin linux; do
 done
 
 rm "${BINARY}"
+
+VERSION=$(grep -ohE 'v\d+\.\d+\.\d+' version.go)
+cat > "${VERSION_FILE}" <<EOT
+{
+  "stable": "${VERSION}"
+}
+EOT
+
+aws s3 cp web/index.html "s3://rockset.sh/index.html"
+aws s3 cp web/install.sh "s3://rockset.sh/install"
+
+aws s3 cp version.json "s3://rockset.sh/install/${VERSION_FILE}"
+rm "${VERSION_FILE}"
