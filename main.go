@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/fatih/color"
 	"os"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/rockset/cli/cmd"
 )
+
+var dsn = "___PUBLIC_DSN___"
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -23,15 +25,40 @@ func main() {
 		os.Exit(1)
 	}()
 
+	if err := sentry.Init(sentry.ClientOptions{
+		Dsn:              dsn,
+		Release:          Version,
+		TracesSampleRate: 1.0,
+	}); err != nil {
+		// TODO log that we failed to init sentry
+	}
+
 	// TODO should this be done in a PersistentPreRun & PersistentPostRun instead?
 	// fire off a go routine to get the latest version
 	version := make(chan string, 1)
 	versionCtx, tc := context.WithTimeout(ctx, time.Second)
-	defer tc()
+
+	defer func() {
+		if err := recover(); err != nil {
+			sentry.CurrentHub().Recover(err)
+			errorf(os.Stderr, "\nERROR: program crash: %v\n", err)
+			// TODO log message about the panic being sent to sentry
+			os.Exit(1)
+		}
+		tc()
+
+		sentry.Flush(2 * time.Second)
+	}()
+
+	// kick off a version check in the background that will show up at the end of the run
 	go cmd.VersionCheck(versionCtx, version)
 
 	root := cmd.NewRootCmd(Version)
 	if err := root.ExecuteContext(ctx); err != nil {
+		// TODO allow users to override the error reporting
+		// TODO log a message that we sent the error
+		// TODO there are expected errors, e.g. "collection not found", those should be filtered out
+		sentry.CaptureException(err)
 		errorf := color.New(color.Bold, color.FgRed).FprintfFunc()
 		errorf(os.Stderr, "\nERROR: %v\n", err)
 		os.Exit(1)
@@ -42,3 +69,5 @@ func main() {
 		fmt.Printf("\n%s\n", v)
 	}
 }
+
+var errorf = color.New(color.Bold, color.FgRed).FprintfFunc()

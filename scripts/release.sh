@@ -20,10 +20,15 @@ aws s3 cp web/install.sh "s3://rockset.sh/install"
 aws s3 cp version.json "s3://rockset.sh/install/${VERSION_FILE}"
 rm "${VERSION_FILE}"
 
+BUILD=""
+if [ -z "${SENTRY_DSN}" ]; then
+  BUILD="-ldflags '-X main.dsn=${SENTRY_DSN}'"
+fi
+
 for OS in Darwin linux; do
   for ARCH in arm64 amd64; do
     # GOOS is all lowercase while macOS will report Darwin from uname -s
-    GOOS=$(echo ${OS} | tr '[:upper:]' '[:lower:]') GOARCH=${ARCH} go build -o "${BINARY}"
+    GOOS=$(echo ${OS} | tr '[:upper:]' '[:lower:]') GOARCH=${ARCH} go build ${BUILD} -o "${BINARY}"
     aws s3 cp "${BINARY}" "s3://rockset.sh/install/${OS}/${ARCH}/${BINARY}"
   done
 done
