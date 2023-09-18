@@ -1,4 +1,5 @@
 # Rockset CLI
+[![Build status](https://github.com/rockset/cli/actions/workflows/build.yaml/badge.svg)](https://github.com/rockset/cli/actions/workflows/build.yaml)
 [![CircleCI](https://circleci.com/gh/rockset/cli.svg?style=shield)](https://circleci.com/gh/rockset/cli)
 [![Documentation](https://godoc.org/github.com/rockset/rockset-go-cli?status.svg)](http://godoc.org/github.com/rockset/rockset-go-cli)
 [![License](https://img.shields.io/github/license/rockset/cli.svg?maxAge=2592000)](https://github.com/rockset/rockset-go-cli/LICENSE)
@@ -7,14 +8,71 @@
 
 ## Usage
 
+The Rockset cli can be used as an alternative to the [console](https://console.rockset.com/),
+and is built as a UNIX tool to allow it to be used in pipes.
+
 ![screen recording](vhs/demo.gif)
+
+### Query
+
+![screen recording](vhs/query.gif)
+
+There are three ways to query a collection, either using the first argument as the SQL
+
+```shell
+$ rockset query 'SELECT COUNT(*) FROM _events'
++--------+
+| ?COUNT |
++--------+
+|   1016 |
++--------+
+Elapsed time: 26 ms
+```
+
+Or using interactive mode
+
+```shell
+$ rockset query
+[R]> SELECT COUNT(*)
+>>> FROM _events;
++--------+
+| ?COUNT |
++--------+
+|   1016 |
++--------+
+Elapsed time: 26 ms
+^D
+```
+
+And reading the SQL from stdin
+
+```shell
+$ rockset query < query.sql
++--------+
+| ?COUNT |
++--------+
+|   1016 |
++--------+
+Elapsed time: 26 ms
+```
+
+### Cloning a collection
+
+A common workflow is to want to clone a collection, but change a few settings, e.g. the retention.
+This can be done using two commands
+
+```shell
+rockset get collection --output - movies | rockset create collection --input - --retention 12h movies2
+```
+
+![screen recording](vhs/clone.gif)
 
 ## Configuration
 
 The Rockset CLI requires having access to an API key and an API server, which can be configured using either
 environment variables or a configuration file.
 
-```
+```shell
 $ rockset list config
 available configs:
 -> dev (api.usw2a1.rockset.com)

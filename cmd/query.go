@@ -73,7 +73,7 @@ func newQueryCmd() *cobra.Command {
 				if validate {
 					return fmt.Errorf("can't validate interactive commands")
 				}
-				return interactiveQuery(ctx, cmd.OutOrStdout(), rs)
+				return interactiveQuery(ctx, io.NopCloser(cmd.InOrStdin()), cmd.OutOrStdout(), rs)
 			}
 
 			if file != "" && len(args) > 0 {
@@ -187,7 +187,7 @@ var (
 	continuationPrompt = color.CyanString(">") + color.MagentaString(">") + "> "
 )
 
-func interactiveQuery(ctx context.Context, out io.Writer, rs *rockset.RockClient) error {
+func interactiveQuery(ctx context.Context, in io.ReadCloser, out io.Writer, rs *rockset.RockClient) error {
 	histFile, err := historyFile()
 	if err != nil {
 		return err
@@ -197,6 +197,8 @@ func interactiveQuery(ctx context.Context, out io.Writer, rs *rockset.RockClient
 
 	rl, err := readline.NewEx(&readline.Config{
 		Prompt:      prompt,
+		Stdin:       in,
+		Stdout:      out,
 		HistoryFile: histFile,
 	})
 	if err != nil {
@@ -212,6 +214,10 @@ func interactiveQuery(ctx context.Context, out io.Writer, rs *rockset.RockClient
 	for {
 		line, err := rl.Readline()
 		if err != nil {
+			if len(cmds) > 0 {
+				// in case someone is sending the SQL over a pipe and there isn't a ";" at the end
+				executeQuery(ctx, out, rs, strings.Join(cmds, " "))
+			}
 			break
 		}
 
@@ -239,16 +245,20 @@ func interactiveQuery(ctx context.Context, out io.Writer, rs *rockset.RockClient
 			slog.Error("failed to save history", err)
 		}
 
-		result, err := rs.Query(ctx, sql)
-		if err != nil {
-			slog.Error("query failed", err)
-			continue
-		}
-
-		if err = showQueryResult(out, result); err != nil {
-			slog.Error("failed to show result", err)
-		}
+		executeQuery(ctx, out, rs, sql)
 	}
 
 	return nil
+}
+
+func executeQuery(ctx context.Context, out io.Writer, rs *rockset.RockClient, sql string) {
+	result, err := rs.Query(ctx, sql)
+	if err != nil {
+		slog.Error("query failed", err)
+		return
+	}
+
+	if err = showQueryResult(out, result); err != nil {
+		slog.Error("failed to show result", err)
+	}
 }
