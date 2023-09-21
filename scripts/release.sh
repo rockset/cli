@@ -4,35 +4,30 @@ set -e
 
 # TODO replace with goreleaser
 
-BINARY="rockset"
-VERSION_FILE="version.json"
-
 go vet ./...
 
-BUILD=""
-if [ -z "${SENTRY_DSN}" ]; then
-  BUILD="-ldflags '-X main.dsn=${SENTRY_DSN}'"
+# check that we're on master
+if [ "$(git branch --show-current)}" != "master" ]; then
+  echo "not on master branch"
+  exit 1
 fi
 
-for OS in Darwin linux; do
-  for ARCH in arm64 amd64; do
-    # GOOS is all lowercase while macOS will report Darwin from uname -s
-    GOOS=$(echo ${OS} | tr '[:upper:]' '[:lower:]') GOARCH=${ARCH} go build ${BUILD} -o "${BINARY}"
-    aws s3 cp "${BINARY}" "s3://rockset.sh/install/${OS}/${ARCH}/${BINARY}"
-  done
-done
+# check clean git repo
+if [ ! -z "${git show --short --ahead-behind}" ]; then
+  git show
+  echo "need a clean repo"
+  exit 1
+fi
 
-rm "${BINARY}"
+# extract version string
+VERSION="$(grep -ohE 'v\d+\.\d+\.\d+' version.go)"
+if [ -z "${VERSION}" ]; then
+  echo "empty version"
+  exit 1
+fi
 
-VERSION=$(grep -ohE 'v\d+\.\d+\.\d+' version.go)
-cat > "${VERSION_FILE}" <<EOT
-{
-  "stable": "${VERSION}"
-}
-EOT
+# tag repo
+git tag "${VERSION}"
 
-aws s3 cp web/index.html "s3://rockset.sh/index.html"
-aws s3 cp web/install.sh "s3://rockset.sh/install"
-
-aws s3 cp version.json "s3://rockset.sh/install/${VERSION_FILE}"
-rm "${VERSION_FILE}"
+# push the tag
+git push origin "${VERSION}"
