@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"runtime/debug"
 	"time"
 
 	"github.com/fatih/color"
@@ -12,7 +13,9 @@ import (
 	"github.com/rockset/cli/cmd"
 )
 
-var dsn = "___PUBLIC_DSN___"
+const publicDsn = "___PUBLIC_DSN___"
+
+var dsn = publicDsn
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -41,10 +44,15 @@ func main() {
 	versionCtx, tc := context.WithTimeout(ctx, time.Second)
 
 	defer func() {
-		if err := recover(); err != nil {
-			sentry.CurrentHub().Recover(err)
-			errorf(os.Stderr, "\nERROR: program crash: %v\n", err)
-			// TODO log message about the panic being sent to sentry
+		if r := recover(); r != nil {
+			if dsn == publicDsn {
+				_, _ = fmt.Fprintf(os.Stderr, "panic: %v\n", r)
+				_, _ = fmt.Fprintf(os.Stderr, "%s", string(debug.Stack()))
+			} else {
+				sentry.CurrentHub().Recover(r)
+				errorf(os.Stderr, "\nERROR: program crash: %v\n", r)
+				// TODO log message about the panic being sent to sentry
+			}
 			os.Exit(1)
 		}
 		tc()

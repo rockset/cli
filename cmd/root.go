@@ -27,14 +27,15 @@ func NewRootCmd(version string) *cobra.Command {
 	root := &cobra.Command{
 		Use:   "rockset",
 		Short: "A cli for Rockset",
-		Long: `The Rockset cli is used as an alternative to the console. 
+		Long: fmt.Sprintf(`The Rockset cli is used as a companion to the console. 
 
 To use the CLI you need an API Key, which you initially have to create using the console:
 https://console.rockset.com/apikeys
 
-It should either be stored as an environment variable ROCKSET_APIKEY.
+It should either be stored as an environment variable ROCKSET_APIKEY or in a
+platform dependent configuration file, %s on the current computer.
 
-For more configuration options, see the 'rockset config' command.`,
+For more configuration options, see the 'rockset create config' command.`, APIKeysFile),
 		Example: `	## Create a sample collection and run a query against it
 	rockset create sample collection --wait --dataset movies movies
 	rockset query "SELECT COUNT(*) FROM movies"`,
@@ -53,8 +54,8 @@ For more configuration options, see the 'rockset config' command.`,
 	cobra.OnInitialize(initConfig(cfgFile))
 
 	var current string
-	cfg, _ := loadConfig()
-	if cfg != nil {
+	cfg, err := loadAPIKeys()
+	if err != nil {
 		current = fmt.Sprintf(" (\"%s\")", cfg.Current)
 	}
 
@@ -91,7 +92,7 @@ func initConfig(cfgFile string) func() {
 				os.Exit(1)
 			}
 
-			// Search config in home directory with name ".r7" (without extension).
+			// Search config in home directory with name ".rocket" (without extension).
 			viper.AddConfigPath(home)
 			viper.SetConfigName(".rockset")
 		}

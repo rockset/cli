@@ -57,6 +57,12 @@ func addVerbs(root *cobra.Command) {
 		Long:  "update Rockset resources",
 	}
 
+	useCmd := &cobra.Command{
+		Use:   "use",
+		Short: "use configuration",
+		Long:  "use a Rockset apikey and server configuration",
+	}
+
 	// workspace
 	createCmd.AddCommand(newCreateWorkspaceCmd())
 	deleteCmd.AddCommand(newDeleteWorkspaceCmd())
@@ -132,8 +138,10 @@ func addVerbs(root *cobra.Command) {
 	// documents
 	deleteCmd.AddCommand(newDeleteDocumentsCmd())
 
+	// config
+	createCmd.AddCommand(newCreateConfigCmd())
 	listCmd.AddCommand(newListConfigCmd())
-	updateCmd.AddCommand(newUpdateConfigCmd())
+	useCmd.AddCommand(newUseConfigCmd())
 
 	root.AddCommand(createCmd)
 	root.AddCommand(deleteCmd)
@@ -143,6 +151,7 @@ func addVerbs(root *cobra.Command) {
 	root.AddCommand(resumeCmd)
 	root.AddCommand(suspendCmd)
 	root.AddCommand(updateCmd)
+	root.AddCommand(useCmd)
 	root.AddCommand(newVersionCmd())
 
 	root.AddCommand(newQueryCmd())

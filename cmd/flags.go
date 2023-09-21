@@ -29,6 +29,7 @@ const (
 	FormatFlag = "format"
 	WideFlag   = "wide"
 	HeaderFlag = "header"
+	ForceFlag  = "force"
 )
 
 const (
