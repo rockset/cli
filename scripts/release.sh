@@ -7,7 +7,7 @@ set -e
 go vet ./...
 
 # check that we're on master
-if [ "$(git branch --show-current)}" != "master" ]; then
+if [ "$(git branch --show-current)" != "master" ]; then
   echo "not on master branch"
   exit 1
 fi

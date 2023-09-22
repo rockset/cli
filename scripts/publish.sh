@@ -9,6 +9,9 @@ VERSION_FILE="version.json"
 
 go vet ./...
 
+# make sure we have working credentials
+aws sts get-caller-identity --no-cli-pager > /dev/null
+
 BUILD=""
 if [ -z "${SENTRY_DSN}" ]; then
   BUILD="-ldflags '-X main.dsn=${SENTRY_DSN}'"
