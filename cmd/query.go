@@ -3,20 +3,21 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/rockset/cli/config"
-	"github.com/rockset/cli/format"
 	"io"
 	"os"
 	"strings"
 
 	"github.com/chzyer/readline"
-	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slog"
 
 	"github.com/rockset/rockset-go-client"
 	"github.com/rockset/rockset-go-client/openapi"
+
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/tui"
 )
 
 func newListQueryCmd() *cobra.Command {
@@ -182,21 +183,16 @@ func showQueryResult(out io.Writer, result openapi.QueryResponse) error {
 	return nil
 }
 
-var (
-	prompt             = R + "> "
-	continuationPrompt = color.CyanString(">") + color.MagentaString(">") + "> "
-)
-
 func interactiveQuery(ctx context.Context, in io.ReadCloser, out io.Writer, rs *rockset.RockClient) error {
 	histFile, err := config.HistoryFile()
 	if err != nil {
 		return err
 	}
 
-	_, _ = fmt.Fprintf(out, "%s interactive console. End your SQL with ;\n", Rockset)
+	_, _ = fmt.Fprintf(out, "%s interactive console. End your SQL with ;\n", tui.Rockset)
 
 	rl, err := readline.NewEx(&readline.Config{
-		Prompt:      prompt,
+		Prompt:      tui.Prompt,
 		Stdin:       in,
 		Stdout:      out,
 		HistoryFile: histFile,
@@ -228,13 +224,13 @@ func interactiveQuery(ctx context.Context, in io.ReadCloser, out io.Writer, rs *
 
 		cmds = append(cmds, line)
 		if !strings.HasSuffix(line, ";") {
-			rl.SetPrompt(continuationPrompt)
+			rl.SetPrompt(tui.ContinuationPrompt)
 			continue
 		}
 
 		sql := strings.Join(cmds, " ")
 		cmds = cmds[:0]
-		rl.SetPrompt(prompt)
+		rl.SetPrompt(tui.Prompt)
 
 		if strings.HasPrefix(sql, "help") {
 			_, _ = fmt.Fprintf(out, "help command TBW\n")

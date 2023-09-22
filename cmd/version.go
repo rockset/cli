@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/rockset/cli/tui"
 	"github.com/spf13/cobra"
 	"net/http"
 	"runtime/debug"
@@ -16,7 +17,7 @@ func newVersionCmd() *cobra.Command {
 		Short: "show cli version",
 		Long:  "show cli version information, use the --debug flag to see detailed information",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", Rockset, Version)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", tui.Rockset, Version)
 
 			if d, _ := cmd.Flags().GetBool(DebugFlag); !d {
 				return nil
@@ -91,6 +92,6 @@ func VersionCheck(ctx context.Context, ch chan string) {
 	}
 
 	if v.Stable != Version {
-		ch <- fmt.Sprintf("A new release of %s is available: %s → %s", Rockset, Version, v.Stable)
+		ch <- fmt.Sprintf("A new release of %s is available: %s → %s", tui.Rockset, Version, v.Stable)
 	}
 }

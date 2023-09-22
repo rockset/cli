@@ -3,13 +3,13 @@ package config
 import (
 	"errors"
 	"fmt"
-	"github.com/rockset/rockset-go-client"
 	"log/slog"
 	"os"
 	"path"
 	"time"
 
 	"github.com/mitchellh/go-homedir"
+	"github.com/rockset/rockset-go-client"
 	"gopkg.in/yaml.v3"
 )
 
@@ -26,10 +26,6 @@ func init() {
 		panic(fmt.Sprintf("unable to locate config file %s: %v", FileName, err))
 	}
 	File = file
-}
-
-var clusters = map[string]string{
-	"usw2a1": "",
 }
 
 type Config struct {
@@ -67,8 +63,8 @@ func (c *Config) AsOptions(override string) ([]rockset.RockOption, error) {
 
 		return []rockset.RockOption{
 			rockset.WithAPIServer(token.Server),
-			rockset.WithBearerToken(token.Token, token.Org),
-		}, nil
+			//rockset.WithBearerToken(token.Token, token.Org),
+		}, errors.New("not implemented")
 	}
 
 	return nil, fmt.Errorf("%w", NotFoundErr)

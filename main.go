@@ -7,10 +7,10 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/fatih/color"
 	"github.com/getsentry/sentry-go"
 
 	"github.com/rockset/cli/cmd"
+	"github.com/rockset/cli/tui"
 )
 
 const publicDsn = "___PUBLIC_DSN___"
@@ -50,7 +50,7 @@ func main() {
 				_, _ = fmt.Fprintf(os.Stderr, "%s", string(debug.Stack()))
 			} else {
 				sentry.CurrentHub().Recover(r)
-				errorf(os.Stderr, "\nERROR: program crash: %v\n", r)
+				errorf(fmt.Sprintf("program crash: %v", r))
 				// TODO log message about the panic being sent to sentry
 			}
 			os.Exit(1)
@@ -69,8 +69,7 @@ func main() {
 		// TODO log a message that we sent the error
 		// TODO there are expected errors, e.g. "collection not found", those should be filtered out
 		sentry.CaptureException(err)
-		errorf := color.New(color.Bold, color.FgRed).FprintfFunc()
-		errorf(os.Stderr, "\nERROR: %v\n", err)
+		errorf(err.Error())
 		os.Exit(1)
 	}
 
@@ -80,4 +79,7 @@ func main() {
 	}
 }
 
-var errorf = color.New(color.Bold, color.FgRed).FprintfFunc()
+func errorf(msg string) {
+	// bold too?
+	_, _ = fmt.Fprintf(os.Stderr, "\n%s\n", tui.WarningStyle.Render("ERROR:", msg))
+}

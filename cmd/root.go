@@ -2,22 +2,20 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/rockset/cli/config"
-	"github.com/rockset/cli/format"
+	"github.com/mitchellh/go-homedir"
 	"os"
 	"path"
 	"strings"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slog"
+
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/format"
 )
 
 var (
-	R       = color.CyanString("[") + color.MagentaString("R") + color.CyanString("]")
-	Rockset = color.CyanString("[") + color.MagentaString("Rockset") + color.CyanString("]")
 	Version = "development"
 	logger  = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelError}))
 )

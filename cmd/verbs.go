@@ -158,5 +158,7 @@ func addVerbs(root *cobra.Command) {
 	root.AddCommand(newQueryCmd())
 	root.AddCommand(newIngestCmd())
 
+	root.AddCommand(newTestCmd())
+
 	// TODO set help func for the root command to show commands grouped by the resource they operate on
 }
