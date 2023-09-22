@@ -33,7 +33,6 @@ var VirtualInstanceFormatter = StructFormatter{
 			DisplayName: "Desired Size",
 			FieldName:   "DesiredSize",
 			FieldFn:     getFieldByName,
-			Wide:        true,
 		},
 	},
 }

@@ -118,14 +118,14 @@ func TestWideFormat(t *testing.T) {
 		RocksetUser: openapi.PtrString("user"),
 		ExternalId:  openapi.PtrString("ext id"),
 		Clusters: []openapi.Cluster{
-			{Id: openapi.PtrString("usw2a1")},
-			{Id: openapi.PtrString("euc1a1")},
+			{ApiserverUrl: openapi.PtrString("usw2a1")},
+			{ApiserverUrl: openapi.PtrString("euc1a1")},
 		},
 		Id:          openapi.PtrString("id"),
 		CreatedAt:   openapi.PtrString("created at"),
 		DisplayName: openapi.PtrString("name"),
 	}
-	regular := "name,id,\"usw2a1, euc1a1\"\n"
+	regular := "name,id\n"
 	wide := "name,id,user,ext id,created at,\"usw2a1, euc1a1\"\n"
 
 	buf := bytes.NewBufferString("")
