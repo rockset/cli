@@ -113,31 +113,32 @@ func TestFormatter(t *testing.T) {
 	}
 }
 
-func TestNewFormatter(t *testing.T) {
-	var testCases = []struct {
-		i interface{}
-		s string
-	}{
-		{
-			i: openapi.User{
-				CreatedAt: openapi.PtrString("created at"),
-				Email:     "email",
-				FirstName: openapi.PtrString("first name"),
-				LastName:  openapi.PtrString("last name"),
-				Roles:     []string{"a", "b"},
-				State:     openapi.PtrString("state"),
-			},
-			s: "first name,last name,email,state,created at,\"a, b\"\n",
+func TestWideFormat(t *testing.T) {
+	org := openapi.Organization{
+		RocksetUser: openapi.PtrString("user"),
+		ExternalId:  openapi.PtrString("ext id"),
+		Clusters: []openapi.Cluster{
+			{Id: openapi.PtrString("usw2a1")},
+			{Id: openapi.PtrString("euc1a1")},
 		},
+		Id:          openapi.PtrString("id"),
+		CreatedAt:   openapi.PtrString("created at"),
+		DisplayName: openapi.PtrString("name"),
 	}
+	regular := "name,id,\"usw2a1, euc1a1\"\n"
+	wide := "name,id,user,ext id,created at,\"usw2a1, euc1a1\"\n"
 
-	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("%T", tc.i), func(t *testing.T) {
-			buf := bytes.NewBufferString("")
-			f, err := format.FormatterFor(buf, format.CSVFormat, false)
-			assert.NoError(t, err)
-			f.Format(true, tc.i)
-			assert.Equal(t, tc.s, buf.String())
-		})
-	}
+	buf := bytes.NewBufferString("")
+	f, err := format.FormatterFor(buf, format.CSVFormat, false)
+	assert.NoError(t, err)
+
+	assert.NoError(t, f.Format(false, org))
+	assert.Equal(t, regular, buf.String())
+
+	buf = bytes.NewBufferString("")
+	f, err = format.FormatterFor(buf, format.CSVFormat, false)
+	assert.NoError(t, err)
+
+	assert.NoError(t, f.Format(true, org))
+	assert.Equal(t, wide, buf.String())
 }

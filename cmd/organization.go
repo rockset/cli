@@ -5,7 +5,7 @@ import (
 )
 
 func newGetOrganizationCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:         "organization",
 		Aliases:     []string{"org"},
 		Args:        cobra.NoArgs,
@@ -28,7 +28,8 @@ func newGetOrganizationCmd() *cobra.Command {
 			return formatOne(cmd, org)
 		},
 	}
-	c.Flags().Bool("wide", false, "display more information")
 
-	return &c
+	cmd.Flags().Bool("wide", false, "display more information")
+
+	return &cmd
 }

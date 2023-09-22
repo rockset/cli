@@ -200,6 +200,35 @@ func getArrayFieldByName(name string, i interface{}) string {
 	return strings.Join(a, ", ")
 }
 
+func getArrayStructFieldByName(structFieldName string) func(string, any) string {
+	return func(fieldName string, item any) string {
+
+		var items []string
+		v := reflect.Indirect(reflect.ValueOf(item))
+		f := v.FieldByName(fieldName)
+
+		// dereference pointer, if we got one
+		if f.Kind() == reflect.Ptr {
+			if f.IsNil() {
+				return ""
+			}
+			f = f.Elem()
+		}
+		if !f.IsValid() {
+			return "not valid"
+		}
+
+		for i := 0; i < f.Len(); i++ {
+			str := f.Index(i)
+			if str.Kind() == reflect.Ptr {
+				str = f.Elem()
+			}
+			items = append(items, getFieldByName(structFieldName, str.Interface()))
+		}
+		return strings.Join(items, ", ")
+	}
+}
+
 func getStructFieldByName(name string) func(string, any) string {
 	return func(s string, a any) string {
 		v := reflect.Indirect(reflect.ValueOf(a))

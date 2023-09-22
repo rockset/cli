@@ -18,6 +18,7 @@ var OrgFormatter = StructFormatter{
 			DisplayName: "User",
 			FieldName:   "RocksetUser",
 			FieldFn:     getFieldByName,
+			Wide:        true,
 		},
 		{
 			DisplayName: "External ID",
@@ -31,17 +32,26 @@ var OrgFormatter = StructFormatter{
 			FieldFn:     getFieldByName,
 			Wide:        true,
 		},
-		// []openapi.Cluster
-		//{
-		//	FieldName: "Clusters",
-		//	FieldFn:   getArrayFieldByName,
-		//},
+		{
+			FieldName: "Clusters",
+			FieldFn:   getArrayStructFieldByName("ApiserverUrl"),
+			Wide:      true,
+		},
 	},
 }
 
 // just to list available fields
 var _ = openapi.Organization{
-	Clusters:      nil,
+	Clusters: []openapi.Cluster{
+		{
+			ApiserverUrl:   nil,
+			AwsRegion:      nil,
+			ClusterType:    nil,
+			Domain:         nil,
+			Id:             nil,
+			TopLevelDomain: nil,
+		},
+	},
 	CreatedAt:     nil,
 	DisplayName:   nil,
 	ExternalId:    nil,

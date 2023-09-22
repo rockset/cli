@@ -7,34 +7,35 @@ import (
 
 type Table struct {
 	Header bool
-	w      *tablewriter.Table
+	out    *tablewriter.Table
 }
 
 func NewTableFormatter(out io.Writer, header bool) *Table {
 	return &Table{
 		Header: header,
-		w:      tablewriter.NewWriter(out),
+		out:    tablewriter.NewWriter(out),
 	}
 }
 
-func (t Table) Format(wide bool, i interface{}) error {
-	f, err := StructFormatterFor(i)
+func (t Table) Format(wide bool, item interface{}) error {
+	f, err := StructFormatterFor(item)
 	if err != nil {
 		return err
 	}
 
 	if t.Header {
-		t.w.SetHeader(f.Headers(wide))
+		t.out.SetHeader(f.Headers(wide))
 	}
-	t.w.Append(f.Fields(wide, i))
-	t.w.Render()
+	t.out.Append(f.Fields(wide, item))
+	t.out.Render()
 
 	return nil
 }
 
 func (t Table) FormatList(wide bool, items []interface{}) error {
-	if items == nil || len(items) == 0 {
-		t.w.Render()
+	if len(items) == 0 {
+		t.out.Render()
+		return nil
 	}
 
 	f, err := StructFormatterFor(items[0])
@@ -42,13 +43,13 @@ func (t Table) FormatList(wide bool, items []interface{}) error {
 		return err
 	}
 	if t.Header {
-		t.w.SetHeader(f.Headers(wide))
+		t.out.SetHeader(f.Headers(wide))
 	}
 
 	for _, i := range items {
-		t.w.Append(f.Fields(wide, i))
+		t.out.Append(f.Fields(wide, i))
 	}
-	t.w.Render()
+	t.out.Render()
 
 	return nil
 }

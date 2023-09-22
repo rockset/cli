@@ -7,7 +7,7 @@ import (
 )
 
 func formatOne(cmd *cobra.Command, a any) error {
-	wide, _ := cmd.Flags().GetBool(HeaderFlag)
+	wide, _ := cmd.Flags().GetBool(WideFlag)
 
 	f, err := formatterFor(cmd)
 	if err != nil {
