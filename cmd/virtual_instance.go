@@ -14,7 +14,7 @@ import (
 
 func newCreateVirtualInstanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:         "virtualinstance NAME",
+		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Short:       "create a virtual instance",
 		Long:        "create a Rockset virtual instance",
@@ -43,21 +43,18 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 				return err
 			}
 
-			if wait, _ := cmd.Flags().GetBool(WaitFlag); wait {
-				// TODO notify the user that we're waiting
-				if err = rs.WaitUntilVirtualInstanceActive(ctx, result.GetId()); err != nil {
-					return fmt.Errorf("failed to wait for %s to be active: %v", result.GetId(), err)
-				}
+			if err = waitUntilVIActive(rs, cmd, result.GetId()); err != nil {
+				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' created\n", result.GetId())
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' created\n", result.GetName())
 			return nil
 		},
 	}
 
 	// TODO uncomment after go client supports setting it
 	//cmd.Flags().StringP(DescriptionFlag, "d", "", "virtual instance description")
-	cmd.Flags().Bool(WaitFlag, false, "wait until virtual instance is ready")
+	cmd.Flags().Bool(WaitFlag, false, "wait until virtual instance is active")
 	cmd.Flags().String(SizeFlag, "", "virtual instance size")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), SizeFlag)
 
@@ -66,7 +63,7 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 
 func newUpdateVirtualInstanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:         "virtualinstance ID",
+		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Short:       "update a virtual instance",
 		Long:        "update a Rockset virtual instance",
@@ -86,17 +83,21 @@ func newUpdateVirtualInstanceCmd() *cobra.Command {
 				return err
 			}
 
+			logger.Info("setting option to", "size", size)
 			var options = []option.VirtualInstanceOption{
 				option.WithVirtualInstanceSize(option.VirtualInstanceSize(size)),
 			}
 
-			// TODO should we allow name to be used too, and look up the ID for the user
 			result, err := rs.UpdateVirtualInstance(ctx, id, options...)
 			if err != nil {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' updated\n", result.GetId())
+			if err = waitUntilVIActive(rs, cmd, result.GetId()); err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' updated\n", result.GetName())
 			return nil
 		},
 	}
@@ -104,6 +105,7 @@ func newUpdateVirtualInstanceCmd() *cobra.Command {
 	// TODO uncomment after go client supports setting it
 	//cmd.Flags().StringP(DescriptionFlag, "d", "", "virtual instance description")
 	cmd.Flags().String(SizeFlag, "", "virtual instance size")
+	cmd.Flags().Bool(WaitFlag, false, "wait until virtual instance is active")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), SizeFlag)
 
 	return cmd
@@ -141,7 +143,7 @@ func newListVirtualInstancesCmd() *cobra.Command {
 
 func newGetVirtualInstancesCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:         "virtualinstance ID",
+		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Args:        cobra.ExactArgs(1),
 		Short:       "get virtual instance",
@@ -176,7 +178,7 @@ func newGetVirtualInstancesCmd() *cobra.Command {
 
 func newDeleteVirtualInstanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:         "virtualinstance ID",
+		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Short:       "delete virtual instance",
 		Long:        "delete Rockset virtual instance",
@@ -195,12 +197,12 @@ func newDeleteVirtualInstanceCmd() *cobra.Command {
 				return err
 			}
 
-			_, err = rs.DeleteVirtualInstance(ctx, id)
+			result, err := rs.DeleteVirtualInstance(ctx, id)
 			if err != nil {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' deleted\n", id)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' deleted\n", result.GetName())
 
 			return nil
 		},
@@ -211,7 +213,7 @@ func newDeleteVirtualInstanceCmd() *cobra.Command {
 
 func newSuspendVirtualInstanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:         "virtualinstance ID",
+		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Short:       "suspend virtual instance",
 		Long:        "suspend Rockset virtual instance",
@@ -230,12 +232,12 @@ func newSuspendVirtualInstanceCmd() *cobra.Command {
 				return err
 			}
 
-			_, err = rs.SuspendVirtualInstance(ctx, id)
+			result, err := rs.SuspendVirtualInstance(ctx, id)
 			if err != nil {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' suspended\n", id)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' suspended\n", result.GetName())
 
 			return nil
 		},
@@ -246,7 +248,7 @@ func newSuspendVirtualInstanceCmd() *cobra.Command {
 
 func newResumeVirtualInstanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:         "virtualinstance ID",
+		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Short:       "resume virtual instance",
 		Long:        "resume Rockset virtual instance",
@@ -265,19 +267,16 @@ func newResumeVirtualInstanceCmd() *cobra.Command {
 				return err
 			}
 
-			vi, err := rs.ResumeVirtualInstance(ctx, id)
+			result, err := rs.ResumeVirtualInstance(ctx, id)
 			if err != nil {
 				return err
 			}
 
-			if wait, _ := cmd.Flags().GetBool(WaitFlag); wait {
-				// TODO notify the user that we're waiting
-				if err = rs.WaitUntilVirtualInstanceActive(ctx, id); err != nil {
-					return fmt.Errorf("failed to wait for %s to be active: %v", id, err)
-				}
+			if err = waitUntilVIActive(rs, cmd, id); err != nil {
+				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' (%s) resumed\n", vi.GetName(), id)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' resumed\n", result.GetName())
 
 			return nil
 		},
@@ -324,3 +323,18 @@ func viNameToID(ctx context.Context, rs *rockset.RockClient, name string) (strin
 }
 
 var VINotFoundErr = errors.New("virtual instance not found")
+
+func waitUntilVIActive(rs *rockset.RockClient, cmd *cobra.Command, vID string) error {
+	wait, err := cmd.Flags().GetBool(WaitFlag)
+	if err != nil {
+		return err
+	}
+	if wait {
+		// TODO notify the user that we're waiting
+		if err := rs.WaitUntilVirtualInstanceActive(cmd.Context(), vID); err != nil {
+			return fmt.Errorf("failed to wait for %s to be active: %v", vID, err)
+		}
+	}
+
+	return nil
+}

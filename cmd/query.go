@@ -33,7 +33,7 @@ func newListQueryCmd() *cobra.Command {
 				return err
 			}
 
-			list, err := rs.GetVirtualInstanceQueries(ctx, args[0])
+			list, err := rs.ListVirtualInstanceQueries(ctx, args[0])
 			if err != nil {
 				return err
 			}
