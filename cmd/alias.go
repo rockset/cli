@@ -2,9 +2,8 @@ package cmd
 
 import (
 	"github.com/rockset/cli/format"
-	"github.com/spf13/cobra"
-
 	"github.com/rockset/rockset-go-client/option"
+	"github.com/spf13/cobra"
 )
 
 func newListAliasesCmd() *cobra.Command {

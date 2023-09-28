@@ -17,37 +17,65 @@ func NewTableFormatter(out io.Writer, header bool) *Table {
 	}
 }
 
-func (t Table) Format(wide bool, i interface{}) error {
-	f, err := StructFormatterFor(i)
+func (t Table) Format(wide bool, selector string, i interface{}) error {
+	if selector == "" {
+		defaults, err := DefaultSelectorFor(i, wide)
+		if err != nil {
+			return err
+		}
+		selector = defaults
+	}
+	selection, err := ParseSelectionString(selector)
 	if err != nil {
 		return err
 	}
 
 	if t.Header {
-		t.w.SetHeader(f.Headers(wide))
+		t.w.SetHeader(selection.Headers())
 	}
-	t.w.Append(f.Fields(wide, i))
+
+	fields, err := selection.Fields(i)
+	if err != nil {
+		return err
+	}
+
+	t.w.Append(fields)
 	t.w.Render()
 
 	return nil
 }
 
-func (t Table) FormatList(wide bool, items []interface{}) error {
+func (t Table) FormatList(wide bool, selector string, items []interface{}) error {
 	if items == nil || len(items) == 0 {
 		t.w.Render()
+		return nil
 	}
 
-	f, err := StructFormatterFor(items[0])
+	if selector == "" {
+		defaults, err := DefaultSelectorFor(items[0], wide)
+		if err != nil {
+			return err
+		}
+		selector = defaults
+	}
+
+	selection, err := ParseSelectionString(selector)
 	if err != nil {
 		return err
 	}
+
 	if t.Header {
-		t.w.SetHeader(f.Headers(wide))
+		t.w.SetHeader(selection.Headers())
 	}
 
-	for _, i := range items {
-		t.w.Append(f.Fields(wide, i))
+	for _, item := range items {
+		fields, err := selection.Fields(item)
+		if err != nil {
+			return err
+		}
+		t.w.Append(fields)
 	}
+
 	t.w.Render()
 
 	return nil

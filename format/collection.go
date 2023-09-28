@@ -1,47 +1,6 @@
 package format
 
-var CollectionFormatter = StructFormatter{
-	[]Header{
-		{
-			FieldName: "Workspace",
-			FieldFn:   getFieldByName,
-		},
-		{
-			FieldName: "Name",
-			FieldFn:   getFieldByName,
-		},
-		{
-			FieldName: "Description",
-			FieldFn:   getFieldByName,
-		},
-		{
-			DisplayName: "Retention",
-			FieldName:   "RetentionSecs",
-			FieldFn:     getFieldByName,
-		},
-		{
-			FieldName: "Status",
-			FieldFn:   getFieldByName,
-		},
-		{
-			DisplayName: "Insert Only",
-			FieldName:   "InsertOnly",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Read Only",
-			FieldName:   "ReadOnly",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Created By",
-			FieldName:   "CreatedBy",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Created At",
-			FieldName:   "CreatedAt",
-			FieldFn:     getFieldByName,
-		},
-	},
+var CollectionDefaultSelector = DefaultSelector{
+	Normal: "Workspace:.workspace,Name:.name,Description:.description,Retention:.retention_secs,Status:.status,Insert Only:.insert_only,Read Only:.read_only,Created By:.created_by,Created At:.created_at",
+	Wide:   "",
 }
