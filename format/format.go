@@ -1,6 +1,7 @@
 package format
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"reflect"
@@ -126,6 +127,14 @@ func valueAsString(value reflect.Value) (string, error) {
 			return "", nil
 		}
 		return valueAsString(reflect.Indirect(value))
+	case reflect.Struct:
+		out, err := json.Marshal(value.Interface())
+		if err != nil {
+			return "", err
+		}
+		return string(out), nil
+	case reflect.Invalid:
+		return "NULL", nil
 	default:
 		return "", fmt.Errorf("unhandled kind %s", k)
 	}
