@@ -1,34 +1,6 @@
 package format
 
-var UserFormatter = StructFormatter{
-	[]Header{
-		{
-			FieldName:   "FirstName",
-			DisplayName: "First Name",
-			FieldFn:     getFieldByName,
-		},
-		{
-			FieldName:   "LastName",
-			DisplayName: "Last Name",
-			FieldFn:     getFieldByName,
-		},
-		{
-			FieldName: "Email",
-			FieldFn:   getFieldByName,
-		},
-		{
-			FieldName: "State",
-			FieldFn:   getFieldByName,
-		},
-		{
-			FieldName:   "CreatedAt",
-			DisplayName: "Created At",
-			FieldFn:     getFieldByName,
-		},
-		{
-			FieldName: "Roles",
-			Wide:      true,
-			FieldFn:   getArrayFieldByName,
-		},
-	},
+var UserDefaultSelector = DefaultSelector{
+	Normal: "First Name:.first_name,Last Name:.last_name,Email:.email,State:.state,Created At:.created_at",
+	Wide:   "First Name:.first_name,Last Name:.last_name,Email:.email,State:.state,Created At:.created_at,Roles:.roles",
 }

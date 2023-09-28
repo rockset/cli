@@ -2,40 +2,9 @@ package format
 
 import "github.com/rockset/rockset-go-client/openapi"
 
-var QueryInfoFormatter = StructFormatter{
-	[]Header{
-		{
-			DisplayName: "Query ID",
-			FieldName:   "QueryId",
-			FieldFn:     getFieldByName,
-		},
-		{
-			FieldName: "Status",
-			FieldFn:   getFieldByName,
-		},
-		{
-			DisplayName: "Executed By",
-			FieldName:   "ExecutedBy",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Submitted At",
-			FieldName:   "SubmittedAt",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Expires At",
-			FieldName:   "ExpiresAt",
-			FieldFn:     getFieldByName,
-			Wide:        true,
-		},
-		{
-			DisplayName: "SQL",
-			FieldName:   "Sql",
-			FieldFn:     getFieldByName,
-			Wide:        true,
-		},
-	},
+var QueryDefaultSelector = DefaultSelector{
+	Normal: "Query ID:.query_id,Status:.status,Executed By:.executed_by,Submitted At:.submitted_at",
+	Wide:   "Query ID:.query_id,Status:.status,Executed By:.executed_by,Submitted At:.submitted_at,Expires At:.expires_at,SQL:.sql",
 }
 
 var _ = openapi.QueryInfo{

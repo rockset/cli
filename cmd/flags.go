@@ -26,10 +26,11 @@ const (
 	SizeFlag             = "size"
 	IngestTransformation = "ingest-transformation"
 
-	FormatFlag = "format"
-	WideFlag   = "wide"
-	HeaderFlag = "header"
-	ForceFlag  = "force"
+	FormatFlag   = "format"
+	WideFlag     = "wide"
+	HeaderFlag   = "header"
+	SelectorFlag = "selector"
+	ForceFlag    = "force"
 )
 
 const (

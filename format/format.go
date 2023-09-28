@@ -19,8 +19,8 @@ func ToInterfaceArray[T any](list []T) []interface{} {
 }
 
 type Formatter interface {
-	Format(wide bool, item interface{}) error
-	FormatList(wide bool, items []interface{}) error
+	Format(wide bool, selector string, item interface{}) error
+	FormatList(wide bool, selector string, items []interface{}) error
 }
 
 type Format string
@@ -57,172 +57,80 @@ func FormatterFor(out io.Writer, f Format, header bool) (Formatter, error) {
 	}
 }
 
-type Header struct {
-	FieldName   string
-	DisplayName string
-	Wide        bool
-	FieldFn     func(string, interface{}) string
-}
-
-func (h Header) Field(i interface{}) string {
-	if h.FieldFn == nil {
-		return getFieldByName(h.FieldName, i)
+func DefaultSelectorFor(f any, wide bool) (string, error) {
+	sel, err := defaultSelectorFor(f)
+	if err != nil {
+		return "", err
 	}
-
-	return h.FieldFn(h.FieldName, i)
+	if sel.Wide != "" && wide {
+		return sel.Wide, nil
+	}
+	return sel.Normal, nil
 }
 
-func StructFormatterFor[T any](f T) (StructFormatter, error) {
-	var i interface{} = f
-	switch t := i.(type) {
+func defaultSelectorFor(f any) (DefaultSelector, error) {
+	switch t := f.(type) {
 	case openapi.Alias:
-		return AliasFormatter, nil
+		return AliasDefaultSelector, nil
 	case openapi.ApiKey:
-		return APIKeyFormatter, nil
+		return ApiKeyDefaultSelector, nil
 	case openapi.User:
-		return UserFormatter, nil
+		return UserDefaultSelector, nil
 	case openapi.Organization:
-		return OrgFormatter, nil
+		return OrganizationDefaultSelector, nil
 	case openapi.Workspace:
-		return WorkspaceFormatter, nil
+		return WorkspaceDefaultSelector, nil
 	case openapi.Collection:
-		return CollectionFormatter, nil
+		return CollectionDefaultSelector, nil
 	case openapi.QueryInfo:
-		return QueryInfoFormatter, nil
+		return QueryDefaultSelector, nil
 	case openapi.QueryLambda:
-		return QueryLambdaFormatter, nil
+		return QueryLambdaDefaultSelector, nil
 	case openapi.QueryLambdaTag:
-		return QueryLambdaTagFormatter, nil
+		return QueryLambdaTagDefaultSelector, nil
 	case openapi.View:
-		return ViewFormatter, nil
+		return ViewDefaultSelector, nil
 	case openapi.VirtualInstance:
-		return VirtualInstanceFormatter, nil
+		return VirtualInstanceDefaultSelector, nil
 	default:
-		return StructFormatter{}, fmt.Errorf("no formatter for %T", t)
+		return DefaultSelector{}, fmt.Errorf("no formatter for %T", t)
 	}
 }
 
-type StructFormatter struct {
-	headers []Header
+type DefaultSelector struct {
+	Normal string
+	Wide   string
 }
 
-func (s StructFormatter) filteredHeaders(wide bool) []Header {
-	var headers []Header
-	for _, h := range s.headers {
-		if wide || !h.Wide {
-			headers = append(headers, h)
-		}
-	}
-	return headers
-}
-
-// Headers returns the list of header names
-func (s StructFormatter) Headers(wide bool) []string {
-	var headers []string
-	for _, h := range s.headers {
-		if wide || !h.Wide {
-			if h.DisplayName == "" {
-				headers = append(headers, h.FieldName)
-			} else {
-				headers = append(headers, h.DisplayName)
-			}
-		}
-	}
-	return headers
-}
-
-func (s StructFormatter) Fields(wide bool, i interface{}) []string {
-	var fields []string
-	for _, h := range s.filteredHeaders(wide) {
-		fields = append(fields, h.Field(i))
-	}
-	return fields
-}
-
-func getFieldByName(name string, i interface{}) string {
-	v := reflect.Indirect(reflect.ValueOf(i))
-	f := v.FieldByName(name)
-
-	if !f.IsValid() {
-		return fmt.Sprintf("unknown field name %s", name)
-	}
-
-	// dereference pointer, if we got one
-	if f.Kind() == reflect.Ptr {
-		if f.IsNil() {
-			return ""
-		}
-		f = f.Elem()
-	}
-
-	switch k := f.Kind(); k {
+func valueAsString(value reflect.Value) (string, error) {
+	k := value.Kind()
+	switch k {
 	case reflect.String:
-		return f.String()
+		return value.String(), nil
 	case reflect.Bool:
-		return strconv.FormatBool(f.Bool())
+		return strconv.FormatBool(value.Bool()), nil
 	case reflect.Int64, reflect.Int32:
-		return strconv.FormatInt(f.Int(), 10)
+		return strconv.FormatInt(value.Int(), 10), nil
 	case reflect.Uint64:
-		return strconv.FormatUint(f.Uint(), 10)
-	case reflect.Slice:
-		a := make([]string, f.Len())
-		for i := 0; i < f.Len(); i++ {
-			x := f.Index(i)
+		return strconv.FormatUint(value.Uint(), 10), nil
+	case reflect.Slice, reflect.Array:
+		a := make([]string, value.Len())
+		for i := 0; i < value.Len(); i++ {
+			x := value.Index(i)
 			a[i] = fmt.Sprintf("%v", x)
 		}
 
-		return strings.Join(a, ", ")
+		return strings.Join(a, ", "), nil
+	case reflect.Ptr:
+		if value.IsNil() {
+			return "", nil
+		}
+		return valueAsString(reflect.Indirect(value))
 	default:
-		return fmt.Sprintf("[%T: unhandled kind %s for field %s]", i, k, name)
+		return "", fmt.Errorf("unhandled kind %s", k)
 	}
 }
 
-func getArrayFieldByName(name string, i interface{}) string {
-	var a []string
-	v := reflect.Indirect(reflect.ValueOf(i))
-	f := v.FieldByName(name)
-
-	// dereference pointer, if we got one
-	if f.Kind() == reflect.Ptr {
-		if f.IsNil() {
-			return ""
-		}
-		f = f.Elem()
-	}
-	if !f.IsValid() {
-		return "not valid"
-	}
-
-	for i := 0; i < f.Len(); i++ {
-		item := f.Index(i)
-		a = append(a, item.String())
-	}
-	return strings.Join(a, ", ")
-}
-
-func getStructFieldByName(name string) func(string, any) string {
-	return func(s string, a any) string {
-		v := reflect.Indirect(reflect.ValueOf(a))
-		f := v.FieldByName(s)
-
-		if f.Kind() == reflect.Ptr {
-			if f.IsNil() {
-				return ""
-			}
-			f = f.Elem()
-		}
-		if !f.IsValid() {
-			return "not valid"
-		}
-
-		sf := f.FieldByName(name)
-		if sf.Kind() == reflect.Ptr {
-			if sf.IsNil() {
-				return ""
-			}
-			sf = sf.Elem()
-		}
-
-		return sf.String()
-	}
+func AnyAsString(a any) (string, error) {
+	return valueAsString(reflect.ValueOf(a))
 }

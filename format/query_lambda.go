@@ -2,47 +2,9 @@ package format
 
 import "github.com/rockset/rockset-go-client/openapi"
 
-var QueryLambdaFormatter = StructFormatter{
-	[]Header{
-		{
-			FieldName: "Workspace",
-			FieldFn:   getFieldByName,
-		},
-		{
-			FieldName: "Name",
-			FieldFn:   getFieldByName,
-		},
-		{
-			DisplayName: "Last Updated By",
-			FieldName:   "LastUpdatedBy",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Last Updated",
-			FieldName:   "LastUpdated",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Latest Version",
-			FieldName:   "LatestVersion",
-			FieldFn:     getStructFieldByName("Version"),
-		},
-		{
-			DisplayName: "Description",
-			FieldName:   "LatestVersion",
-			FieldFn:     getStructFieldByName("Description"),
-			Wide:        true,
-		},
-		{
-			DisplayName: "Version Count",
-			FieldName:   "VersionCount",
-			FieldFn:     getFieldByName,
-		},
-		{
-			FieldName: "Collections",
-			FieldFn:   getArrayFieldByName,
-		},
-	},
+var QueryLambdaDefaultSelector = DefaultSelector{
+	Normal: "Workspace:.workspace,Name:.name,Last Updated By:.last_updated_by,Last Updated:.last_updated,Latest Version:.latest_version.version,Version Count:.version_count,Collections:.collections",
+	Wide:   "Workspace:.workspace,Name:.name,Last Updated By:.last_updated_by,Last Updated:.last_updated,Latest Version:.latest_version.version,Description:.latest_version.description,Version Count:.version_count,Collections:.collections",
 }
 
 var _ = openapi.QueryLambda{
@@ -76,25 +38,9 @@ var _ = openapi.QueryLambda{
 	Workspace:    nil,
 }
 
-var QueryLambdaTagFormatter = StructFormatter{
-	[]Header{
-		{
-			FieldName:   "TagName",
-			DisplayName: "Tag",
-			FieldFn:     getFieldByName,
-		},
-		{
-			FieldName:   "Version",
-			DisplayName: "Description",
-			FieldFn:     getStructFieldByName("Description"),
-			Wide:        true,
-		},
-		{
-			FieldName:   "Version",
-			DisplayName: "State",
-			FieldFn:     getStructFieldByName("State"),
-		},
-	},
+var QueryLambdaTagDefaultSelector = DefaultSelector{
+	Normal: "Tag:.tag_name,State:.version.state",
+	Wide:   "Tag:.tag_name,Description:.version.description,State:.version.state",
 }
 
 var _ = openapi.QueryLambdaTag{

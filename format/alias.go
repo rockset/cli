@@ -2,36 +2,9 @@ package format
 
 import "github.com/rockset/rockset-go-client/openapi"
 
-var AliasFormatter = StructFormatter{
-	[]Header{
-		{
-			FieldName: "Workspace",
-			FieldFn:   getFieldByName,
-		},
-		{
-			FieldName: "Name",
-			FieldFn:   getFieldByName,
-		},
-		{
-			FieldName: "Description",
-			FieldFn:   getFieldByName,
-			Wide:      true,
-		},
-		{
-			DisplayName: "Modified At",
-			FieldName:   "ModifiedAt",
-			FieldFn:     getFieldByName,
-			Wide:        true,
-		},
-		{
-			FieldName: "Collections",
-			FieldFn:   getArrayFieldByName,
-		},
-		{
-			FieldName: "State",
-			FieldFn:   getFieldByName,
-		},
-	},
+var AliasDefaultSelector = DefaultSelector{
+	Normal: "Workspace:.workspace,Name:.name,Collections:.collections,State:.state",
+	Wide:   "Workspace:.workspace,Name:.name,Description:.description,Modified At:.modified_at,Collections:.collections,State:.state",
 }
 
 // just to list available fields

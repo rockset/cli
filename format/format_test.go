@@ -16,6 +16,20 @@ func TestFormatter(t *testing.T) {
 		s string
 	}{
 		{
+			i: openapi.Alias{
+				Collections:         []string{"collection1", "collection2"},
+				CreatedAt:           openapi.PtrString("created at"),
+				CreatedByApikeyName: openapi.PtrString("created by apikey name"),
+				CreatorEmail:        openapi.PtrString("creator email"),
+				Description:         openapi.PtrString("description"),
+				ModifiedAt:          openapi.PtrString("modified at"),
+				Name:                openapi.PtrString("name"),
+				State:               openapi.PtrString("state"),
+				Workspace:           openapi.PtrString("workspace"),
+			},
+			s: "workspace,name,description,modified at,\"collection1, collection2\",state\n",
+		},
+		{
 			i: openapi.Workspace{
 				CreatedAt:       openapi.PtrString("created at"),
 				CreatedBy:       openapi.PtrString("created by"),
@@ -107,7 +121,12 @@ func TestFormatter(t *testing.T) {
 			buf := bytes.NewBufferString("")
 			f, err := format.FormatterFor(buf, format.CSVFormat, false)
 			assert.NoError(t, err)
-			f.Format(true, tc.i)
+			err = f.Format(true, "", tc.i)
+			if tc.s == "" {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
 			assert.Equal(t, tc.s, buf.String())
 		})
 	}
@@ -136,7 +155,8 @@ func TestNewFormatter(t *testing.T) {
 			buf := bytes.NewBufferString("")
 			f, err := format.FormatterFor(buf, format.CSVFormat, false)
 			assert.NoError(t, err)
-			f.Format(true, tc.i)
+			err = f.Format(true, "", tc.i)
+			assert.NoError(t, err)
 			assert.Equal(t, tc.s, buf.String())
 		})
 	}

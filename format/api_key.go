@@ -2,41 +2,9 @@ package format
 
 import "github.com/rockset/rockset-go-client/openapi"
 
-var APIKeyFormatter = StructFormatter{
-	[]Header{
-		{
-			FieldName: "Name",
-			FieldFn:   getFieldByName,
-		},
-		{
-			DisplayName: "Key ID",
-			FieldName:   "Key",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Created By",
-			FieldName:   "CreatedBy",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Expiry Time",
-			FieldName:   "ExpiryTime",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Last Access Time",
-			FieldName:   "LastAccessTime",
-			FieldFn:     getFieldByName,
-		},
-		{
-			FieldName: "Role",
-			FieldFn:   getFieldByName,
-		},
-		{
-			FieldName: "State",
-			FieldFn:   getFieldByName,
-		},
-	},
+var ApiKeyDefaultSelector = DefaultSelector{
+	Normal: "Name:.name,Key ID:.key,Created By:.created_by,Expiry Time:.expiry_time,Last Access Time:.last_access_time,Role:.role,State:.state",
+	Wide:   "",
 }
 
 // just to list available fields

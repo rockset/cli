@@ -8,24 +8,26 @@ import (
 
 func formatOne(cmd *cobra.Command, a any) error {
 	wide, _ := cmd.Flags().GetBool(HeaderFlag)
+	selector, _ := cmd.Flags().GetString(SelectorFlag)
 
 	f, err := formatterFor(cmd)
 	if err != nil {
 		return err
 	}
 
-	return f.Format(wide, a)
+	return f.Format(wide, selector, a)
 }
 
 func formatList(cmd *cobra.Command, a []any) error {
 	wide, _ := cmd.Flags().GetBool(HeaderFlag)
+	selector, _ := cmd.Flags().GetString(SelectorFlag)
 
 	f, err := formatterFor(cmd)
 	if err != nil {
 		return err
 	}
 
-	return f.FormatList(wide, a)
+	return f.FormatList(wide, selector, a)
 }
 
 func formatterFor(cmd *cobra.Command) (format.Formatter, error) {

@@ -2,42 +2,9 @@ package format
 
 import "github.com/rockset/rockset-go-client/openapi"
 
-var ViewFormatter = StructFormatter{
-	[]Header{
-		{
-			FieldName: "Workspace",
-			FieldFn:   getFieldByName,
-		},
-		{
-			FieldName: "Name",
-			FieldFn:   getFieldByName,
-		},
-		{
-			FieldName: "Description",
-			FieldFn:   getFieldByName,
-			Wide:      true,
-		},
-		{
-			DisplayName: "Created By",
-			FieldName:   "CreatorEmail",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "Created At",
-			FieldName:   "CreatedAt",
-			FieldFn:     getFieldByName,
-			Wide:        true,
-		},
-		{
-			FieldName: "State",
-			FieldFn:   getFieldByName,
-		},
-		{
-			DisplayName: "SQL",
-			FieldName:   "QuerySql",
-			FieldFn:     getFieldByName,
-		},
-	},
+var ViewDefaultSelector = DefaultSelector{
+	Normal: "Workspace:.workspace,Name:.name,Created By:.creator_email,State:.state,SQL:.query_sql",
+	Wide:   "Workspace:.workspace,Name:.name,Description:.description,Created By:.creator_email,Created At:.created_at,State:.state,SQL:.query_sql",
 }
 
 // just to list available fields

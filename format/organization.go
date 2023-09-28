@@ -2,41 +2,9 @@ package format
 
 import "github.com/rockset/rockset-go-client/openapi"
 
-var OrgFormatter = StructFormatter{
-	[]Header{
-		{
-			DisplayName: "DisplayName",
-			FieldName:   "DisplayName",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "ID",
-			FieldName:   "Id",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "User",
-			FieldName:   "RocksetUser",
-			FieldFn:     getFieldByName,
-		},
-		{
-			DisplayName: "External ID",
-			FieldName:   "ExternalId",
-			FieldFn:     getFieldByName,
-			Wide:        true,
-		},
-		{
-			DisplayName: "Created At",
-			FieldName:   "CreatedAt",
-			FieldFn:     getFieldByName,
-			Wide:        true,
-		},
-		// []openapi.Cluster
-		//{
-		//	FieldName: "Clusters",
-		//	FieldFn:   getArrayFieldByName,
-		//},
-	},
+var OrganizationDefaultSelector = DefaultSelector{
+	Normal: "Display Name:.display_name,ID:.id,User:.rockset_user",
+	Wide:   "Display Name:.display_name,ID:.id,User:.rockset_user,External ID:.external_id,Created At:.created_at",
 }
 
 // just to list available fields

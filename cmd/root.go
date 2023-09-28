@@ -67,6 +67,7 @@ For more configuration options, see the 'rockset create config' command.`, APIKe
 		strings.Join(format.SupportedFormats.ToStringArray(), ", ")))
 	root.PersistentFlags().Bool(HeaderFlag, true, "show header")
 	root.PersistentFlags().Bool(WideFlag, false, "show extended fields")
+	root.PersistentFlags().String(SelectorFlag, "", fmt.Sprintf(`Allows displaying custom values in tables (ignored if --%s is anything other than "%s" or "%s"). Has the format "Column Name:.Field1.Subfield,Column 2 Name:.Selector" etc. The column name and colon can be ommitted, in which case the column and selector will be identical.`, FormatFlag, format.TableFormat, format.CSVFormat))
 
 	root.PersistentFlags().String(ContextFLag, "", fmt.Sprintf("override currently selected configuration context%s", current))
 	root.PersistentFlags().String(ClusterFLag, "", "override Rockset cluster")
