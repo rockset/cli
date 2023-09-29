@@ -34,18 +34,25 @@ func (c CSV) Format(wide bool, selector string, i interface{}) error {
 	defer c.w.Flush()
 
 	if c.Header {
-		err := c.w.Write(selection.Headers())
+		c.w.Write([]string{"key", "value"})
 		if err != nil {
 			return fmt.Errorf("failed to write csv: %w", err)
 		}
 	}
-	fields, err := selection.Fields(i)
-	if err != nil {
-		return fmt.Errorf("failed to write csv: %w", err)
-	}
-	err = c.w.Write(fields)
-	if err != nil {
-		return fmt.Errorf("failed to write csv: %w", err)
+
+	for _, sel := range selection {
+		value, err := sel.Select(i)
+		if err != nil {
+			return fmt.Errorf("failed to write csv: %w", err)
+		}
+		valueAsString, err := AnyAsString(value)
+		if err != nil {
+			return fmt.Errorf("failed to write csv: %w", err)
+		}
+		err = c.w.Write([]string{sel.ColumnName, valueAsString})
+		if err != nil {
+			return fmt.Errorf("failed to write csv: %w", err)
+		}
 	}
 	return nil
 }
