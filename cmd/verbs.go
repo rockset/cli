@@ -143,6 +143,7 @@ func addVerbs(root *cobra.Command) {
 	listCmd.AddCommand(newListConfigCmd())
 	useCmd.AddCommand(newUseConfigCmd())
 
+	root.AddCommand(newAuthCmd())
 	root.AddCommand(createCmd)
 	root.AddCommand(deleteCmd)
 	root.AddCommand(executeCmd)

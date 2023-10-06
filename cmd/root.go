@@ -5,6 +5,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/rockset/cli/format"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
@@ -53,14 +54,14 @@ For more configuration options, see the 'rockset create config' command.`, APIKe
 
 	cobra.OnInitialize(initConfig(cfgFile))
 
-	var current string
-	cfg, err := loadAPIKeys()
-	if err != nil {
-		current = fmt.Sprintf(" (\"%s\")", cfg.Current)
+	var currentContext string
+	apikeys, err := loadAPIKeys()
+	if err == nil {
+		currentContext = fmt.Sprintf("(\"%s\")", apikeys.Current)
 	}
 
 	// any persistent flag defined here will be visible in all commands
-	root.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.rockset.yaml)")
+	root.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/rockset/config.yaml)")
 	root.PersistentFlags().Bool(DebugFlag, false, "enable debug output")
 
 	root.PersistentFlags().String(FormatFlag, DefaultFormat, fmt.Sprintf("output format (%s)",
@@ -69,8 +70,9 @@ For more configuration options, see the 'rockset create config' command.`, APIKe
 	root.PersistentFlags().Bool(WideFlag, false, "show extended fields")
 	root.PersistentFlags().String(SelectorFlag, "", fmt.Sprintf(`Allows displaying custom values in tables (ignored if --%s is anything other than "%s" or "%s"). Has the format "Column Name:.Field1.Subfield,Column 2 Name:.Selector" etc. The column name and colon can be ommitted, in which case the column and selector will be identical.`, FormatFlag, format.TableFormat, format.CSVFormat))
 
-	root.PersistentFlags().String(ContextFLag, "", fmt.Sprintf("override currently selected configuration context%s", current))
-	root.PersistentFlags().String(ClusterFLag, "", "override Rockset cluster")
+	root.PersistentFlags().String(ContextFLag, "", fmt.Sprintf("override currently selected configuration context %s", currentContext))
+	// TODO add convenience function to map usw2a1 -> api.usw2a1.rockset.com
+	root.PersistentFlags().String(ClusterFLag, "", "override Rockset cluster for the current context")
 
 	// this binds the environment variable DEBUG to the flag debug
 	_ = viper.BindPFlag("debug", root.PersistentFlags().Lookup("debug"))
@@ -94,8 +96,8 @@ func initConfig(cfgFile string) func() {
 			}
 
 			// Search config in home directory with name ".rocket" (without extension).
-			viper.AddConfigPath(home)
-			viper.SetConfigName(".rockset")
+			viper.AddConfigPath(path.Join(home, ".config", "cli"))
+			viper.SetConfigName("config")
 		}
 
 		viper.SetEnvPrefix("rockset")

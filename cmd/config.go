@@ -16,15 +16,16 @@ import (
 )
 
 func newListConfigCmd() *cobra.Command {
+
 	cmd := cobra.Command{
 		Use:         "configs",
 		Aliases:     []string{"config", "cfg"},
 		Annotations: group("config"),
 		Args:        cobra.NoArgs,
 		Short:       "list configurations",
-		Long: `list configurations and show the currently selected
+		Long: fmt.Sprintf(`list configurations and show the currently selected context
 
-YAML file located in ~/.config/rockset/cli.yaml of the format 
+YAML file located in %s of the format 
 ---
 current: dev
 configs:
@@ -33,7 +34,7 @@ configs:
     apiserver: api.usw2a1.rockset.com
   prod:
     apikey: ...
-    apiserver: api.use1a1.rockset.com`,
+    apiserver: api.use1a1.rockset.com`, APIKeysFile),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := loadAPIKeys()
 			if err != nil {
@@ -209,6 +210,8 @@ func storeAPIKeys(cfg APIKeys) error {
 	if err != nil {
 		return err
 	}
+
+	// TODO create directory
 
 	f, err := os.OpenFile(file, os.O_TRUNC|os.O_WRONLY, 0600)
 	if err != nil {
