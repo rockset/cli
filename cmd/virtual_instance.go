@@ -331,7 +331,7 @@ func waitUntilVIActive(rs *rockset.RockClient, cmd *cobra.Command, vID string) e
 	}
 	if wait {
 		// TODO notify the user that we're waiting
-		if err := rs.WaitUntilVirtualInstanceActive(cmd.Context(), vID); err != nil {
+		if err := rs.Wait.UntilVirtualInstanceActive(cmd.Context(), vID); err != nil {
 			return fmt.Errorf("failed to wait for %s to be active: %v", vID, err)
 		}
 	}

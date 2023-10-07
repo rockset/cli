@@ -325,7 +325,7 @@ func waitForCollection(ctx context.Context, cmd *cobra.Command, rs *rockset.Rock
 
 	if wait {
 		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "waiting for collection '%s.%s' to be READY\n", ws, name)
-		if err := rs.WaitUntilCollectionReady(ctx, ws, name); err != nil {
+		if err := rs.Wait.UntilCollectionReady(ctx, ws, name); err != nil {
 			return fmt.Errorf("failed to wait for %s.%s to be ready: %v", ws, name, err)
 		}
 	}

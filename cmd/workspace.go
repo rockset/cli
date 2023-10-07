@@ -118,19 +118,19 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 				// wait until all resources are gone...
 
 				for _, collection := range collections {
-					if err = rs.WaitUntilCollectionGone(ctx, ws, collection.GetName()); err != nil {
+					if err = rs.Wait.UntilCollectionGone(ctx, ws, collection.GetName()); err != nil {
 						return err
 					}
 				}
 
 				for _, view := range views {
-					if err = rs.WaitUntilViewGone(ctx, ws, view.GetName()); err != nil {
+					if err = rs.Wait.UntilViewGone(ctx, ws, view.GetName()); err != nil {
 						return err
 					}
 				}
 
 				for _, alias := range aliases {
-					if err = rs.WaitUntilAliasGone(ctx, ws, alias.GetName()); err != nil {
+					if err = rs.Wait.UntilAliasGone(ctx, ws, alias.GetName()); err != nil {
 						return err
 					}
 				}
