@@ -275,8 +275,6 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
 github.com/rockset/device-authorization v0.0.5 h1:3+IEVEMuupP90ZNlxFHU/WDxojH0hAl9JNLbjP/A3jE=
 github.com/rockset/device-authorization v0.0.5/go.mod h1:9clOUQUxYEP7Cq1WUyYos2okPuJGr5qqwEtwWpgc1Xk=
-github.com/rockset/rockset-go-client v0.22.0 h1:Jgzrca3jEVmTx/wTLwuAOQyc6HhxKXbgYpazZ8lVuq8=
-github.com/rockset/rockset-go-client v0.22.0/go.mod h1:l4bHqlKIIdqRTX/9RkKeq0uOHBGXZHZc13oXZYlIzts=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.9.0 h1:73kH8U+JUqXU8lRuOHeVHaa/SZPifC7BkcraZVejAe8=
 github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=

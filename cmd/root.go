@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/fatih/color"
+	"github.com/rockset/cli/config"
 	"github.com/rockset/cli/format"
 	"os"
 	"path"
@@ -36,7 +37,7 @@ https://console.rockset.com/apikeys
 It should either be stored as an environment variable ROCKSET_APIKEY or in a
 platform dependent configuration file, %s on the current computer.
 
-For more configuration options, see the 'rockset create config' command.`, APIKeysFile),
+For more configuration options, see the 'rockset create config' command.`, config.File),
 		Example: `	## Create a sample collection and run a query against it
 	rockset create sample collection --wait --dataset movies movies
 	rockset query "SELECT COUNT(*) FROM movies"`,
@@ -55,9 +56,9 @@ For more configuration options, see the 'rockset create config' command.`, APIKe
 	cobra.OnInitialize(initConfig(cfgFile))
 
 	var currentContext string
-	apikeys, err := loadAPIKeys()
+	cfg, err := config.Load()
 	if err == nil {
-		currentContext = fmt.Sprintf("(\"%s\")", apikeys.Current)
+		currentContext = fmt.Sprintf("(\"%s\")", cfg.Current)
 	}
 
 	// any persistent flag defined here will be visible in all commands

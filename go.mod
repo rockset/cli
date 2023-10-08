@@ -2,6 +2,8 @@ module github.com/rockset/cli
 
 go 1.21
 
+replace github.com/rockset/rockset-go-client => ../rockset-go-client
+
 require (
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/fatih/color v1.13.0

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/rockset/cli/config"
 	"github.com/rockset/cli/format"
 	"io"
 	"os"
@@ -24,7 +25,7 @@ func newListQueryCmd() *cobra.Command {
 		Short:       "list queries",
 		Long:        "list queries on a virtual instance",
 		Args:        cobra.ExactArgs(1),
-		Annotations: group("query"), // TODO shoudl this be in the VI group too?
+		Annotations: group("query"), // TODO should this be in the VI group too?
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -187,7 +188,7 @@ var (
 )
 
 func interactiveQuery(ctx context.Context, in io.ReadCloser, out io.Writer, rs *rockset.RockClient) error {
-	histFile, err := historyFile()
+	histFile, err := config.HistoryFile()
 	if err != nil {
 		return err
 	}
