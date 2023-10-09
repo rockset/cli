@@ -92,6 +92,8 @@ func defaultSelectorFor(f any) (DefaultSelector, error) {
 		return ViewDefaultSelector, nil
 	case openapi.VirtualInstance:
 		return VirtualInstanceDefaultSelector, nil
+	case openapi.Role:
+		return RoleDefaultSelector, nil
 	default:
 		return DefaultSelector{}, fmt.Errorf("no formatter for %T", t)
 	}
