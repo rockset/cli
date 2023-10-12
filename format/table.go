@@ -31,15 +31,21 @@ func (t Table) Format(wide bool, selector string, i interface{}) error {
 	}
 
 	if t.Header {
-		t.w.SetHeader(selection.Headers())
+		t.w.SetHeader([]string{"key", "value"})
 	}
 
-	fields, err := selection.Fields(i)
-	if err != nil {
-		return err
+	for _, sel := range selection {
+		value, err := sel.Select(i)
+		if err != nil {
+			return err
+		}
+		valueAsString, err := AnyAsString(value)
+		if err != nil {
+			return err
+		}
+		t.w.Append([]string{sel.ColumnName, valueAsString})
 	}
 
-	t.w.Append(fields)
 	t.w.Render()
 
 	return nil
