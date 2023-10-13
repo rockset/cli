@@ -65,12 +65,23 @@ func (t Table) FormatList(wide bool, selector Selector, items []interface{}) err
 		t.w.SetHeader(selector.Headers())
 	}
 
-	for _, item := range items {
+	for i, item := range items {
 		fields, err := selector.Fields(item)
 		if err != nil {
 			return err
 		}
-		t.w.Append(fields)
+
+		// make every other row different
+		// TODO might need a --no-color flag to turn this off
+		if i%2 == 0 {
+			cells := make([]tablewriter.Colors, len(fields))
+			for j := range cells {
+				cells[j] = tablewriter.Colors{tablewriter.Bold, tablewriter.FgWhiteColor}
+			}
+			t.w.Rich(fields, cells)
+		} else {
+			t.w.Append(fields)
+		}
 	}
 
 	t.w.Render()
