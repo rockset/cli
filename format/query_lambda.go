@@ -3,8 +3,33 @@ package format
 import "github.com/rockset/rockset-go-client/openapi"
 
 var QueryLambdaDefaultSelector = DefaultSelector{
-	Normal: "Workspace:.workspace,Name:.name,Last Updated By:.last_updated_by,Last Updated:.last_updated,Latest Version:.latest_version.version,Version Count:.version_count,Collections:.collections",
-	Wide:   "Workspace:.workspace,Name:.name,Last Updated By:.last_updated_by,Last Updated:.last_updated,Latest Version:.latest_version.version,Description:.latest_version.description,Version Count:.version_count,Collections:.collections",
+	Normal: []FieldSelection{
+		NewFieldSelection("Workspace", "workspace"),
+		NewFieldSelection("Name", "name"),
+		NewFieldSelection("Last Updated By", "last_updated_by"),
+		{
+			ColumnName:     "Last Updated",
+			Path:           []PathElem{{FieldName: "last_updated"}},
+			FieldFormatter: TimeSinceFormatter{}, // TODO this doesn't display correctly
+		},
+		NewFieldSelection("Latest Version", "latest_version", "version"),
+		NewFieldSelection("Version Count", "version_count"),
+		NewFieldSelection("Collections", "collections"),
+	},
+	Wide: []FieldSelection{
+		NewFieldSelection("Workspace", "workspace"),
+		NewFieldSelection("Name", "name"),
+		NewFieldSelection("Last Updated By", "last_updated_by"),
+		{
+			ColumnName:     "Last Updated",
+			Path:           []PathElem{{FieldName: "last_updated"}},
+			FieldFormatter: TimeSinceFormatter{},
+		},
+		NewFieldSelection("Latest Version", "latest_version", "version"),
+		NewFieldSelection("Description", "latest_version", "description"),
+		NewFieldSelection("Version Count", "version_count"),
+		NewFieldSelection("Collections", "collections"),
+	},
 }
 
 var _ = openapi.QueryLambda{
@@ -39,8 +64,8 @@ var _ = openapi.QueryLambda{
 }
 
 var QueryLambdaTagDefaultSelector = DefaultSelector{
-	Normal: "Tag:.tag_name,State:.version.state",
-	Wide:   "Tag:.tag_name,Description:.version.description,State:.version.state",
+	Normal: nil, // "Tag:.tag_name,State:.version.state",
+	Wide:   nil, // "Tag:.tag_name,Description:.version.description,State:.version.state",
 }
 
 var _ = openapi.QueryLambdaTag{

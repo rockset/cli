@@ -18,34 +18,30 @@ func NewCSVFormat(out io.Writer, header bool) CSV {
 	}
 }
 
-func (c CSV) Format(wide bool, selector string, i interface{}) error {
-	if selector == "" {
+func (c CSV) Format(wide bool, selector Selector, i interface{}) error {
+	if selector == nil {
 		defaults, err := DefaultSelectorFor(i, wide)
 		if err != nil {
 			return err
 		}
 		selector = defaults
 	}
-	selection, err := ParseSelectionString(selector)
-	if err != nil {
-		return err
-	}
 
 	defer c.w.Flush()
 
 	if c.Header {
-		c.w.Write([]string{"key", "value"})
-		if err != nil {
+
+		if err := c.w.Write([]string{"key", "value"}); err != nil {
 			return fmt.Errorf("failed to write csv: %w", err)
 		}
 	}
 
-	for _, sel := range selection {
+	for _, sel := range selector {
 		value, err := sel.Select(i)
 		if err != nil {
 			return fmt.Errorf("failed to write csv: %w", err)
 		}
-		valueAsString, err := AnyAsString(value)
+		valueAsString, err := AnyAsString(value, sel.FieldFormatter)
 		if err != nil {
 			return fmt.Errorf("failed to write csv: %w", err)
 		}
@@ -57,11 +53,11 @@ func (c CSV) Format(wide bool, selector string, i interface{}) error {
 	return nil
 }
 
-func (c CSV) FormatList(wide bool, selector string, items []interface{}) error {
+func (c CSV) FormatList(wide bool, selector Selector, items []interface{}) error {
 	if len(items) == 0 {
 		return fmt.Errorf("no items in list")
 	}
-	if selector == "" {
+	if selector == nil {
 		defaults, err := DefaultSelectorFor(items[0], wide)
 		if err != nil {
 			return err
@@ -69,22 +65,17 @@ func (c CSV) FormatList(wide bool, selector string, items []interface{}) error {
 		selector = defaults
 	}
 
-	selection, err := ParseSelectionString(selector)
-	if err != nil {
-		return err
-	}
-
 	defer c.w.Flush()
 
 	if c.Header {
-		err := c.w.Write(selection.Headers())
+		err := c.w.Write(selector.Headers())
 		if err != nil {
 			return fmt.Errorf("failed to write csv: %w", err)
 		}
 	}
 
 	for _, item := range items {
-		fields, err := selection.Fields(item)
+		fields, err := selector.Fields(item)
 		if err != nil {
 			return fmt.Errorf("failed to write csv: %w", err)
 		}

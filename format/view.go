@@ -3,8 +3,21 @@ package format
 import "github.com/rockset/rockset-go-client/openapi"
 
 var ViewDefaultSelector = DefaultSelector{
-	Normal: "Workspace:.workspace,Name:.name,Created By:.creator_email,State:.state,SQL:.query_sql",
-	Wide:   "Workspace:.workspace,Name:.name,Description:.description,Created By:.creator_email,Created At:.created_at,State:.state,SQL:.query_sql",
+	Normal: []FieldSelection{
+		NewFieldSelection("Workspace", "workspace"),
+		NewFieldSelection("Name", "name"),
+		NewFieldSelection("Created By", "creator_email"),
+		NewFieldSelection("State", "state"),
+	},
+	Wide: []FieldSelection{
+		NewFieldSelection("Workspace", "workspace"),
+		NewFieldSelection("Name", "name"),
+		NewFieldSelection("Description", "description"),
+		NewFieldSelection("Created By", "creator_email"),
+		NewFieldSelection("Created At", "created_at"),
+		NewFieldSelection("State", "state"),
+		NewFieldSelection("SQL", "query_sql"),
+	},
 }
 
 // just to list available fields

@@ -3,8 +3,24 @@ package format
 import "github.com/rockset/rockset-go-client/openapi"
 
 var QueryDefaultSelector = DefaultSelector{
-	Normal: "Query ID:.query_id,Status:.status,Executed By:.executed_by,Submitted At:.submitted_at",
-	Wide:   "Query ID:.query_id,Status:.status,Executed By:.executed_by,Submitted At:.submitted_at,Expires At:.expires_at,SQL:.sql",
+	Normal: []FieldSelection{
+		NewFieldSelection("Query ID", "query_id"),
+		NewFieldSelection("Status", "status"),
+		NewFieldSelection("Executed By", "executed_by"),
+		NewFieldSelection("Submitted At", "submitted_at"),
+		NewFieldSelection("User", "rockset_user"),
+	},
+	Wide: []FieldSelection{
+		NewFieldSelection("Query ID", "query_id"),
+		NewFieldSelection("Status", "status"),
+		NewFieldSelection("Executed By", "executed_by"),
+		NewFieldSelection("Submitted At", "submitted_at"),
+		NewFieldSelection("Expires At", "expires_at"),
+		NewFieldSelection("SQL", "sql"),
+	},
+
+	//Normal: nil, // "Query ID:.query_id,Status:.status,Executed By:.executed_by,Submitted At:.submitted_at",
+	//Expires At:.expires_at,SQL:.sql",
 }
 
 var _ = openapi.QueryInfo{

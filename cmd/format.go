@@ -15,11 +15,18 @@ func formatOne(cmd *cobra.Command, a any) error {
 		return err
 	}
 
-	return f.Format(wide, selector, a)
+	var s format.Selector
+	if selector != "" {
+		s, err = format.ParseSelectionString(selector)
+		if err != nil {
+			return err
+		}
+	}
+	return f.Format(wide, s, a)
 }
 
 func formatList(cmd *cobra.Command, a []any) error {
-	wide, _ := cmd.Flags().GetBool(HeaderFlag)
+	wide, _ := cmd.Flags().GetBool(WideFlag)
 	selector, _ := cmd.Flags().GetString(SelectorFlag)
 
 	f, err := formatterFor(cmd)
@@ -27,7 +34,15 @@ func formatList(cmd *cobra.Command, a []any) error {
 		return err
 	}
 
-	return f.FormatList(wide, selector, a)
+	var s format.Selector
+	if selector != "" {
+		s, err = format.ParseSelectionString(selector)
+		if err != nil {
+			return err
+		}
+	}
+
+	return f.FormatList(wide, s, a)
 }
 
 func formatterFor(cmd *cobra.Command) (format.Formatter, error) {

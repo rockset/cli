@@ -7,6 +7,7 @@ require (
 	github.com/charmbracelet/bubbletea v0.24.2
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
+	github.com/dustin/go-humanize v1.0.1
 	github.com/getsentry/sentry-go v0.24.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5

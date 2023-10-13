@@ -22,10 +22,11 @@ import (
 
 func newListQueryCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "query ID",
+		Use:         "query [virtual instance ID]",
+		Aliases:     []string{"queries", "q"},
 		Short:       "list queries",
-		Long:        "list queries on a virtual instance",
-		Args:        cobra.ExactArgs(1),
+		Long:        "list all active queries, or on a specific virtual instance",
+		Args:        cobra.RangeArgs(0, 1),
 		Annotations: group("query"), // TODO should this be in the VI group too?
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
@@ -35,7 +36,12 @@ func newListQueryCmd() *cobra.Command {
 				return err
 			}
 
-			list, err := rs.ListVirtualInstanceQueries(ctx, args[0])
+			var list []openapi.QueryInfo
+			if len(args) == 0 {
+				list, err = rs.ListActiveQueries(ctx)
+			} else {
+				list, err = rs.ListVirtualInstanceQueries(ctx, args[0])
+			}
 			if err != nil {
 				return err
 			}

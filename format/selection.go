@@ -14,23 +14,62 @@ type PathElem struct {
 	ArrayIndex       int
 }
 
-type SelectionString struct {
-	Path       []PathElem
-	ColumnName string
+type Selector []FieldSelection
+
+type FieldSelection struct {
+	Path           []PathElem
+	ColumnName     string
+	FieldFormatter FieldFormatter
 }
 
-type Selector []SelectionString
+func NewFieldSelection(columnName string, path ...string) FieldSelection {
+	fs := FieldSelection{
+		ColumnName: columnName,
+	}
+	for _, p := range path {
+		fs.Path = append(fs.Path, PathElem{FieldName: p})
+	}
+	return fs
+}
+
+func (s Selector) String() string {
+	var list []string
+
+	for _, f := range s {
+		var sb strings.Builder
+		sb.WriteString(f.ColumnName)
+		sb.WriteString(":")
+		for _, p := range f.Path {
+			sb.WriteString(".")
+			sb.WriteString(p.FieldName)
+		}
+		if f.FieldFormatter != nil {
+			sb.WriteString(":")
+			sb.WriteString(f.FieldFormatter.Name())
+		}
+		list = append(list, sb.String())
+	}
+
+	return strings.Join(list, ",")
+}
 
 func ParseSelectionString(s string) (Selector, error) {
 	elems := strings.Split(s, ",")
-	columns := make([]SelectionString, 0)
+	columns := make([]FieldSelection, 0)
 
 	for _, elem := range elems {
 		segments := strings.Split(elem, ":")
-		columnName := segments[0]
+		fs := FieldSelection{ColumnName: segments[0]}
+
 		pathString := segments[0]
 		if len(segments) == 2 {
 			pathString = segments[1]
+		} else if len(segments) == 3 {
+			pathString = segments[1]
+			if ff, found := FieldFormatters[segments[2]]; found {
+				fs.FieldFormatter = ff
+			}
+			// TODO log message if not found?
 		}
 
 		path := strings.Split(pathString, ".")[1:]
@@ -49,7 +88,7 @@ func ParseSelectionString(s string) (Selector, error) {
 			if len(pathSplit) == 2 {
 				res, err := strconv.ParseInt(strings.Trim(pathSplit[1], "[] "), 10, 64)
 				if err != nil {
-					return make([]SelectionString, 0), err
+					return make([]FieldSelection, 0), err
 				}
 				richPath = append(richPath, PathElem{
 					FieldName:        field,
@@ -65,10 +104,8 @@ func ParseSelectionString(s string) (Selector, error) {
 			}
 		}
 
-		columns = append(columns, SelectionString{
-			Path:       richPath,
-			ColumnName: columnName,
-		})
+		fs.Path = richPath
+		columns = append(columns, fs)
 	}
 
 	if len(columns) == 0 {
@@ -78,22 +115,22 @@ func ParseSelectionString(s string) (Selector, error) {
 	return columns, nil
 }
 
-func (r Selector) Headers() []string {
-	headers := make([]string, len(r))
-	for i, sel := range r {
+func (s Selector) Headers() []string {
+	headers := make([]string, len(s))
+	for i, sel := range s {
 		headers[i] = sel.ColumnName
 	}
 	return headers
 }
 
-func (r Selector) Fields(data any) ([]string, error) {
-	fields := make([]string, len(r))
-	for i, sel := range r {
+func (s Selector) Fields(data any) ([]string, error) {
+	fields := make([]string, len(s))
+	for i, sel := range s {
 		value, err := sel.Select(data)
 		if err != nil {
 			return nil, err
 		}
-		valueAsString, err := AnyAsString(value)
+		valueAsString, err := AnyAsString(value, sel.FieldFormatter)
 		if err != nil {
 			return nil, err
 		}
@@ -120,7 +157,7 @@ func findFieldByJsonTag(value reflect.Value, jsonTag string) (reflect.Value, err
 	return reflect.Value{}, fmt.Errorf("could not find json tag %s in type %s", jsonTag, value.Type().Name())
 }
 
-func (r SelectionString) Select(obj any) (any, error) {
+func (r FieldSelection) Select(obj any) (any, error) {
 	cur := reflect.Indirect(reflect.ValueOf(obj))
 	curPath := r.Path
 
@@ -173,7 +210,7 @@ func (r SelectionString) Select(obj any) (any, error) {
 	return cur.Interface(), nil
 }
 
-func (r SelectionString) ToString() string {
+func (r FieldSelection) ToString() string {
 	path := make([]string, 0)
 	for _, elem := range r.Path {
 		path = append(path, elem.ToString())

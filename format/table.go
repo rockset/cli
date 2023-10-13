@@ -17,29 +17,25 @@ func NewTableFormatter(out io.Writer, header bool) *Table {
 	}
 }
 
-func (t Table) Format(wide bool, selector string, i interface{}) error {
-	if selector == "" {
+func (t Table) Format(wide bool, selector Selector, i interface{}) error {
+	if selector == nil {
 		defaults, err := DefaultSelectorFor(i, wide)
 		if err != nil {
 			return err
 		}
 		selector = defaults
 	}
-	selection, err := ParseSelectionString(selector)
-	if err != nil {
-		return err
-	}
 
 	if t.Header {
 		t.w.SetHeader([]string{"key", "value"})
 	}
 
-	for _, sel := range selection {
+	for _, sel := range selector {
 		value, err := sel.Select(i)
 		if err != nil {
 			return err
 		}
-		valueAsString, err := AnyAsString(value)
+		valueAsString, err := AnyAsString(value, sel.FieldFormatter)
 		if err != nil {
 			return err
 		}
@@ -51,13 +47,13 @@ func (t Table) Format(wide bool, selector string, i interface{}) error {
 	return nil
 }
 
-func (t Table) FormatList(wide bool, selector string, items []interface{}) error {
+func (t Table) FormatList(wide bool, selector Selector, items []interface{}) error {
 	if items == nil || len(items) == 0 {
 		t.w.Render()
 		return nil
 	}
 
-	if selector == "" {
+	if selector == nil {
 		defaults, err := DefaultSelectorFor(items[0], wide)
 		if err != nil {
 			return err
@@ -65,17 +61,12 @@ func (t Table) FormatList(wide bool, selector string, items []interface{}) error
 		selector = defaults
 	}
 
-	selection, err := ParseSelectionString(selector)
-	if err != nil {
-		return err
-	}
-
 	if t.Header {
-		t.w.SetHeader(selection.Headers())
+		t.w.SetHeader(selector.Headers())
 	}
 
 	for _, item := range items {
-		fields, err := selection.Fields(item)
+		fields, err := selector.Fields(item)
 		if err != nil {
 			return err
 		}
