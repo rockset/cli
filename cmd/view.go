@@ -9,8 +9,8 @@ import (
 
 func newListViewsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:         "view",
-		Aliases:     []string{"v"},
+		Use:         "views",
+		Aliases:     []string{"view", "v"},
 		Args:        cobra.NoArgs,
 		Short:       "list views",
 		Annotations: group("view"),

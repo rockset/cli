@@ -20,8 +20,8 @@ func ToInterfaceArray[T any](list []T) []interface{} {
 }
 
 type Formatter interface {
-	Format(wide bool, selector string, item interface{}) error
-	FormatList(wide bool, selector string, items []interface{}) error
+	Format(wide bool, selector Selector, item interface{}) error
+	FormatList(wide bool, selector Selector, items []interface{}) error
 }
 
 type Format string
@@ -58,12 +58,12 @@ func FormatterFor(out io.Writer, f Format, header bool) (Formatter, error) {
 	}
 }
 
-func DefaultSelectorFor(f any, wide bool) (string, error) {
+func DefaultSelectorFor(f any, wide bool) (Selector, error) {
 	sel, err := defaultSelectorFor(f)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	if sel.Wide != "" && wide {
+	if sel.Wide != nil && wide {
 		return sel.Wide, nil
 	}
 	return sel.Normal, nil
@@ -99,11 +99,11 @@ func defaultSelectorFor(f any) (DefaultSelector, error) {
 }
 
 type DefaultSelector struct {
-	Normal string
-	Wide   string
+	Normal Selector
+	Wide   Selector
 }
 
-func valueAsString(value reflect.Value) (string, error) {
+func valueAsString(value reflect.Value, ff FieldFormatter) (string, error) {
 	k := value.Kind()
 	switch k {
 	case reflect.String:
@@ -111,7 +111,10 @@ func valueAsString(value reflect.Value) (string, error) {
 	case reflect.Bool:
 		return strconv.FormatBool(value.Bool()), nil
 	case reflect.Int64, reflect.Int32:
-		return strconv.FormatInt(value.Int(), 10), nil
+		if ff == nil {
+			return strconv.FormatInt(value.Int(), 10), nil
+		}
+		return ff.FormatField(value.Int())
 	case reflect.Uint64:
 		return strconv.FormatUint(value.Uint(), 10), nil
 	case reflect.Slice, reflect.Array:
@@ -126,7 +129,7 @@ func valueAsString(value reflect.Value) (string, error) {
 		if value.IsNil() {
 			return "", nil
 		}
-		return valueAsString(reflect.Indirect(value))
+		return valueAsString(reflect.Indirect(value), ff)
 	case reflect.Struct:
 		out, err := json.Marshal(value.Interface())
 		if err != nil {
@@ -140,6 +143,6 @@ func valueAsString(value reflect.Value) (string, error) {
 	}
 }
 
-func AnyAsString(a any) (string, error) {
-	return valueAsString(reflect.ValueOf(a))
+func AnyAsString(a any, ff FieldFormatter) (string, error) {
+	return valueAsString(reflect.ValueOf(a), ff)
 }

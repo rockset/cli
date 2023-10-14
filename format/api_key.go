@@ -3,8 +3,15 @@ package format
 import "github.com/rockset/rockset-go-client/openapi"
 
 var ApiKeyDefaultSelector = DefaultSelector{
-	Normal: "Name:.name,Key ID:.key,Created By:.created_by,Expiry Time:.expiry_time,Last Access Time:.last_access_time,Role:.role,State:.state",
-	Wide:   "",
+	Normal: []FieldSelection{
+		NewFieldSelection("Name", "name"),
+		NewFieldSelection("Key ID", "key"),
+		NewFieldSelection("Created By", "created_by"),
+		NewFieldSelection("Expiry Time", "expiry_time"),
+		NewFieldSelection("Last Access Time", "last_access_time"),
+		NewFieldSelection("Role", "role"),
+		NewFieldSelection("State", "state"),
+	},
 }
 
 // just to list available fields

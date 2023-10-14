@@ -121,7 +121,7 @@ func TestFormatter(t *testing.T) {
 			buf := bytes.NewBufferString("")
 			f, err := format.FormatterFor(buf, format.CSVFormat, false)
 			assert.NoError(t, err)
-			err = f.FormatList(true, "", []any{tc.i})
+			err = f.FormatList(true, nil, []any{tc.i})
 			if tc.s == "" {
 				assert.Error(t, err)
 			} else {
@@ -155,7 +155,7 @@ func TestNewFormatter(t *testing.T) {
 			buf := bytes.NewBufferString("")
 			f, err := format.FormatterFor(buf, format.CSVFormat, false)
 			assert.NoError(t, err)
-			err = f.FormatList(true, "", []any{tc.i})
+			err = f.FormatList(true, nil, []any{tc.i})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.s, buf.String())
 		})
