@@ -13,7 +13,7 @@ if [ "$(git branch --show-current)" != "master" ]; then
 fi
 
 # check clean git repo
-if [ ! -z "$(git status --short --ahead-behind)" ]; then
+if [ ! -z "$(git status --short --ahead-behind --untracked=no)" ]; then
   git show
   echo "need a clean repo"
   exit 1
@@ -30,4 +30,5 @@ fi
 git tag "${VERSION}"
 
 # push the tag
+echo "pushing tag to origin..."
 git push origin "${VERSION}"
