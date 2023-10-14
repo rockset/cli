@@ -13,7 +13,7 @@ if [ "$(git branch --show-current)" != "master" ]; then
 fi
 
 # check clean git repo
-if [ ! -z "${git show --short --ahead-behind}" ]; then
+if [ ! -z "$(git status --short --ahead-behind)" ]; then
   git show
   echo "need a clean repo"
   exit 1
