@@ -64,7 +64,7 @@ func newGetAliasCmd() *cobra.Command {
 			return formatOne(cmd, alias)
 		},
 	}
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show views for the selected workspace")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "get an alias for the selected workspace")
 
 	return cmd
 }
