@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
+	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/spf13/cobra"
 
 	"github.com/rockset/rockset-go-client/option"
@@ -51,6 +53,13 @@ func newListIntegrationsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			ms := sort.Multi[openapi.Integration]{
+				LessFuncs: []func(p1 *openapi.Integration, p2 *openapi.Integration) bool{
+					sort.ByName[*openapi.Integration],
+				},
+			}
+			ms.Sort(list)
 
 			return formatList(cmd, format.ToInterfaceArray(list))
 		},

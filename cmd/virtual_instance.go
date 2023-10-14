@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
+	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/spf13/cobra"
 	"regexp"
 
@@ -131,6 +133,13 @@ func newListVirtualInstancesCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			ms := sort.Multi[openapi.VirtualInstance]{
+				LessFuncs: []func(p1 *openapi.VirtualInstance, p2 *openapi.VirtualInstance) bool{
+					sort.ByName[*openapi.VirtualInstance],
+				},
+			}
+			ms.Sort(list)
 
 			return formatList(cmd, format.ToInterfaceArray(list))
 		},

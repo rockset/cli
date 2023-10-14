@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
+	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/spf13/cobra"
 )
 
@@ -19,12 +21,19 @@ func newListRolesCommand() *cobra.Command {
 				return err
 			}
 
-			aliases, err := rs.ListRoles(ctx)
+			roles, err := rs.ListRoles(ctx)
 			if err != nil {
 				return err
 			}
 
-			return formatList(cmd, format.ToInterfaceArray(aliases))
+			ms := sort.Multi[openapi.Role]{
+				LessFuncs: []func(p1 *openapi.Role, p2 *openapi.Role) bool{
+					sort.ByRoleName[*openapi.Role],
+				},
+			}
+			ms.Sort(roles)
+
+			return formatList(cmd, format.ToInterfaceArray(roles))
 		},
 	}
 

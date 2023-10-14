@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
+	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/spf13/cobra"
 
 	"github.com/rockset/rockset-go-client/option"
@@ -32,6 +34,13 @@ func newListViewsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			ms := sort.Multi[openapi.View]{
+				LessFuncs: []func(p1 *openapi.View, p2 *openapi.View) bool{
+					sort.ByName[*openapi.View],
+				},
+			}
+			ms.Sort(views)
 
 			return formatList(cmd, format.ToInterfaceArray(views))
 		},

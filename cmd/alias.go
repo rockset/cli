@@ -1,9 +1,12 @@
 package cmd
 
 import (
-	"github.com/rockset/cli/format"
+	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/rockset/rockset-go-client/option"
 	"github.com/spf13/cobra"
+
+	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
 )
 
 func newListAliasesCmd() *cobra.Command {
@@ -31,6 +34,14 @@ func newListAliasesCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			ms := sort.Multi[openapi.Alias]{
+				LessFuncs: []func(p1 *openapi.Alias, p2 *openapi.Alias) bool{
+					sort.ByWorkspace[*openapi.Alias],
+					sort.ByName[*openapi.Alias],
+				},
+			}
+			ms.Sort(aliases)
 
 			return formatList(cmd, format.ToInterfaceArray(aliases))
 		},

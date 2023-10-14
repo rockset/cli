@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
+	"github.com/rockset/rockset-go-client/openapi"
 
 	"github.com/spf13/cobra"
 
@@ -197,6 +199,13 @@ func newListWorkspacesCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			ms := sort.Multi[openapi.Workspace]{
+				LessFuncs: []func(p1 *openapi.Workspace, p2 *openapi.Workspace) bool{
+					sort.ByName[*openapi.Workspace],
+				},
+			}
+			ms.Sort(list)
 
 			return formatList(cmd, format.ToInterfaceArray(list))
 		},

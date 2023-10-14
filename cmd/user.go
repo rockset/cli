@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
 	"github.com/spf13/cobra"
 
 	"github.com/rockset/rockset-go-client/openapi"
@@ -26,6 +27,13 @@ func newListUsersCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			ms := sort.Multi[openapi.User]{
+				LessFuncs: []func(p1 *openapi.User, p2 *openapi.User) bool{
+					sort.ByEmail[*openapi.User],
+				},
+			}
+			ms.Sort(list)
 
 			return formatList(cmd, format.ToInterfaceArray(list))
 		},

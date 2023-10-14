@@ -127,12 +127,8 @@ func newListCollectionsCmd() *cobra.Command {
 
 			ms := sort.Multi[openapi.Collection]{
 				LessFuncs: []func(p1 *openapi.Collection, p2 *openapi.Collection) bool{
-					func(c1 *openapi.Collection, c2 *openapi.Collection) bool {
-						return c1.GetWorkspace() < c2.GetWorkspace()
-					},
-					func(c1 *openapi.Collection, c2 *openapi.Collection) bool {
-						return c1.GetName() < c2.GetName()
-					},
+					sort.ByWorkspace[*openapi.Collection],
+					sort.ByName[*openapi.Collection],
 				},
 			}
 			ms.Sort(list)

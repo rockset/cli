@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
+	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/spf13/cobra"
 	"os"
 	"strings"
@@ -34,6 +36,13 @@ func newListQueryLambdaCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			ms := sort.Multi[openapi.QueryLambda]{
+				LessFuncs: []func(p1 *openapi.QueryLambda, p2 *openapi.QueryLambda) bool{
+					sort.ByName[*openapi.QueryLambda],
+				},
+			}
+			ms.Sort(lambdas)
 
 			return formatList(cmd, format.ToInterfaceArray(lambdas))
 		},
