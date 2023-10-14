@@ -66,10 +66,11 @@ func ParseSelectionString(s string) (Selector, error) {
 			pathString = segments[1]
 		} else if len(segments) == 3 {
 			pathString = segments[1]
-			if ff, found := FieldFormatters[segments[2]]; found {
-				fs.FieldFormatter = ff
+			ff, found := FieldFormatters[segments[2]]
+			if !found {
+				return nil, fmt.Errorf("field formatter %s not found", segments[2])
 			}
-			// TODO log message if not found?
+			fs.FieldFormatter = ff
 		}
 
 		path := strings.Split(pathString, ".")[1:]

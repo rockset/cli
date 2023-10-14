@@ -18,9 +18,6 @@ var QueryDefaultSelector = DefaultSelector{
 		NewFieldSelection("Expires At", "expires_at"),
 		NewFieldSelection("SQL", "sql"),
 	},
-
-	//Normal: nil, // "Query ID:.query_id,Status:.status,Executed By:.executed_by,Submitted At:.submitted_at",
-	//Expires At:.expires_at,SQL:.sql",
 }
 
 var _ = openapi.QueryInfo{

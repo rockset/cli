@@ -64,8 +64,15 @@ var _ = openapi.QueryLambda{
 }
 
 var QueryLambdaTagDefaultSelector = DefaultSelector{
-	Normal: nil, // "Tag:.tag_name,State:.version.state",
-	Wide:   nil, // "Tag:.tag_name,Description:.version.description,State:.version.state",
+	Normal: []FieldSelection{
+		NewFieldSelection("Tag", "tag_name"),
+		NewFieldSelection("State", "version", "state"),
+	},
+	Wide: []FieldSelection{
+		NewFieldSelection("Tag", "tag_name"),
+		NewFieldSelection("State", "version", "state"),
+		NewFieldSelection("Description", "version", "description"),
+	},
 }
 
 var _ = openapi.QueryLambdaTag{
