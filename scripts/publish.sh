@@ -17,6 +17,7 @@ if [ -z "${SENTRY_DSN}" ]; then
   BUILD="-ldflags '-X main.dsn=${SENTRY_DSN}'"
 fi
 
+echo "compiling binaries..."
 for OS in Darwin linux; do
   for ARCH in arm64 amd64; do
     # GOOS is all lowercase while macOS will report Darwin from uname -s
