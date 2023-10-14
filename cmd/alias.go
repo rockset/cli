@@ -11,7 +11,7 @@ import (
 
 func newListAliasesCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:         "ailases",
+		Use:         "aliases",
 		Aliases:     []string{"a", "alias"},
 		Args:        cobra.NoArgs,
 		Short:       "list aliases",
