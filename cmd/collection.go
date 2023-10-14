@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
 	"github.com/spf13/cobra"
 	"os"
 	"strings"
@@ -123,6 +124,18 @@ func newListCollectionsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			ms := sort.Multi[openapi.Collection]{
+				LessFuncs: []func(p1 *openapi.Collection, p2 *openapi.Collection) bool{
+					func(c1 *openapi.Collection, c2 *openapi.Collection) bool {
+						return c1.GetWorkspace() < c2.GetWorkspace()
+					},
+					func(c1 *openapi.Collection, c2 *openapi.Collection) bool {
+						return c1.GetName() < c2.GetName()
+					},
+				},
+			}
+			ms.Sort(list)
 
 			return formatList(cmd, format.ToInterfaceArray(list))
 		},
