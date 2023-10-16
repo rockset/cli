@@ -72,7 +72,20 @@ rockset get collection --output - movies | rockset create collection --input - -
 The Rockset CLI requires having access to either an API key or a bearer token, together with an apiserver,
 and in the case of a bearer token also the organization.
 
-These are called an authentication context.
+These are called authentication context.
+
+The easiest way to authenticate is using the console login, which is invoked using
+```shell
+$ rockset auth login
+```
+
+The authentication token is valid for 24h, and can be refreshed using
+
+```shell
+$ rockset auth refresh
+```
+
+To view which authentication contacts are available
 
 ```shell
 $ rockset list contexts
