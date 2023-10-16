@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/rockset/rockset-go-client/option"
 	"github.com/spf13/cobra"
 )
 
@@ -10,7 +11,12 @@ func collectionCompletion(cmd *cobra.Command, args []string, toComplete string) 
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	collections, err := rs.ListCollections(cmd.Context())
+	var options []option.ListCollectionOption
+	if ws, _ := cmd.Flags().GetString(WorkspaceFlag); ws != "" {
+		options = append(options, option.WithWorkspace(ws))
+	}
+
+	collections, err := rs.ListCollections(cmd.Context(), options...)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
