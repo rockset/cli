@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"path"
+	"sort"
 	"time"
 
 	"github.com/mitchellh/go-homedir"
@@ -17,6 +18,12 @@ const (
 	FileName        = "config.yaml"
 	HistoryFileName = "cli.hist"
 )
+
+var Clusters = []string{"usw2a1", "use1a1", "euc1a1", "apt2a1"}
+
+func init() {
+	sort.Strings(Clusters)
+}
 
 var File string
 
@@ -57,14 +64,14 @@ func (c *Config) AsOptions(override string) ([]rockset.RockOption, error) {
 	}
 
 	if token, found := c.Tokens[name]; found {
-		if token.Expiration.After(time.Now()) {
+		if time.Now().After(token.Expiration) {
 			return nil, TokenExpiredErr
 		}
 
 		return []rockset.RockOption{
 			rockset.WithAPIServer(token.Server),
-			//rockset.WithBearerToken(token.Token, token.Org),
-		}, errors.New("not implemented")
+			rockset.WithBearerToken(token.Token, token.Org),
+		}, nil
 	}
 
 	return nil, fmt.Errorf("%w", NotFoundErr)

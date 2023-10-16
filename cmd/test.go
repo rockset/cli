@@ -4,15 +4,18 @@ import (
 	"errors"
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/rockset/cli/config"
 	"github.com/rockset/cli/tui"
 	"github.com/spf13/cobra"
+	"strings"
 	"time"
 )
 
 func newTestCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "test",
-		Short: "test",
+		Use:    "test",
+		Short:  "test",
+		Hidden: true,
 	}
 
 	cmd.AddCommand(newTestProgressCmd())
@@ -30,11 +33,26 @@ func newTestInputCmd() *cobra.Command {
 		Args:        cobra.NoArgs,
 		Annotations: group("test"),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			model := tui.NewInput([]string{"name", "server", "organization"})
+			model := tui.NewInput("Enter context options", []tui.InputConfig{
+				{Placeholder: "name", Prompt: "Name: "},
+				{Placeholder: "server", Prompt: "Cluster: ", Validate: func(s string) error {
+					for _, c := range config.Clusters {
+						if strings.HasPrefix(c, s) {
+							return nil
+						}
+					}
+					return fmt.Errorf("cluster must be one of: %s", strings.Join(config.Clusters, ", "))
+				}},
+				{Placeholder: "organization", Prompt: "Organization: "},
+			})
 			p := tea.NewProgram(model)
 
 			if _, err := p.Run(); err != nil {
 				return err
+			}
+
+			if model.Err != nil {
+				return model.Err
 			}
 
 			for _, f := range model.Fields {

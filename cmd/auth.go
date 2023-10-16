@@ -2,27 +2,32 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/rockset/cli/config"
 	"log/slog"
+	"strings"
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/pkg/browser"
 	devauth "github.com/rockset/device-authorization"
 	"github.com/spf13/cobra"
+
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/tui"
 )
 
 const Auth0ClientID = "0dJNiGWClbLjg7AdtXtAyPCeE0jKOFet"
 
 func newAuthCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auth NAME CLUSTER ORGANIZATION",
-		Args:  cobra.ExactArgs(3),
+		Use:   "auth [NAME CLUSTER ORGANIZATION]",
+		Args:  cobra.RangeArgs(0, 3),
 		Short: "authenticate",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			name := args[0]
-			cluster := args[1]
-			org := args[2]
+
+			if len(args) > 0 && len(args) < 3 {
+				return fmt.Errorf("you must provide either zero or three arguments")
+			}
 
 			p := devauth.NewProvider("auth0")
 			authCfg := p.Config("rockset", Auth0ClientID)
@@ -56,21 +61,48 @@ Then enter the code:
 				slog.Error("failed to wait for authorization", "err", err)
 			}
 
-			fmt.Printf("Successfully logged in!\n")
+			fmt.Printf("Successfully logged in!\n\n")
 
-			fmt.Printf("token:\n%s\n", token.IDToken)
+			var name, cluster, org string
+			if len(args) > 0 {
+				name = args[0]
+			}
+			if len(args) > 1 {
+				cluster = args[1]
+			}
+			if len(args) > 2 {
+				org = args[2]
+			}
 
-			// TODO save token & expiration in config
+			model := tui.NewInput("Enter authentication context information", []tui.InputConfig{
+				{Placeholder: name, Prompt: "Name: "},
+				{Placeholder: cluster, Prompt: "Cluster: ", Validate: func(s string) error {
+					for _, c := range config.Clusters {
+						if strings.HasPrefix(c, s) {
+							return nil
+						}
+					}
+					return fmt.Errorf("cluster must be one of: %s", strings.Join(config.Clusters, ", "))
+				}},
+				{Placeholder: org, Prompt: "Organization: "},
+			})
+			input := tea.NewProgram(model)
+
+			if _, err = input.Run(); err != nil {
+				return err
+			}
+
 			cfg, err := config.Load()
 			if err != nil {
 				return err
 			}
 
-			if err = cfg.AddToken(name, config.Token{
+			d := time.Duration(token.ExpiresIn) * time.Second
+			if err = cfg.AddToken(model.Fields[0], config.Token{
 				Token:      token.IDToken,
-				Org:        org,
-				Server:     cluster,
-				Expiration: time.Now().Add(time.Duration(token.ExpiresIn) * time.Second),
+				Org:        model.Fields[2],
+				Server:     fmt.Sprintf("https://api.%s.rockset.com", model.Fields[1]),
+				Expiration: time.Now().Add(d),
 			}); err != nil {
 				return err
 			}
@@ -78,6 +110,10 @@ Then enter the code:
 			if err = config.Store(cfg); err != nil {
 				return err
 			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "context %s saved (token expires in %s)\n",
+				model.Fields[0], d.String())
+			// should we select the new context, or tell the user how to do it?
 
 			return nil
 		},

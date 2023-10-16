@@ -9,18 +9,27 @@ import (
 )
 
 type Input struct {
+	title      string
 	focusIndex int
 	inputs     []textinput.Model
 	Fields     []string
+	Err        error
 	cursorMode cursor.Mode
 }
 
-func NewInput(titles []string) *Input {
+type InputConfig struct {
+	Prompt      string
+	Placeholder string
+	Validate    textinput.ValidateFunc
+}
+
+func NewInput(title string, cfg []InputConfig) *Input {
 	m := Input{
-		inputs: make([]textinput.Model, len(titles)),
+		title:  title,
+		inputs: make([]textinput.Model, len(cfg)),
 	}
 
-	for i, title := range titles {
+	for i, c := range cfg {
 		t := textinput.New()
 		if i == 0 {
 			t.Focus()
@@ -30,7 +39,9 @@ func NewInput(titles []string) *Input {
 
 		t.Cursor.Style = cursorStyle
 		t.CharLimit = 64
-		t.Placeholder = title
+		t.Placeholder = c.Placeholder
+		t.Prompt = c.Prompt
+		t.Validate = c.Validate
 
 		m.inputs[i] = t
 	}
@@ -56,6 +67,10 @@ func (i *Input) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Did the user press enter while the submit button was focused? If so, exit.
 			if s == "enter" && i.focusIndex == len(i.inputs) {
 				for _, input := range i.inputs {
+					if input.Err != nil {
+						// TODO this only reports the last error, should it use a slice of error instead?
+						i.Err = input.Err
+					}
 					i.Fields = append(i.Fields, input.Value())
 				}
 
@@ -115,18 +130,31 @@ func (i *Input) updateInputs(msg tea.Msg) tea.Cmd {
 func (i *Input) View() string {
 	var b strings.Builder
 
+	b.WriteString(BracketStyle.Render(i.title))
+	b.WriteRune('\n')
+
+	var err error
 	for j := range i.inputs {
+		if i.inputs[j].Err != nil {
+			err = i.inputs[j].Err
+		}
 		b.WriteString(i.inputs[j].View())
 		if j < len(i.inputs)-1 {
 			b.WriteRune('\n')
 		}
 	}
 
+	if err == nil {
+		_, _ = fmt.Fprintf(&b, "\n\n")
+	} else {
+		_, _ = fmt.Fprintf(&b, "\n%s\n", errorStyle.Render(err.Error()))
+	}
+
 	button := blurredButton
 	if i.focusIndex == len(i.inputs) {
 		button = focusedButton
 	}
-	_, _ = fmt.Fprintf(&b, "\n\n%s\n\n", button)
+	_, _ = fmt.Fprintf(&b, "%s\n\n", button)
 
 	b.WriteString(helpStyle.Render("ESC or ctrl+C to quit"))
 	b.WriteRune('\n')
