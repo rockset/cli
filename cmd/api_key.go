@@ -10,7 +10,7 @@ import (
 )
 
 func newListAPIKeysCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "apikey [USER]",
 		Aliases:     []string{"ak", "api"},
 		Args:        cobra.RangeArgs(0, 1),
@@ -44,11 +44,11 @@ func newListAPIKeysCmd() *cobra.Command {
 		},
 	}
 
-	return cmd
+	return &cmd
 }
 
 func newGetAPIKeyCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "apikey NAME",
 		Aliases:     []string{"ak"},
 		Args:        cobra.ExactArgs(1),
@@ -70,5 +70,5 @@ func newGetAPIKeyCmd() *cobra.Command {
 		},
 	}
 
-	return cmd
+	return &cmd
 }

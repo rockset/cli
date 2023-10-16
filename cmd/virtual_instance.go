@@ -15,7 +15,7 @@ import (
 )
 
 func newCreateVirtualInstanceCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Short:       "create a virtual instance",
@@ -60,11 +60,11 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 	cmd.Flags().String(SizeFlag, "", "virtual instance size")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), SizeFlag)
 
-	return cmd
+	return &cmd
 }
 
 func newUpdateVirtualInstanceCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Short:       "update a virtual instance",
@@ -110,11 +110,11 @@ func newUpdateVirtualInstanceCmd() *cobra.Command {
 	cmd.Flags().Bool(WaitFlag, false, "wait until virtual instance is active")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), SizeFlag)
 
-	return cmd
+	return &cmd
 }
 
 func newListVirtualInstancesCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "virtualinstances",
 		Aliases:     []string{"vi", "vis"},
 		Args:        cobra.NoArgs,
@@ -147,11 +147,11 @@ func newListVirtualInstancesCmd() *cobra.Command {
 
 	cmd.Flags().Bool(WideFlag, false, "display more information")
 
-	return cmd
+	return &cmd
 }
 
 func newGetVirtualInstancesCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Args:        cobra.ExactArgs(1),
@@ -182,11 +182,11 @@ func newGetVirtualInstancesCmd() *cobra.Command {
 
 	cmd.Flags().Bool(WideFlag, false, "display more information")
 
-	return cmd
+	return &cmd
 }
 
 func newDeleteVirtualInstanceCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Short:       "delete virtual instance",
@@ -217,11 +217,11 @@ func newDeleteVirtualInstanceCmd() *cobra.Command {
 		},
 	}
 
-	return cmd
+	return &cmd
 }
 
 func newSuspendVirtualInstanceCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Short:       "suspend virtual instance",
@@ -252,11 +252,11 @@ func newSuspendVirtualInstanceCmd() *cobra.Command {
 		},
 	}
 
-	return cmd
+	return &cmd
 }
 
 func newResumeVirtualInstanceCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "virtualinstance ID|NAME",
 		Aliases:     []string{"vi"},
 		Short:       "resume virtual instance",
@@ -293,7 +293,7 @@ func newResumeVirtualInstanceCmd() *cobra.Command {
 
 	cmd.Flags().Bool(WaitFlag, false, "wait until virtual instance is ready")
 
-	return cmd
+	return &cmd
 }
 
 // TODO should this move to the Rockset go client instead?

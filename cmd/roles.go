@@ -8,7 +8,7 @@ import (
 )
 
 func newListRolesCommand() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "role",
 		Aliases:     []string{"r", "roles"},
 		Args:        cobra.NoArgs,
@@ -37,11 +37,11 @@ func newListRolesCommand() *cobra.Command {
 		},
 	}
 
-	return cmd
+	return &cmd
 }
 
 func newGetRoleCommand() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "role NAME",
 		Aliases:     []string{"r"},
 		Args:        cobra.ExactArgs(1),
@@ -63,5 +63,5 @@ func newGetRoleCommand() *cobra.Command {
 		},
 	}
 
-	return cmd
+	return &cmd
 }

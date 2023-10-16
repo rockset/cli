@@ -10,7 +10,7 @@ import (
 )
 
 func newListAliasesCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "aliases",
 		Aliases:     []string{"a", "alias"},
 		Args:        cobra.NoArgs,
@@ -48,11 +48,11 @@ func newListAliasesCmd() *cobra.Command {
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show aliases for the selected workspace")
 
-	return cmd
+	return &cmd
 }
 
 func newGetAliasCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "alias NAME",
 		Aliases:     []string{"a"},
 		Args:        cobra.ExactArgs(1),
@@ -77,5 +77,5 @@ func newGetAliasCmd() *cobra.Command {
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "get an alias for the selected workspace")
 
-	return cmd
+	return &cmd
 }

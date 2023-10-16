@@ -20,7 +20,7 @@ import (
 const Auth0ClientID = "0dJNiGWClbLjg7AdtXtAyPCeE0jKOFet"
 
 func newAuthLoginCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:   "login [NAME CLUSTER ORGANIZATION]",
 		Args:  cobra.RangeArgs(0, 3),
 		Short: "authenticate using the Rockset console",
@@ -122,11 +122,11 @@ Then enter the code:
 		},
 	}
 
-	return cmd
+	return &cmd
 }
 
 func newAuthKeyCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:   "key NAME ROLE",
 		Args:  cobra.ExactArgs(2),
 		Short: "create an apikey",
@@ -166,5 +166,5 @@ func newAuthKeyCmd() *cobra.Command {
 		},
 	}
 
-	return cmd
+	return &cmd
 }

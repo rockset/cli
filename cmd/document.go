@@ -55,7 +55,7 @@ func newDeleteDocumentsCmd() *cobra.Command {
 }
 
 func newIngestCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:   "ingest",
 		Short: "ingest documents to a collection",
 		Long:  "ingest documents to a collection from either a list of files or from stdin",
@@ -107,5 +107,5 @@ func newIngestCmd() *cobra.Command {
 	cmd.Flags().Uint64("batch-size", 100,
 		"number of documents to batch together each write")
 
-	return cmd
+	return &cmd
 }

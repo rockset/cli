@@ -12,7 +12,7 @@ import (
 )
 
 func newTestCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:    "test",
 		Short:  "test",
 		Hidden: true,
@@ -22,11 +22,11 @@ func newTestCmd() *cobra.Command {
 	cmd.AddCommand(newTestInputCmd())
 	cmd.AddCommand(newTestSelectorCmd())
 
-	return cmd
+	return &cmd
 }
 
 func newTestInputCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "input",
 		Short:       "test input",
 		Long:        "used for testing input fields",
@@ -63,11 +63,11 @@ func newTestInputCmd() *cobra.Command {
 		},
 	}
 
-	return cmd
+	return &cmd
 }
 
 func newTestProgressCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "progress",
 		Short:       "test progress",
 		Long:        "used for testing progress bar",
@@ -115,11 +115,11 @@ func newTestProgressCmd() *cobra.Command {
 	cmd.Flags().Duration("done", 5*time.Second, "done after")
 	cmd.Flags().Bool("fail", false, "should it fail")
 
-	return cmd
+	return &cmd
 }
 
 func newTestSelectorCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "selector",
 		Short:       "test selector",
 		Long:        "used for testing the selector",
@@ -144,5 +144,5 @@ func newTestSelectorCmd() *cobra.Command {
 		},
 	}
 
-	return cmd
+	return &cmd
 }

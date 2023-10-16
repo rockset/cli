@@ -12,7 +12,7 @@ import (
 )
 
 func newCreateWorkspaceCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "workspace",
 		Aliases:     []string{"ws"},
 		Short:       "create workspace",
@@ -45,7 +45,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP(DescriptionFlag, "d", "", "workspace description")
-	return cmd
+	return &cmd
 }
 
 func newDeleteWorkspaceCmd() *cobra.Command {

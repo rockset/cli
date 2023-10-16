@@ -10,7 +10,7 @@ import (
 )
 
 func newListViewsCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "views",
 		Aliases:     []string{"view", "v"},
 		Args:        cobra.NoArgs,
@@ -47,11 +47,11 @@ func newListViewsCmd() *cobra.Command {
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show views for the selected workspace")
 
-	return cmd
+	return &cmd
 }
 
 func newGetViewCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "view NAME",
 		Aliases:     []string{"v"},
 		Args:        cobra.ExactArgs(1),
@@ -76,5 +76,5 @@ func newGetViewCmd() *cobra.Command {
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show views for the selected workspace")
 
-	return cmd
+	return &cmd
 }

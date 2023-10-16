@@ -13,7 +13,7 @@ import (
 )
 
 func newListQueryLambdaCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "lambda",
 		Aliases:     []string{"ql"},
 		Args:        cobra.NoArgs,
@@ -49,11 +49,11 @@ func newListQueryLambdaCmd() *cobra.Command {
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show query lambdas for the selected workspace")
 
-	return cmd
+	return &cmd
 }
 
 func newGetQueryLambdaCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "lambda",
 		Aliases:     []string{"ql"},
 		Args:        cobra.ExactArgs(1),
@@ -80,11 +80,11 @@ func newGetQueryLambdaCmd() *cobra.Command {
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show query lambdas for the selected workspace")
 	cmd.Flags().String("tag", "latest", "query lambda tag")
 
-	return cmd
+	return &cmd
 }
 
 func newExecuteQueryLambdaCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "lambda",
 		Aliases:     []string{"ql"},
 		Short:       "execute lambda",
@@ -145,11 +145,11 @@ func newExecuteQueryLambdaCmd() *cobra.Command {
 	cmd.Flags().StringArrayP("param", "p", nil, "query parameters")
 	_ = cobra.MarkFlagFilename(cmd.Flags(), "params", ".json")
 
-	return cmd
+	return &cmd
 }
 
 func newCreateQueryLambdaCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	cmd := cobra.Command{
 		Use:         "lambda",
 		Aliases:     []string{"ql"},
 		Args:        cobra.ExactArgs(1),
@@ -181,5 +181,5 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 	_ = cobra.MarkFlagRequired(cmd.Flags(), "sql")
 	_ = cobra.MarkFlagFilename(cmd.Flags(), "sql", ".sql")
 
-	return cmd
+	return &cmd
 }

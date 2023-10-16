@@ -5,65 +5,65 @@ import (
 )
 
 func addVerbs(root *cobra.Command) {
-	authCmd := &cobra.Command{
+	authCmd := cobra.Command{
 		Use:   "auth",
 		Short: "authenticate",
 		Long:  "authenticate using an bearer token or an apikey",
 	}
 
-	createCmd := &cobra.Command{
+	createCmd := cobra.Command{
 		Use:     "create",
 		Aliases: []string{"c"},
 		Short:   "create resources",
 		Long:    "create Rockset resources",
 	}
 
-	deleteCmd := &cobra.Command{
+	deleteCmd := cobra.Command{
 		Use:   "delete",
 		Short: "delete resources",
 		Long:  "delete Rockset resource",
 	}
 
-	executeCmd := &cobra.Command{
+	executeCmd := cobra.Command{
 		Use:     "execute",
 		Aliases: []string{"e"},
 		Short:   "execute query",
 		Long:    "execute Rockset query",
 	}
 
-	getCmd := &cobra.Command{
+	getCmd := cobra.Command{
 		Use:     "get",
 		Aliases: []string{"g"},
 		Short:   "get resources",
 		Long:    "get Rockset resources",
 	}
 
-	listCmd := &cobra.Command{
+	listCmd := cobra.Command{
 		Use:     "list",
 		Aliases: []string{"l"},
 		Short:   "list resources",
 		Long:    "list Rockset resources",
 	}
 
-	resumeCmd := &cobra.Command{
+	resumeCmd := cobra.Command{
 		Use:   "resume",
 		Short: "resume resources",
 		Long:  "resume Rockset resources",
 	}
 
-	suspendCmd := &cobra.Command{
+	suspendCmd := cobra.Command{
 		Use:   "suspend",
 		Short: "suspend resources",
 		Long:  "suspend Rockset resources",
 	}
 
-	updateCmd := &cobra.Command{
+	updateCmd := cobra.Command{
 		Use:   "update",
 		Short: "update resources",
 		Long:  "update Rockset resources",
 	}
 
-	useCmd := &cobra.Command{
+	useCmd := cobra.Command{
 		Use:   "use",
 		Short: "use configuration",
 		Long:  "use a Rockset apikey and server configuration",
@@ -76,17 +76,17 @@ func addVerbs(root *cobra.Command) {
 	listCmd.AddCommand(newListWorkspacesCmd())
 
 	// sample
-	sampleCmd := &cobra.Command{
+	sampleCmd := cobra.Command{
 		Use:   "sample",
 		Short: "create sample collections",
 		Long:  "create sample collections",
 	}
 
-	createCmd.AddCommand(sampleCmd)
+	createCmd.AddCommand(&sampleCmd)
 	sampleCmd.AddCommand(newCreateSampleCollectionCmd())
 
 	// s3
-	s3Cmd := &cobra.Command{
+	s3Cmd := cobra.Command{
 		Use:   "s3",
 		Short: "create s3 resources",
 		Long:  "s3 integration and collection commands",
@@ -96,7 +96,7 @@ func addVerbs(root *cobra.Command) {
 	authCmd.AddCommand(newAuthLoginCmd())
 	authCmd.AddCommand(newAuthKeyCmd())
 
-	createCmd.AddCommand(s3Cmd)
+	createCmd.AddCommand(&s3Cmd)
 	s3Cmd.AddCommand(newCreateS3CollectionCmd())
 	s3Cmd.AddCommand(newCreateS3IntegrationsCmd())
 
@@ -156,16 +156,16 @@ func addVerbs(root *cobra.Command) {
 	listCmd.AddCommand(newListConfigCmd())
 	useCmd.AddCommand(newUseConfigCmd())
 
-	root.AddCommand(authCmd)
-	root.AddCommand(createCmd)
-	root.AddCommand(deleteCmd)
-	root.AddCommand(executeCmd)
-	root.AddCommand(getCmd)
-	root.AddCommand(listCmd)
-	root.AddCommand(resumeCmd)
-	root.AddCommand(suspendCmd)
-	root.AddCommand(updateCmd)
-	root.AddCommand(useCmd)
+	root.AddCommand(&authCmd)
+	root.AddCommand(&createCmd)
+	root.AddCommand(&deleteCmd)
+	root.AddCommand(&executeCmd)
+	root.AddCommand(&getCmd)
+	root.AddCommand(&listCmd)
+	root.AddCommand(&resumeCmd)
+	root.AddCommand(&suspendCmd)
+	root.AddCommand(&updateCmd)
+	root.AddCommand(&useCmd)
 	root.AddCommand(newVersionCmd())
 
 	root.AddCommand(newQueryCmd())
