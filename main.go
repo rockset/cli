@@ -73,9 +73,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	// show a warning if there is a new version available
+	// show a warning if there is a new version available, but on stderr as it will show up in the
+	// rockset completion output otherwise
 	if v := <-version; v != "" {
-		fmt.Printf("\n%s\n", v)
+		_, _ = fmt.Fprintf(os.Stderr, "\n%s\n", v)
 	}
 }
 
