@@ -97,13 +97,16 @@ available configs:
 ```yaml
 ---
 current: dev
-configs:
+keys:
   dev:
     apikey: ...
-    apiserver: api.usw2a1.rockset.com
+    apiserver: api.usw2a1.dev.rockset.com
+tokens:
   prod:
-    apikey: ...
-    apiserver: api.use1a1.rockset.com
+    token: ...
+    org: rockset-test
+    apiserver: api.usw2a1.dev.rockset.com
+    expiration: 2023-10-17T08:13:48.785337-07:00
 ```
 
 ## Building

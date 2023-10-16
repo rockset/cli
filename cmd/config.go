@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"sort"
@@ -20,18 +21,7 @@ func newListConfigCmd() *cobra.Command {
 		Annotations: group("config"),
 		Args:        cobra.NoArgs,
 		Short:       "list configurations",
-		Long: fmt.Sprintf(`list configurations and show the currently selected context
-
-YAML file located in %s of the format 
----
-current: dev
-configs:
-  dev:
-    apikey: ...
-    apiserver: api.usw2a1.rockset.com
-  prod:
-    apikey: ...
-    apiserver: api.use1a1.rockset.com`, config.FileName),
+		Long:        fmt.Sprintf(`list configurations and show the currently selected context. YAML file located in %s of the format`, config.FileName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.Load()
 			if err != nil {
@@ -41,25 +31,41 @@ configs:
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "available contexts:\n")
-			var names []string
-			for name := range cfg.Keys {
-				names = append(names, name)
+			// TODO redo as tui
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Available Authentication Contexts:\n")
+			if len(cfg.Keys) > 0 {
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "apikeys:\n")
+				listContext(cmd.OutOrStdout(), cfg.Current, cfg.Keys)
 			}
-			sort.Strings(names)
-			for _, name := range names {
-				var arrow = "  "
-				if cfg.Current == name {
-					arrow = "->"
-				}
-				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s %s (%s)\n", arrow, name, cfg.Keys[name].Server)
+			if len(cfg.Tokens) > 0 {
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "bearer tokens:\n")
+				listContext(cmd.OutOrStdout(), cfg.Current, cfg.Tokens)
 			}
-
 			return nil
 		},
 	}
 
 	return &cmd
+}
+
+type apiserver interface {
+	APIServer() string
+}
+
+func listContext[T apiserver](out io.Writer, current string, m map[string]T) {
+	var names []string
+	for name := range m {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	for _, name := range names {
+		var arrow = "  "
+		if current == name {
+			arrow = "->"
+		}
+		_, _ = fmt.Fprintf(out, "%s %s (%s)\n", arrow, name, m[name].APIServer())
+	}
 }
 
 func newCreateConfigCmd() *cobra.Command {
@@ -144,6 +150,7 @@ func newUseConfigCmd() *cobra.Command {
 				return err
 			}
 
+			// TODO if len(args) == it should open a tui and let the user select
 			if err = cfg.Use(args[0]); err != nil {
 				return err
 			}
@@ -185,22 +192,5 @@ func rockClient(cmd *cobra.Command) (*rockset.RockClient, error) {
 	}
 	options = append(options, opts...)
 
-	/*
-		// load from environment
-		if key, found := os.LookupEnv(rockset.APIKeyEnvironmentVariableName); found {
-			slog.Debug("set apikey")
-			apikey = key
-		}
-		if server, found := os.LookupEnv(rockset.APIServerEnvironmentVariableName); found {
-			slog.Debug("set apiserver")
-			apiserver = server
-		}
-
-		// let the --cluster flag override the apiserver
-		if cluster, _ := cmd.Flags().GetString(ClusterFLag); cluster != "" {
-			slog.Debug("override apiserver")
-			apiserver = fmt.Sprintf("https://api.%s.rockset.com", cluster)
-		}
-	*/
 	return rockset.NewClient(options...)
 }

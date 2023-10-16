@@ -29,11 +29,13 @@ func NewRootCmd(version string) *cobra.Command {
 		Short: "A cli for Rockset",
 		Long: fmt.Sprintf(`The Rockset cli is used as a companion to the console. 
 
-To use the CLI you need an API Key, which you initially have to create using the console:
-https://console.rockset.com/apikeys
+To use the cli you need to authenticate using 'rockset auth' will get you a bearer token,
+but you can also use an API Key, which you have create using the cli or the console:
+https://console.rockset.com/
 
-It should either be stored as an environment variable ROCKSET_APIKEY or in a
-platform dependent configuration file, %s on the current computer.
+API keys and tokens should be stored platform dependent configuration file, 
+%s on the current computer,
+or as the environment variable ROCKSET_APIKEY.
 
 For more configuration options, see the 'rockset create config' command.`, config.File),
 		Example: `	## Create a sample collection and run a query against it

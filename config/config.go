@@ -121,12 +121,16 @@ type APIKey struct {
 	Server string `yaml:"apiserver"`
 }
 
+func (a APIKey) APIServer() string { return a.Server }
+
 type Token struct {
 	Token      string    `yaml:"token"`
 	Org        string    `yaml:"org"`
 	Server     string    `yaml:"apiserver"`
 	Expiration time.Time `yaml:"expiration"`
 }
+
+func (t Token) APIServer() string { return t.Server }
 
 func configPath() (string, error) {
 	return rocksetConfigDir(FileName)
