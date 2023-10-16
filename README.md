@@ -69,30 +69,33 @@ rockset get collection --output - movies | rockset create collection --input - -
 
 ## Configuration
 
-The Rockset CLI requires having access to an API key and an API server, which can be configured using either
-environment variables or a configuration file.
+The Rockset CLI requires having access to either an API key or a bearer token, together with an apiserver,
+and in the case of a bearer token also the organization.
+
+These are called an authentication context.
 
 ```shell
-$ rockset list config
-available configs:
--> dev (api.usw2a1.rockset.com)
-   prod (api.usw2a1.rockset.com)
-$ rockset update config prod
+$ rockset list contexts
+Available Authentication Contexts:
+apikeys:
+   dev (https://api.usw2a1.dev.rockset.com)
+   test (https://api.use1a1.rockset.com)
+bearer tokens:
+-> usw2a1 (https://api.usw2a1.rockset.com)
+$ rockset use context prod
 using prod
-$ rockset list config
-available configs:
-   dev (api.usw2a1.rockset.com)
--> prod (api.usw2a1.rockset.com)
+$ rockset list contexts
+Available Authentication Contexts:
+apikeys:
+   dev (https://api.usw2a1.dev.rockset.com)
+-> test (https://api.use1a1.rockset.com)
+bearer tokens:
+   usw2a1 (https://api.usw2a1.rockset.com)
 ```
-
-### Environment variables
-
-* `ROCKSET_APIKEY`
-* `ROCKSET_APISERVER`
 
 ### Configuration File
 
-`~/.config/rockset/cli.yaml`
+The configuration file is stored in `~/.config/rockset/config.yaml`
 
 ```yaml
 ---

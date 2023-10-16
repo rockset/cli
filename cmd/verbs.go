@@ -152,9 +152,9 @@ func addVerbs(root *cobra.Command) {
 	deleteCmd.AddCommand(newDeleteDocumentsCmd())
 
 	// config
-	createCmd.AddCommand(newCreateConfigCmd())
-	listCmd.AddCommand(newListConfigCmd())
-	useCmd.AddCommand(newUseConfigCmd())
+	createCmd.AddCommand(newCreateContextCmd())
+	listCmd.AddCommand(newListContextsCmd())
+	useCmd.AddCommand(newUseContextCmd())
 
 	root.AddCommand(&authCmd)
 	root.AddCommand(&createCmd)

@@ -13,15 +13,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newListConfigCmd() *cobra.Command {
+// config is the file containing the auth contexts
+
+func newListContextsCmd() *cobra.Command {
 
 	cmd := cobra.Command{
-		Use:         "configs",
-		Aliases:     []string{"config", "cfg"},
-		Annotations: group("config"),
+		Use:         "contexts",
+		Aliases:     []string{"context", "ctx"},
+		Annotations: group("context"),
 		Args:        cobra.NoArgs,
-		Short:       "list configurations",
-		Long:        fmt.Sprintf(`list configurations and show the currently selected context. YAML file located in %s of the format`, config.FileName),
+		Short:       "list authentication contexts",
+		Long:        fmt.Sprintf(`list authentication contexts and show the currently selected one. YAML file located in %s of the format`, config.FileName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.Load()
 			if err != nil {
@@ -68,13 +70,13 @@ func listContext[T apiserver](out io.Writer, current string, m map[string]T) {
 	}
 }
 
-func newCreateConfigCmd() *cobra.Command {
+func newCreateContextCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "config NAME",
-		Aliases:     []string{"cfg"},
-		Short:       "create configuration",
-		Long:        "create new configuration command",
-		Annotations: group("config"),
+		Use:         "context NAME",
+		Aliases:     []string{"ctx"},
+		Short:       "create a new authentication context",
+		Long:        "create a new authentication context and save it in the config file",
+		Annotations: group("context"),
 		Args:        cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			key, _ := cmd.Flags().GetString("apikey")
@@ -94,7 +96,7 @@ func newCreateConfigCmd() *cobra.Command {
 			// use --force to add anyway
 			if _, found := cfg.Keys[args[0]]; found {
 				if force {
-					logger.Info("config already exist, adding anyway")
+					logger.Info("context already exist, adding anyway")
 				} else {
 					return fmt.Errorf("configuration %s already exists", args[0])
 				}
@@ -131,18 +133,18 @@ func newCreateConfigCmd() *cobra.Command {
 
 	cmd.Flags().String("server", "", "api server name")
 	cmd.Flags().String("apikey", "", "apikey")
-	cmd.Flags().Bool(ForceFlag, false, "force add the config even if the name exists or the credentials can't be used connect to the API server")
+	cmd.Flags().Bool(ForceFlag, false, "force add the context even if the name exists or the credentials can't be used connect to the API server")
 
 	return &cmd
 }
 
-func newUseConfigCmd() *cobra.Command {
+func newUseContextCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "config NAME",
-		Aliases:     []string{"cfg"},
-		Short:       "use configuration",
-		Long:        "configuration command",
-		Annotations: group("config"),
+		Use:         "context NAME",
+		Aliases:     []string{"ctx"},
+		Short:       "use auth context",
+		Long:        "use authentication context",
+		Annotations: group("context"),
 		Args:        cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.Load()
