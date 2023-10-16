@@ -5,6 +5,12 @@ import (
 )
 
 func addVerbs(root *cobra.Command) {
+	authCmd := &cobra.Command{
+		Use:   "auth",
+		Short: "authenticate",
+		Long:  "authenticate using an bearer token or an apikey",
+	}
+
 	createCmd := &cobra.Command{
 		Use:     "create",
 		Aliases: []string{"c"},
@@ -86,6 +92,10 @@ func addVerbs(root *cobra.Command) {
 		Long:  "s3 integration and collection commands",
 	}
 
+	// authentication
+	authCmd.AddCommand(newAuthLoginCmd())
+	authCmd.AddCommand(newAuthKeyCmd())
+
 	createCmd.AddCommand(s3Cmd)
 	s3Cmd.AddCommand(newCreateS3CollectionCmd())
 	s3Cmd.AddCommand(newCreateS3IntegrationsCmd())
@@ -146,7 +156,7 @@ func addVerbs(root *cobra.Command) {
 	listCmd.AddCommand(newListConfigCmd())
 	useCmd.AddCommand(newUseConfigCmd())
 
-	root.AddCommand(newAuthCmd())
+	root.AddCommand(authCmd)
 	root.AddCommand(createCmd)
 	root.AddCommand(deleteCmd)
 	root.AddCommand(executeCmd)

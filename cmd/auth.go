@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/dustin/go-humanize"
+	"github.com/rockset/rockset-go-client/option"
 	"log/slog"
 	"strings"
 	"time"
@@ -17,11 +19,12 @@ import (
 
 const Auth0ClientID = "0dJNiGWClbLjg7AdtXtAyPCeE0jKOFet"
 
-func newAuthCmd() *cobra.Command {
+func newAuthLoginCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auth [NAME CLUSTER ORGANIZATION]",
+		Use:   "login [NAME CLUSTER ORGANIZATION]",
 		Args:  cobra.RangeArgs(0, 3),
-		Short: "authenticate",
+		Short: "authenticate using the Rockset console",
+		Long:  "authenticate using the Rockset console and save a bearer token on local disk",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -97,12 +100,12 @@ Then enter the code:
 				return err
 			}
 
-			d := time.Duration(token.ExpiresIn) * time.Second
+			exp := time.Now().Add(time.Duration(token.ExpiresIn) * time.Second)
 			if err = cfg.AddToken(model.Fields[0], config.Token{
 				Token:      token.IDToken,
 				Org:        model.Fields[2],
 				Server:     fmt.Sprintf("https://api.%s.rockset.com", model.Fields[1]),
-				Expiration: time.Now().Add(d),
+				Expiration: exp,
 			}); err != nil {
 				return err
 			}
@@ -111,8 +114,52 @@ Then enter the code:
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "context %s saved (token expires in %s)\n",
-				model.Fields[0], d.String())
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "authentication context %s saved (expires in %s)\n",
+				model.Fields[0], humanize.Time(exp))
+			// should we select the new context, or tell the user how to do it?
+
+			return nil
+		},
+	}
+
+	return cmd
+}
+
+func newAuthKeyCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "key NAME ROLE",
+		Args:  cobra.ExactArgs(2),
+		Short: "create an apikey",
+		Long:  "create an apikey using the current auth context and save it in the configuration file",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+			name := args[0]
+			role := args[1]
+
+			rs, err := rockClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			key, err := rs.CreateAPIKey(ctx, "name", option.WithRole(role))
+			if err != nil {
+				return err
+			}
+
+			cfg, err := config.Load()
+			if err != nil {
+				return err
+			}
+
+			cfg.Keys[name] = config.APIKey{
+				Key:    key.Key,
+				Server: rs.APIServer,
+			}
+			if err = config.Store(cfg); err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "apikey %s created and saved as authentication context %s\n", name, name)
 			// should we select the new context, or tell the user how to do it?
 
 			return nil
