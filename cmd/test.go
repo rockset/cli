@@ -56,7 +56,7 @@ func newTestInputCmd() *cobra.Command {
 			}
 
 			for _, f := range model.Fields {
-				fmt.Printf("%s\n", f)
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s\n", f)
 			}
 
 			return nil
@@ -102,9 +102,9 @@ func newTestProgressCmd() *cobra.Command {
 			}
 
 			if err := model.Error(); err == nil {
-				fmt.Printf("done\n")
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "done\n")
 			} else {
-				fmt.Printf("err: %v\n", err)
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "err: %v\n", err)
 			}
 
 			return nil
@@ -135,9 +135,9 @@ func newTestSelectorCmd() *cobra.Command {
 			}
 
 			if model.Selected > 0 {
-				fmt.Printf("selection: %s\n", values[model.Selected])
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "selection: %s\n", values[model.Selected])
 			} else {
-				fmt.Printf("no selection\n")
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "no selection\n")
 			}
 
 			return nil

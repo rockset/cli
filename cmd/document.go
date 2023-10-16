@@ -32,15 +32,15 @@ func newDeleteDocumentsCmd() *cobra.Command {
 			for _, d := range res {
 				if d.GetStatus() != "DELETED" {
 					failed++
-					fmt.Printf("failed to delete document %s\n", d.GetId())
+					fmt.Fprintf(cmd.OutOrStdout(), "failed to delete document %s\n", d.GetId())
 					continue
 				}
 				count++
 			}
 
-			fmt.Printf("deleted %d documents\n", count)
+			fmt.Fprintf(cmd.OutOrStdout(), "deleted %d documents\n", count)
 			if failed > 0 {
-				fmt.Printf("failed to delete %d documents\n", failed)
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "failed to delete %d documents\n", failed)
 			}
 
 			return nil
