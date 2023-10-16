@@ -39,7 +39,7 @@ func TestStore_noFile(t *testing.T) {
 	require.NoError(t, err)
 
 	f, err := os.ReadFile(file)
-	assert.Equal(t, "", string(f))
+	assert.Equal(t, `current: \"\"\nkeys: {}\ntokens: {}\n`, string(f))
 }
 
 func TestConfig(t *testing.T) {
