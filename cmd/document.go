@@ -50,8 +50,9 @@ func newDeleteDocumentsCmd() *cobra.Command {
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace name")
 	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
-	cmd.Flags().String("collection", "", "collection name")
-	_ = cmd.MarkFlagRequired("collection")
+	cmd.Flags().String(CollectionFlag, "", "collection name")
+	_ = cmd.MarkFlagRequired(CollectionFlag)
+	_ = cmd.RegisterFlagCompletionFunc(CollectionFlag, collectionCompletion)
 
 	return &cmd
 }
@@ -63,12 +64,8 @@ func newIngestCmd() *cobra.Command {
 		Long:  "ingest documents to a collection from either a list of files or from stdin",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
-			coll, _ := cmd.Flags().GetString("collection")
+			collection, _ := cmd.Flags().GetString(CollectionFlag)
 			batchSize, _ := cmd.Flags().GetUint64("batch-size")
-
-			if coll == "" {
-				return fmt.Errorf("must specify --collection")
-			}
 
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -78,7 +75,7 @@ func newIngestCmd() *cobra.Command {
 
 			cfg := StreamConfig{
 				Workspace:  ws,
-				Collection: coll,
+				Collection: collection,
 				BatchSize:  batchSize,
 			}
 
@@ -107,7 +104,10 @@ func newIngestCmd() *cobra.Command {
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace name")
 	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
-	cmd.Flags().String("collection", "", "collection name")
+	cmd.Flags().String(CollectionFlag, "", "collection name")
+	_ = cobra.MarkFlagRequired(cmd.Flags(), CollectionFlag)
+	_ = cmd.RegisterFlagCompletionFunc(CollectionFlag, collectionCompletion)
+
 	cmd.Flags().Uint64("batch-size", 100,
 		"number of documents to batch together each write")
 

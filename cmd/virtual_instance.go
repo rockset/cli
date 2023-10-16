@@ -59,6 +59,7 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 	cmd.Flags().Bool(WaitFlag, false, "wait until virtual instance is active")
 	cmd.Flags().String(SizeFlag, "", "virtual instance size")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), SizeFlag)
+	// TODO completion of sizes
 
 	return &cmd
 }
@@ -109,6 +110,7 @@ func newUpdateVirtualInstanceCmd() *cobra.Command {
 	cmd.Flags().String(SizeFlag, "", "virtual instance size")
 	cmd.Flags().Bool(WaitFlag, false, "wait until virtual instance is active")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), SizeFlag)
+	// TODO completion of sizes
 
 	return &cmd
 }

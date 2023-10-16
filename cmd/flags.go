@@ -5,38 +5,43 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// global flags
 const (
-	ClusterFLag          = "cluster"
-	DescriptionFlag      = "description"
-	WorkspaceFlag        = "workspace"
-	WorkspaceShortFlag   = "W"
-	RetentionFlag        = "retention"
-	CompressionFlag      = "compression"
-	IntegrationFlag      = "integration"
-	RegionFlag           = "region"
-	BucketFlag           = "bucket"
-	PatternFlag          = "pattern"
-	RoleARNFlag          = "role-arn"
-	DatasetFlag          = "dataset"
-	WaitFlag             = "wait"
-	ValidateFlag         = "validate"
-	FileFlag             = "file"
-	ContextFLag          = "context"
-	DebugFlag            = "debug"
-	SizeFlag             = "size"
-	IngestTransformation = "ingest-transformation"
-
+	ClusterFLag  = "cluster"
+	ContextFLag  = "context"
+	DebugFlag    = "debug"
 	FormatFlag   = "format"
-	WideFlag     = "wide"
 	HeaderFlag   = "header"
 	SelectorFlag = "selector"
-	ForceFlag    = "force"
+	WideFlag     = "wide"
+)
+
+// command specific flags
+const (
+	BucketFlag           = "bucket"
+	CompressionFlag      = "compression"
+	CollectionFlag       = "collection"
+	DatasetFlag          = "dataset"
+	DescriptionFlag      = "description"
+	FileFlag             = "file"
+	ForceFlag            = "force"
+	IngestTransformation = "ingest-transformation"
+	IntegrationFlag      = "integration"
+	PatternFlag          = "pattern"
+	RegionFlag           = "region"
+	RetentionFlag        = "retention"
+	RoleARNFlag          = "role-arn"
+	SizeFlag             = "size"
+	ValidateFlag         = "validate"
+	WaitFlag             = "wait"
+	WorkspaceFlag        = "workspace"
+	WorkspaceShortFlag   = "W"
 )
 
 const (
+	AllWorkspaces    = "all"
 	DefaultFormat    = "table"
 	DefaultWorkspace = "commons"
-	AllWorkspaces    = "all"
 )
 
 func FormatFromCommand(cmd *cobra.Command) format.Format {

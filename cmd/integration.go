@@ -67,7 +67,7 @@ func newListIntegrationsCmd() *cobra.Command {
 }
 
 func newCreateS3IntegrationsCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:         "integration NAME",
 		Short:       "create S3 integration",
 		Long:        "create S3 integration",
@@ -92,14 +92,14 @@ func newCreateS3IntegrationsCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().String(RoleARNFlag, "", "AWS IAM role ARN")
-	_ = cobra.MarkFlagRequired(c.Flags(), RoleARNFlag)
+	cmd.Flags().String(RoleARNFlag, "", "AWS IAM role ARN")
+	_ = cobra.MarkFlagRequired(cmd.Flags(), RoleARNFlag)
 
-	return &c
+	return &cmd
 }
 
 func newDeleteIntegrationsCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:         "integration NAME",
 		Short:       "delete integration",
 		Long:        "delete an integration",
@@ -122,5 +122,5 @@ func newDeleteIntegrationsCmd() *cobra.Command {
 		},
 	}
 
-	return &c
+	return &cmd
 }

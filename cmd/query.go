@@ -56,7 +56,7 @@ func newListQueryCmd() *cobra.Command {
 }
 
 func newQueryCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:         "query SQL",
 		Short:       "execute SQL query",
 		Long:        "query Rockset collections",
@@ -126,12 +126,12 @@ func newQueryCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().Bool(ValidateFlag, false, "validate SQL")
-	c.Flags().String(FileFlag, "", "read SQL from file")
-	c.Flags().String("vi", "", "execute query on virtual instance")
-	_ = cobra.MarkFlagFilename(c.Flags(), FileFlag, ".sql")
+	cmd.Flags().Bool(ValidateFlag, false, "validate SQL")
+	cmd.Flags().String(FileFlag, "", "read SQL from file")
+	cmd.Flags().String("vi", "", "execute query on virtual instance")
+	_ = cobra.MarkFlagFilename(cmd.Flags(), FileFlag, ".sql")
 
-	return &c
+	return &cmd
 }
 
 func showQueryResult(out io.Writer, result openapi.QueryResponse) error {
