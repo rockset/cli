@@ -95,6 +95,7 @@ func addVerbs(root *cobra.Command) {
 	// authentication
 	authCmd.AddCommand(newAuthLoginCmd())
 	authCmd.AddCommand(newAuthKeyCmd())
+	authCmd.AddCommand(newAuthRefreshCmd())
 
 	createCmd.AddCommand(&s3Cmd)
 	s3Cmd.AddCommand(newCreateS3CollectionCmd())

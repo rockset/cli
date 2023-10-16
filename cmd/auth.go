@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"github.com/dustin/go-humanize"
 	"github.com/rockset/rockset-go-client/option"
+	"io"
 	"log/slog"
 	"strings"
 	"time"
@@ -32,39 +34,11 @@ func newAuthLoginCmd() *cobra.Command {
 				return fmt.Errorf("you must provide either zero or three arguments")
 			}
 
-			p := devauth.NewProvider("auth0")
-			authCfg := p.Config("rockset", Auth0ClientID)
-			authCfg.Audience = "https://rockset.sh/"
-			authCfg.OAuth2Config.Endpoint.AuthURL = "https://auth.rockset.com/oauth/device/code"
-			authCfg.OAuth2Config.Endpoint.TokenURL = "https://auth.rockset.com/oauth/token"
-			authCfg.OAuth2Config.Scopes = append(authCfg.OAuth2Config.Scopes, "email")
-
-			a := devauth.NewAuthorizer(authCfg)
-
-			code, err := a.RequestCode(ctx)
+			token, err := auth(ctx, cmd.OutOrStdout())
 			if err != nil {
-				slog.Error("failed to request a device code", "err", err)
+				return err
 			}
-
-			fmt.Printf(`Attempting to automatically open the SSO authorization page in your default browser.
-If the browser does not open or you wish to use a different device to authorize this request, open the following URL:
-
-%s
-
-Then enter the code:
-%s
-`, code.VerificationURIComplete, code.UserCode)
-
-			if err := browser.OpenURL(code.VerificationURIComplete); err != nil {
-				slog.Warn("could not open", "url", code.VerificationURIComplete, "err", err)
-			}
-
-			token, err := a.WaitForAuthorization(ctx, code)
-			if err != nil {
-				slog.Error("failed to wait for authorization", "err", err)
-			}
-
-			fmt.Printf("Successfully logged in!\n\n")
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Successfully logged in!\n\n")
 
 			var name, cluster, org string
 			if len(args) > 0 {
@@ -110,13 +84,77 @@ Then enter the code:
 				return err
 			}
 
+			var useNew bool
+			if cfg.Current == "" {
+				cfg.Current = model.Fields[0]
+				useNew = true
+			}
+
 			if err = config.Store(cfg); err != nil {
 				return err
 			}
 
 			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "authentication context %s saved (expires in %s)\n",
 				model.Fields[0], humanize.Time(exp))
-			// should we select the new context, or tell the user how to do it?
+			if useNew {
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "using new context %s\n", model.Fields[0])
+			}
+
+			return nil
+		},
+	}
+
+	return &cmd
+}
+
+func newAuthRefreshCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:   "refresh [NAME]",
+		Args:  cobra.RangeArgs(0, 1),
+		Short: "refresh authentication credentials",
+		Long:  "refresh authentication credentials using the current context or an explicit name",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+
+			cfg, err := config.Load()
+			if err != nil {
+				return err
+			}
+
+			var name string
+			if len(args) == 1 {
+				name = args[0]
+			} else if cfg.Current != "" {
+				name = cfg.Current
+			} else {
+				return fmt.Errorf("no current context or explicit context name")
+			}
+
+			oldToken, found := cfg.Tokens[name]
+			if !found {
+				return fmt.Errorf("could not find any context named %s", name)
+			}
+
+			token, err := auth(ctx, cmd.OutOrStdout())
+			if err != nil {
+				return err
+			}
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "Successfully logged in!\n\n")
+
+			exp := time.Now().Add(time.Duration(token.ExpiresIn) * time.Second)
+			cfg.Tokens[name] = config.Token{
+				Token:      token.IDToken,
+				Org:        oldToken.Org,
+				Server:     oldToken.Server,
+				Expiration: exp,
+			}
+
+			if err = config.Store(cfg); err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "authentication context %s saved (expires in %s)\n",
+				name, humanize.Time(exp))
 
 			return nil
 		},
@@ -167,4 +205,40 @@ func newAuthKeyCmd() *cobra.Command {
 	}
 
 	return &cmd
+}
+
+func auth(ctx context.Context, out io.Writer) (devauth.AuthorizationResponse, error) {
+	p := devauth.NewProvider("auth0")
+	authCfg := p.Config("rockset", Auth0ClientID)
+	authCfg.Audience = "https://rockset.sh/"
+	authCfg.OAuth2Config.Endpoint.AuthURL = "https://auth.rockset.com/oauth/device/code"
+	authCfg.OAuth2Config.Endpoint.TokenURL = "https://auth.rockset.com/oauth/token"
+	authCfg.OAuth2Config.Scopes = append(authCfg.OAuth2Config.Scopes, "email")
+
+	a := devauth.NewAuthorizer(authCfg)
+
+	code, err := a.RequestCode(ctx)
+	if err != nil {
+		return devauth.AuthorizationResponse{}, fmt.Errorf("failed to request a device code: %v", err)
+	}
+
+	_, _ = fmt.Fprintf(out, `Attempting to automatically open the SSO authorization page in your default browser.
+If the browser does not open or you wish to use a different device to authorize this request, open the following URL:
+
+%s
+
+Then enter the code:
+%s
+`, code.VerificationURIComplete, code.UserCode)
+
+	if err := browser.OpenURL(code.VerificationURIComplete); err != nil {
+		slog.Warn("could not open", "url", code.VerificationURIComplete, "err", err)
+	}
+
+	token, err := a.WaitForAuthorization(ctx, code)
+	if err != nil {
+		return devauth.AuthorizationResponse{}, fmt.Errorf("failed to wait for authorization: %v", err)
+	}
+
+	return token, nil
 }
