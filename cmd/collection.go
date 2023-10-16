@@ -17,7 +17,7 @@ import (
 )
 
 func newDeleteCollectionCmd() *cobra.Command {
-	c := cobra.Command{
+	cmd := cobra.Command{
 		Use:         "collection",
 		Aliases:     []string{"coll"},
 		Short:       "delete collection",
@@ -44,9 +44,10 @@ func newDeleteCollectionCmd() *cobra.Command {
 		},
 	}
 
-	c.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
-	return &c
+	return &cmd
 }
 
 func newGetCollectionCmd() *cobra.Command {
@@ -92,6 +93,8 @@ func newGetCollectionCmd() *cobra.Command {
 
 	cmd.Flags().Bool(WideFlag, false, "display more information")
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+
 	cmd.Flags().String("output", "", "save json for create collection request to output file, use `-` for stdout")
 	_ = cobra.MarkFlagFilename(cmd.Flags(), "output")
 
@@ -139,6 +142,7 @@ func newListCollectionsCmd() *cobra.Command {
 
 	cmd.Flags().Bool(WideFlag, false, "display more information")
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "workspace for the collection")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
 	return &cmd
 }
@@ -344,6 +348,8 @@ func waitForCollection(ctx context.Context, cmd *cobra.Command, rs *rockset.Rock
 
 func addCommonCollectionFlags(cmd *cobra.Command) {
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+
 	cmd.Flags().String(DescriptionFlag, "", "collection description")
 	cmd.Flags().Duration(RetentionFlag, 0, "collection retention")
 	cmd.Flags().String(IngestTransformation, "", "ingest transformation SQL")

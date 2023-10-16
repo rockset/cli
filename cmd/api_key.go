@@ -11,8 +11,8 @@ import (
 
 func newListAPIKeysCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "apikey [USER]",
-		Aliases:     []string{"ak", "api"},
+		Use:         "apikeys [USER]",
+		Aliases:     []string{"ak", "api", "apikey"},
 		Args:        cobra.RangeArgs(0, 1),
 		Short:       "list apikeys for the current user, or the specified USER",
 		Annotations: group("apikey"),

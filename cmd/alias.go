@@ -47,6 +47,7 @@ func newListAliasesCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show aliases for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
 	return &cmd
 }
@@ -76,6 +77,7 @@ func newGetAliasCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "get an alias for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
 	return &cmd
 }

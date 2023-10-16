@@ -9,8 +9,8 @@ import (
 
 func newListRolesCommand() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "role",
-		Aliases:     []string{"r", "roles"},
+		Use:         "roles",
+		Aliases:     []string{"r", "role"},
 		Args:        cobra.NoArgs,
 		Short:       "list roles",
 		Annotations: group("role"),

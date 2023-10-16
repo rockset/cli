@@ -211,3 +211,22 @@ func newListWorkspacesCmd() *cobra.Command {
 		},
 	}
 }
+
+func workspaceCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := rockClient(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	workspaces, err := rs.ListWorkspaces(cmd.Context())
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	list := make([]string, len(workspaces))
+	for i, ws := range workspaces {
+		list[i] = ws.GetName()
+	}
+
+	return list, cobra.ShellCompDirectiveDefault
+}

@@ -46,6 +46,7 @@ func newListViewsCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show views for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
 	return &cmd
 }
@@ -75,6 +76,7 @@ func newGetViewCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show views for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
 	return &cmd
 }

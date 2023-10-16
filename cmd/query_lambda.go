@@ -14,8 +14,8 @@ import (
 
 func newListQueryLambdaCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "lambda",
-		Aliases:     []string{"ql"},
+		Use:         "lambdas",
+		Aliases:     []string{"ql", "qls", "querylambdas"},
 		Args:        cobra.NoArgs,
 		Short:       "list lambda",
 		Annotations: group("lambda"),
@@ -48,6 +48,7 @@ func newListQueryLambdaCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show query lambdas for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
 	return &cmd
 }
@@ -78,6 +79,8 @@ func newGetQueryLambdaCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show query lambdas for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+
 	cmd.Flags().String("tag", "latest", "query lambda tag")
 
 	return &cmd
@@ -139,6 +142,8 @@ func newExecuteQueryLambdaCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace name")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+
 	cmd.Flags().String("version", "", "query lambda version")
 	cmd.Flags().String("tag", "", "query lambda tag")
 	cmd.Flags().StringP("params-file", "P", "", "query parameters file")
@@ -177,6 +182,8 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show query lambdas for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+
 	cmd.Flags().String("sql", "", "file containing SQL")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), "sql")
 	_ = cobra.MarkFlagFilename(cmd.Flags(), "sql", ".sql")
