@@ -185,7 +185,7 @@ func rockClient(cmd *cobra.Command) (*rockset.RockClient, error) {
 	}
 
 	var options = []rockset.RockOption{
-		rockset.WithCustomHeader("rockset-go-cli", Version),
+		rockset.WithUserAgent("rockset-go-cli/" + Version),
 	}
 
 	opts, err := cfg.AsOptions(override)
