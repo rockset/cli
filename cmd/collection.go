@@ -19,7 +19,7 @@ import (
 func newDeleteCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:         "collection",
-		Aliases:     []string{"coll"},
+		Aliases:     []string{"coll", "c"},
 		Short:       "delete collection",
 		Long:        "delete Rockset collection",
 		Annotations: group("collection"),
@@ -53,7 +53,7 @@ func newDeleteCollectionCmd() *cobra.Command {
 func newGetCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:         "collection",
-		Aliases:     []string{"coll"},
+		Aliases:     []string{"coll", "c"},
 		Short:       "get collection",
 		Long:        "get Rockset collection",
 		Annotations: group("collection"),
@@ -104,7 +104,7 @@ func newGetCollectionCmd() *cobra.Command {
 func newListCollectionsCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:         "collections",
-		Aliases:     []string{"collection", "coll"},
+		Aliases:     []string{"collection", "coll", "c"},
 		Short:       "list collections",
 		Long:        "list Rockset collections",
 		Annotations: group("collection"),
@@ -150,7 +150,7 @@ func newListCollectionsCmd() *cobra.Command {
 func newCreateCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:         "collection NAME",
-		Aliases:     []string{"coll"},
+		Aliases:     []string{"coll", "c"},
 		Short:       "create collection for use with the write API",
 		Long:        "create collection for use with the write API",
 		Annotations: group("collection"),
@@ -221,7 +221,7 @@ func newCreateCollectionCmd() *cobra.Command {
 func newCreateS3CollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:         "collection NAME",
-		Aliases:     []string{"coll"},
+		Aliases:     []string{"coll", "c"},
 		Short:       "create S3 collection",
 		Long:        "create S3 collection",
 		Annotations: group("collection"),
@@ -269,6 +269,8 @@ func newCreateS3CollectionCmd() *cobra.Command {
 	cmd.Flags().String("source-format", "json", "data source format")
 
 	_ = cobra.MarkFlagRequired(cmd.Flags(), IntegrationFlag)
+	_ = cmd.RegisterFlagCompletionFunc(IntegrationFlag, integrationCompletion)
+
 	_ = cobra.MarkFlagRequired(cmd.Flags(), BucketFlag)
 
 	addCommonCollectionFlags(&cmd)
@@ -279,7 +281,7 @@ func newCreateS3CollectionCmd() *cobra.Command {
 func newCreateSampleCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:         "collection NAME",
-		Aliases:     []string{"coll"},
+		Aliases:     []string{"coll", "c"},
 		Annotations: group("collection"),
 		Args:        cobra.ExactArgs(1),
 		Short:       "create sample collection",
@@ -327,6 +329,7 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 
 	cmd.Flags().String(DatasetFlag, "", "create sample collection from this dataset")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), DatasetFlag)
+	// TODO add completion
 
 	addCommonCollectionFlags(&cmd)
 
@@ -352,6 +355,7 @@ func addCommonCollectionFlags(cmd *cobra.Command) {
 
 	cmd.Flags().String(DescriptionFlag, "", "collection description")
 	cmd.Flags().Duration(RetentionFlag, 0, "collection retention")
+
 	cmd.Flags().String(IngestTransformation, "", "ingest transformation SQL")
 	cmd.Flags().StringP("ingest-transformation-file", "I", "", "read ingest transformation SQL from file")
 	cmd.Flags().Bool(WaitFlag, false, "wait until collection is ready")

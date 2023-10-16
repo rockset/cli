@@ -23,6 +23,25 @@ func collectionCompletion(cmd *cobra.Command, args []string, toComplete string) 
 	return list, cobra.ShellCompDirectiveDefault
 }
 
+func integrationCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := rockClient(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	integrations, err := rs.ListIntegrations(cmd.Context())
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	list := make([]string, len(integrations))
+	for i, ws := range integrations {
+		list[i] = ws.GetName()
+	}
+
+	return list, cobra.ShellCompDirectiveDefault
+}
+
 func workspaceCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	rs, err := rockClient(cmd)
 	if err != nil {
