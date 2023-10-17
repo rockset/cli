@@ -136,6 +136,9 @@ func addVerbs(root *cobra.Command) {
 
 	getCmd.AddCommand(newGetAliasCmd())
 	listCmd.AddCommand(newListAliasesCmd())
+	createCmd.AddCommand(newCreateAliasCmd())
+	deleteCmd.AddCommand(newDeleteAliasCmd())
+	updateCmd.AddCommand(newUpdateAliasCmd())
 
 	getCmd.AddCommand(newGetRoleCommand())
 	listCmd.AddCommand(newListRolesCommand())
