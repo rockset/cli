@@ -20,3 +20,13 @@ repos:
         pass_filenames: false
         additional_dependencies: []
         minimum_pre_commit_version: 2.9.2
+      - id: gotest
+        name: "go test"
+        entry: go
+        language: system
+        'types_or': [go]
+        args: ["test", "-v", "./..."]
+        require_serial: false
+        pass_filenames: false
+        additional_dependencies: []
+        minimum_pre_commit_version: 2.9.2
