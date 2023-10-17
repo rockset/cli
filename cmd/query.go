@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/chzyer/readline"
-	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slog"
 
@@ -145,7 +144,7 @@ func showQueryResult(out io.Writer, result openapi.QueryResponse) error {
 	case "QUEUED", "RUNNING":
 		_, _ = fmt.Fprintf(out, "your query %s is %s\n", result.GetQueryId(), result.GetStatus())
 	case "COMPLETED":
-		t := tablewriter.NewWriter(out)
+		t := tui.NewTable(out)
 
 		if len(result.GetColumnFields()) == 0 {
 			// in a "SELECT *" query the ColumnFields isn't populated
@@ -155,32 +154,32 @@ func showQueryResult(out io.Writer, result openapi.QueryResponse) error {
 			for k := range result.Results[0] {
 				headers = append(headers, k)
 			}
-			t.SetHeader(headers)
+			t.Headers(headers...)
 
 			for _, row := range result.Results {
 				var r []string
 				for _, h := range headers {
 					r = append(r, fmt.Sprintf("%v", row[h]))
 				}
-				t.Append(r)
+				t.Row(r...)
 			}
 		} else {
 			var headers []string
 			for _, h := range result.GetColumnFields() {
 				headers = append(headers, h.Name)
 			}
-			t.SetHeader(headers)
+			t.Headers(headers...)
 
 			for _, row := range result.Results {
 				var r []string
 				for _, column := range result.GetColumnFields() {
 					r = append(r, fmt.Sprintf("%v", row[column.GetName()]))
 				}
-				t.Append(r)
+				t.Row(r...)
 			}
 		}
 
-		t.Render()
+		_, _ = fmt.Fprintln(out, t.Render())
 		_, _ = fmt.Fprintf(out, "Elapsed time: %d ms\n\n", result.Stats.GetElapsedTimeMs())
 	default:
 		return fmt.Errorf("unexpected query status: %s", result.GetStatus())

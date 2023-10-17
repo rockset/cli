@@ -1,19 +1,24 @@
 package format
 
 import (
-	"github.com/olekukonko/tablewriter"
+	"fmt"
+	"github.com/charmbracelet/lipgloss/table"
+	"github.com/rockset/cli/tui"
 	"io"
 )
 
 type Table struct {
 	Header bool
-	w      *tablewriter.Table
+	out    io.Writer
+	table  *table.Table
 }
 
 func NewTableFormatter(out io.Writer, header bool) *Table {
 	return &Table{
 		Header: header,
-		w:      tablewriter.NewWriter(out),
+		out:    out,
+		// TODO might need a --no-color flag to turn coloring off
+		table: tui.NewTable(out),
 	}
 }
 
@@ -27,7 +32,7 @@ func (t Table) Format(wide bool, selector Selector, i interface{}) error {
 	}
 
 	if t.Header {
-		t.w.SetHeader([]string{"key", "value"})
+		t.table.Headers("key", "value")
 	}
 
 	for _, sel := range selector {
@@ -39,17 +44,20 @@ func (t Table) Format(wide bool, selector Selector, i interface{}) error {
 		if err != nil {
 			return err
 		}
-		t.w.Append([]string{sel.ColumnName, valueAsString})
+		t.table.Row(sel.ColumnName, valueAsString)
+		//t.w.Append([]string{sel.ColumnName, valueAsString})
 	}
 
-	t.w.Render()
+	_, _ = fmt.Fprintln(t.out, t.table.Render())
 
 	return nil
 }
 
 func (t Table) FormatList(wide bool, selector Selector, items []interface{}) error {
 	if items == nil || len(items) == 0 {
-		t.w.Render()
+		// TODO what is a better message?
+		t.table.Headers("No rows")
+		_, _ = fmt.Fprintln(t.out, t.table.Render())
 		return nil
 	}
 
@@ -62,29 +70,19 @@ func (t Table) FormatList(wide bool, selector Selector, items []interface{}) err
 	}
 
 	if t.Header {
-		t.w.SetHeader(selector.Headers())
+		t.table.Headers(selector.Headers()...)
 	}
 
-	for i, item := range items {
+	for _, item := range items {
 		fields, err := selector.Fields(item)
 		if err != nil {
 			return err
 		}
 
-		// make every other row different
-		// TODO might need a --no-color flag to turn this off
-		if i%2 == 0 {
-			cells := make([]tablewriter.Colors, len(fields))
-			for j := range cells {
-				cells[j] = tablewriter.Colors{tablewriter.Bold, tablewriter.FgWhiteColor}
-			}
-			t.w.Rich(fields, cells)
-		} else {
-			t.w.Append(fields)
-		}
+		t.table.Row(fields...)
 	}
 
-	t.w.Render()
+	_, _ = fmt.Fprintln(t.out, t.table.Render())
 
 	return nil
 }
