@@ -139,10 +139,10 @@ go test ./...
 
 ### Integration testing
 
-Requires the environment variable `ROCKSET_APIKEY` to be set
+Requires the environment variable `ROCKSET_APIKEY` to be set.
 
 ```
-go test ./...
+go test -tags=integration ./...
 ```
 
 ### Create recordings
