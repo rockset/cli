@@ -10,12 +10,18 @@ import (
 	"github.com/rockset/cli/sort"
 )
 
+// https://docs.rockset.com/documentation/reference/aliases
+
 func newListAliasesCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "aliases",
-		Aliases:     []string{"a", "alias"},
-		Args:        cobra.NoArgs,
-		Short:       "list aliases",
+		Use:     "aliases",
+		Aliases: []string{"a", "alias"},
+		Args:    cobra.NoArgs,
+		Short:   "list aliases",
+		Long: ` list aliases and all workspaces, or in a specific workspace
+	# Documentation URLs
+	https://docs.rockset.com/documentation/reference/listaliases
+	https://docs.rockset.com/documentation/reference/workspacealiases`,
 		Annotations: group("alias"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
@@ -55,10 +61,14 @@ func newListAliasesCmd() *cobra.Command {
 
 func newGetAliasCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "alias NAME",
-		Aliases:     []string{"a"},
-		Args:        cobra.ExactArgs(1),
-		Short:       "get alias information",
+		Use:     "alias NAME",
+		Aliases: []string{"a"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "get alias information",
+		Long: `get an alias
+
+	# Documentation URL
+	https://docs.rockset.com/documentation/reference/getalias`,
 		Annotations: group("alias"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
@@ -85,10 +95,14 @@ func newGetAliasCmd() *cobra.Command {
 
 func newCreateAliasCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "alias NAME COLLECTION [[COLLECTION] ...]",
-		Aliases:     []string{"a"},
-		Args:        cobra.MinimumNArgs(2),
-		Short:       "create alias",
+		Use:     "alias NAME COLLECTION [[COLLECTION] ...]",
+		Aliases: []string{"a"},
+		Args:    cobra.MinimumNArgs(2),
+		Short:   "create alias",
+		Long: `create a new alias
+
+	# Documentation URL
+	https://docs.rockset.com/documentation/reference/createalias`,
 		Annotations: group("alias"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
@@ -118,10 +132,15 @@ func newCreateAliasCmd() *cobra.Command {
 
 func newUpdateAliasCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "alias NAME COLLECTION [[COLLECTION] ...]",
-		Aliases:     []string{"a"},
-		Args:        cobra.MinimumNArgs(2),
-		Short:       "update alias",
+		Use:     "alias NAME COLLECTION [[COLLECTION] ...]",
+		Aliases: []string{"a"},
+		Args:    cobra.MinimumNArgs(2),
+		Short:   "update alias",
+		Long: `update an alias
+
+	# Documentation URL
+	https://docs.rockset.com/documentation/reference/updatealias`,
+
 		Annotations: group("alias"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
@@ -151,10 +170,14 @@ func newUpdateAliasCmd() *cobra.Command {
 
 func newDeleteAliasCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "alias NAME ",
-		Aliases:     []string{"a"},
-		Args:        cobra.ExactArgs(1),
-		Short:       "delete alias",
+		Use:     "alias NAME ",
+		Aliases: []string{"a"},
+		Args:    cobra.ExactArgs(1),
+		Short:   "delete alias",
+		Long: `delete an alias
+
+	# Documentation URL
+	https://docs.rockset.com/documentation/reference/deletealias`,
 		Annotations: group("alias"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]

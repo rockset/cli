@@ -69,12 +69,6 @@ func addVerbs(root *cobra.Command) {
 		Long:  "use a Rockset apikey and server configuration",
 	}
 
-	// workspace
-	createCmd.AddCommand(newCreateWorkspaceCmd())
-	deleteCmd.AddCommand(newDeleteWorkspaceCmd())
-	getCmd.AddCommand(newGetWorkspaceCmd())
-	listCmd.AddCommand(newListWorkspacesCmd())
-
 	// sample
 	sampleCmd := cobra.Command{
 		Use:   "sample",
@@ -83,7 +77,6 @@ func addVerbs(root *cobra.Command) {
 	}
 
 	createCmd.AddCommand(&sampleCmd)
-	sampleCmd.AddCommand(newCreateSampleCollectionCmd())
 
 	// s3
 	s3Cmd := cobra.Command{
@@ -101,13 +94,15 @@ func addVerbs(root *cobra.Command) {
 	s3Cmd.AddCommand(newCreateS3CollectionCmd())
 	s3Cmd.AddCommand(newCreateS3IntegrationsCmd())
 
-	// collection
+	// collections
 	createCmd.AddCommand(newCreateCollectionCmd())
 	deleteCmd.AddCommand(newDeleteCollectionCmd())
 	getCmd.AddCommand(newGetCollectionCmd())
 	listCmd.AddCommand(newListCollectionsCmd())
+	listCmd.AddCommand(newListQueryCmd())
+	sampleCmd.AddCommand(newCreateSampleCollectionCmd())
 
-	// integration
+	// integrations
 	deleteCmd.AddCommand(newDeleteIntegrationsCmd())
 	getCmd.AddCommand(newGetIntegrationCmd())
 	listCmd.AddCommand(newListIntegrationsCmd())
@@ -115,17 +110,15 @@ func addVerbs(root *cobra.Command) {
 	// org
 	getCmd.AddCommand(newGetOrganizationCmd())
 
-	listCmd.AddCommand(newListQueryCmd())
-
-	// user
+	// users
 	getCmd.AddCommand(newGetUserCmd())
 	listCmd.AddCommand(newListUsersCmd())
 
-	// view
+	// views
 	getCmd.AddCommand(newGetViewCmd())
 	listCmd.AddCommand(newListViewsCmd())
 
-	// virtual instance
+	// virtual instances
 	createCmd.AddCommand(newCreateVirtualInstanceCmd())
 	deleteCmd.AddCommand(newDeleteVirtualInstanceCmd())
 	getCmd.AddCommand(newGetVirtualInstancesCmd())
@@ -134,15 +127,18 @@ func addVerbs(root *cobra.Command) {
 	suspendCmd.AddCommand(newSuspendVirtualInstanceCmd())
 	updateCmd.AddCommand(newUpdateVirtualInstanceCmd())
 
+	// aliases
 	getCmd.AddCommand(newGetAliasCmd())
 	listCmd.AddCommand(newListAliasesCmd())
 	createCmd.AddCommand(newCreateAliasCmd())
 	deleteCmd.AddCommand(newDeleteAliasCmd())
 	updateCmd.AddCommand(newUpdateAliasCmd())
 
+	// roles
 	getCmd.AddCommand(newGetRoleCommand())
 	listCmd.AddCommand(newListRolesCommand())
 
+	// API keys
 	getCmd.AddCommand(newGetAPIKeyCmd())
 	listCmd.AddCommand(newListAPIKeysCmd())
 
@@ -154,6 +150,12 @@ func addVerbs(root *cobra.Command) {
 
 	// documents
 	deleteCmd.AddCommand(newDeleteDocumentsCmd())
+
+	// workspace
+	createCmd.AddCommand(newCreateWorkspaceCmd())
+	deleteCmd.AddCommand(newDeleteWorkspaceCmd())
+	getCmd.AddCommand(newGetWorkspaceCmd())
+	listCmd.AddCommand(newListWorkspacesCmd())
 
 	// config
 	createCmd.AddCommand(newCreateContextCmd())
