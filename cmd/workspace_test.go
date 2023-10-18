@@ -4,6 +4,7 @@ package cmd
 
 import (
 	"bytes"
+	"github.com/rockset/cli/internal/cluster"
 	"github.com/rockset/cli/internal/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -16,7 +17,7 @@ func TestGetWorkspaceCmd(t *testing.T) {
 	buf := &bytes.Buffer{}
 	cmd := newGetWorkspaceCmd()
 	cmd.SetArgs([]string{DefaultWorkspace})
-	cmd.Flags().Set("region", "usw2a1")
+	cmd.Flags().Set("region", cluster.Use1a1)
 	cmd.SetOut(buf)
 
 	err := cmd.Execute()

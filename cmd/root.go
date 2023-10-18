@@ -73,7 +73,8 @@ For more configuration options, see the 'rockset create config' command.`, confi
 
 	root.PersistentFlags().String(ContextFLag, "", fmt.Sprintf("override currently selected configuration context %s", currentContext))
 	// TODO add convenience function to map usw2a1 -> api.usw2a1.rockset.com
-	root.PersistentFlags().String(ClusterFLag, "", "override Rockset cluster for the current context")
+	root.PersistentFlags().String(ClusterFLag, "",
+		fmt.Sprintf("override Rockset cluster for the current context: %s", strings.Join(config.Clusters, ", ")))
 
 	// this binds the environment variable DEBUG to the flag debug
 	_ = viper.BindPFlag("debug", root.PersistentFlags().Lookup("debug"))
