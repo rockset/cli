@@ -1,9 +1,13 @@
-package cmd
+package cmd_test
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/suite"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
+
+	"github.com/rockset/cli/cmd"
+	"github.com/rockset/cli/internal/test"
 )
 
 type AliasTestSuite struct {
@@ -12,48 +16,50 @@ type AliasTestSuite struct {
 }
 
 func TestAliasSuite(t *testing.T) {
-	s := AliasTestSuite{name: "dummy"}
+	test.SkipUnlessIntegrationTest(t)
+
+	s := AliasTestSuite{name: "dummy"} // TODO use random name
 	suite.Run(t, &s)
 }
 
 func (s *AliasTestSuite) Test_0_Create() {
-	cmd := newCreateAliasCmd()
-	out := testWrapper(cmd, []string{s.name, "commons._events"})
-	err := cmd.Execute()
+	c := cmd.NewCreateAliasCmd()
+	out := test.Wrapper(c, []string{s.name, "commons._events"})
+	err := c.Execute()
 	s.Require().NoError(err)
 	s.Equal(fmt.Sprintf("alias %s created", s.name), out.String())
 }
 
 func (s *AliasTestSuite) Test_1_Get() {
-	cmd := newGetAliasCmd()
-	out := testWrapper(cmd, []string{s.name})
+	c := cmd.NewGetAliasCmd()
+	out := test.Wrapper(c, []string{s.name})
 
-	err := cmd.Execute()
+	err := c.Execute()
 	s.Require().NoError(err)
 	s.NotEmpty(out.String())
 }
 
 func (s *AliasTestSuite) Test_2_List() {
-	cmd := newListAliasesCmd()
-	out := testWrapper(cmd, []string{})
+	c := cmd.NewListAliasesCmd()
+	out := test.Wrapper(c, []string{})
 
-	err := cmd.Execute()
+	err := c.Execute()
 	s.Require().NoError(err)
 	s.NotEmpty(out.String())
 }
 
 func (s *AliasTestSuite) Test_3_Update() {
-	cmd := newUpdateAliasCmd()
-	out := testWrapper(cmd, []string{s.name, "commons._events"})
-	err := cmd.Execute()
+	c := cmd.NewUpdateAliasCmd()
+	out := test.Wrapper(c, []string{s.name, "commons._events"})
+	err := c.Execute()
 	s.Require().NoError(err)
 	s.NotEmpty(fmt.Sprintf("alias %s deleted", s.name), out.String())
 }
 
 func (s *AliasTestSuite) Test_4_Delete() {
-	cmd := newDeleteAliasCmd()
-	out := testWrapper(cmd, []string{s.name})
-	err := cmd.Execute()
+	c := cmd.NewDeleteAliasCmd()
+	out := test.Wrapper(c, []string{s.name})
+	err := c.Execute()
 	s.Require().NoError(err)
 	s.NotEmpty(fmt.Sprintf("alias %s deleted", s.name), out.String())
 }

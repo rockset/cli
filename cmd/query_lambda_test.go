@@ -2,14 +2,14 @@ package cmd
 
 import (
 	"bytes"
+	"github.com/rockset/cli/internal/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestExecuteLambdaCmd(t *testing.T) {
-	t.Skipf("skip for now")
-	skipUnlessIntegrationTest(t)
+	test.SkipUnlessIntegrationTest(t)
 
 	params := "testdata/params.json"
 	buf := bytes.NewBufferString("")

@@ -12,7 +12,7 @@ import (
 
 // https://docs.rockset.com/documentation/reference/aliases
 
-func newListAliasesCmd() *cobra.Command {
+func NewListAliasesCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "aliases",
 		Aliases: []string{"a", "alias"},
@@ -59,7 +59,7 @@ func newListAliasesCmd() *cobra.Command {
 	return &cmd
 }
 
-func newGetAliasCmd() *cobra.Command {
+func NewGetAliasCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "alias NAME",
 		Aliases: []string{"a"},
@@ -93,7 +93,7 @@ func newGetAliasCmd() *cobra.Command {
 	return &cmd
 }
 
-func newCreateAliasCmd() *cobra.Command {
+func NewCreateAliasCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "alias NAME COLLECTION [[COLLECTION] ...]",
 		Aliases: []string{"a"},
@@ -130,7 +130,7 @@ func newCreateAliasCmd() *cobra.Command {
 	return &cmd
 }
 
-func newUpdateAliasCmd() *cobra.Command {
+func NewUpdateAliasCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "alias NAME COLLECTION [[COLLECTION] ...]",
 		Aliases: []string{"a"},
@@ -168,7 +168,7 @@ func newUpdateAliasCmd() *cobra.Command {
 	return &cmd
 }
 
-func newDeleteAliasCmd() *cobra.Command {
+func NewDeleteAliasCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "alias NAME ",
 		Aliases: []string{"a"},
