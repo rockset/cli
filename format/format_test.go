@@ -101,11 +101,11 @@ func TestFormatter(t *testing.T) {
 		},
 		{
 			i: openapi.Integration{
-				Name:        "",
-				Description: nil,
+				Name:        "name",
+				Description: openapi.PtrString("desc"),
 				Collections: nil,
-				CreatedBy:   "",
-				CreatedAt:   nil,
+				CreatedBy:   "pme",
+				CreatedAt:   openapi.PtrString("when"),
 				S3:          nil,
 				Kinesis:     nil,
 				Dynamodb:    nil,
@@ -113,6 +113,7 @@ func TestFormatter(t *testing.T) {
 				Kafka:       nil,
 				Mongodb:     nil,
 			},
+			s: "name,desc,pme,when\n",
 		},
 	}
 
