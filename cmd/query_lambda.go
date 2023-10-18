@@ -104,7 +104,7 @@ func newExecuteQueryLambdaCmd() *cobra.Command {
 			}
 
 			var opts []option.QueryLambdaOption
-			if version, _ := cmd.Flags().GetString("version"); version != "" {
+			if version, _ := cmd.Flags().GetString(VersionFlag); version != "" {
 				opts = []option.QueryLambdaOption{option.WithVersion(version)}
 			}
 			if tag, _ := cmd.Flags().GetString("tag"); tag != "" {
@@ -144,7 +144,7 @@ func newExecuteQueryLambdaCmd() *cobra.Command {
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace name")
 	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
-	cmd.Flags().String("version", "", "query lambda version")
+	cmd.Flags().String(VersionFlag, "", "query lambda version")
 	cmd.Flags().String("tag", "", "query lambda tag")
 	cmd.Flags().StringP("params-file", "P", "", "query parameters file")
 	cmd.Flags().StringArrayP("param", "p", nil, "query parameters")
@@ -162,7 +162,7 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 		Annotations: group("lambda"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
-			sql, _ := cmd.Flags().GetString("sql")
+			sql, _ := cmd.Flags().GetString(SQLFlag)
 
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -184,9 +184,9 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show query lambdas for the selected workspace")
 	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
-	cmd.Flags().String("sql", "", "file containing SQL")
-	_ = cobra.MarkFlagRequired(cmd.Flags(), "sql")
-	_ = cobra.MarkFlagFilename(cmd.Flags(), "sql", ".sql")
+	cmd.Flags().String(SQLFlag, "", "file containing SQL")
+	_ = cobra.MarkFlagRequired(cmd.Flags(), SQLFlag)
+	_ = cobra.MarkFlagFilename(cmd.Flags(), SQLFlag, ".sql")
 
 	return &cmd
 }
