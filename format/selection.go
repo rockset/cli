@@ -12,6 +12,8 @@ type PathElem struct {
 
 	HasArraySelector bool
 	ArrayIndex       int
+
+	HasArrayMapping bool
 }
 
 type Selector []FieldSelection
@@ -36,18 +38,7 @@ func (s Selector) String() string {
 	var list []string
 
 	for _, f := range s {
-		var sb strings.Builder
-		sb.WriteString(f.ColumnName)
-		sb.WriteString(":")
-		for _, p := range f.Path {
-			sb.WriteString(".")
-			sb.WriteString(p.FieldName)
-		}
-		if f.FieldFormatter != nil {
-			sb.WriteString(":")
-			sb.WriteString(f.FieldFormatter.Name())
-		}
-		list = append(list, sb.String())
+		list = append(list, f.String())
 	}
 
 	return strings.Join(list, ",")
@@ -87,15 +78,23 @@ func ParseSelectionString(s string) (Selector, error) {
 			pathSplit := strings.Split(v, "[")
 			field := pathSplit[0]
 			if len(pathSplit) == 2 {
-				res, err := strconv.ParseInt(strings.Trim(pathSplit[1], "[] "), 10, 64)
-				if err != nil {
-					return make([]FieldSelection, 0), err
+				trimmed := strings.Trim(pathSplit[1], "[] ")
+				if len(trimmed) == 0 {
+					richPath = append(richPath, PathElem{
+						FieldName:       field,
+						HasArrayMapping: true,
+					})
+				} else {
+					res, err := strconv.ParseInt(trimmed, 10, 64)
+					if err != nil {
+						return make([]FieldSelection, 0), err
+					}
+					richPath = append(richPath, PathElem{
+						FieldName:        field,
+						HasArraySelector: true,
+						ArrayIndex:       int(res),
+					})
 				}
-				richPath = append(richPath, PathElem{
-					FieldName:        field,
-					HasArraySelector: true,
-					ArrayIndex:       int(res),
-				})
 			} else {
 				richPath = append(richPath, PathElem{
 					FieldName:        field,
@@ -158,14 +157,13 @@ func findFieldByJsonTag(value reflect.Value, jsonTag string) (reflect.Value, err
 	return reflect.Value{}, fmt.Errorf("could not find json tag %s in type %s", jsonTag, value.Type().Name())
 }
 
-func (r FieldSelection) Select(obj any) (any, error) {
+func (r FieldSelection) doSelect(obj any, curPath []PathElem) (any, error) {
 	cur := reflect.Indirect(reflect.ValueOf(obj))
-	curPath := r.Path
 
 	makeError := func(err error) error {
 		typeName := reflect.TypeOf(obj).Name()
 		possibleSelectors := GetPossibleSelectorsFor(obj)
-		selector := r.ToString()
+		selector := r.String()
 
 		prefix := fmt.Sprintf("selector %s is not valid on type %s", selector, typeName)
 		suffix := fmt.Sprintf("possible selectors on type %s include: %s", typeName, strings.Join(possibleSelectors, "; "))
@@ -199,6 +197,19 @@ func (r FieldSelection) Select(obj any) (any, error) {
 				return nil, nil
 			}
 			cur = cur.Index(next.ArrayIndex)
+		} else if next.HasArrayMapping {
+			if cur.Kind() != reflect.Slice && cur.Kind() != reflect.Array {
+				return nil, makeError(fmt.Errorf("tried to map over %s which is not an array or slice", cur.Type().Name()))
+			}
+			mapped := make([]any, 0)
+			for i := 0; i < cur.Len(); i++ {
+				elem, err := r.doSelect(cur.Index(i).Interface(), rest)
+				if err != nil {
+					return nil, err
+				}
+				mapped = append(mapped, elem)
+			}
+			return mapped, nil
 		}
 
 		curPath = rest
@@ -208,20 +219,35 @@ func (r FieldSelection) Select(obj any) (any, error) {
 		return nil, makeError(nil)
 	}
 
-	return cur.Interface(), nil
+	return reflect.Indirect(cur).Interface(), nil
 }
 
-func (r FieldSelection) ToString() string {
+func (r FieldSelection) Select(obj any) (any, error) {
+	return r.doSelect(obj, r.Path)
+}
+
+func (r FieldSelection) String() string {
 	path := make([]string, 0)
 	for _, elem := range r.Path {
-		path = append(path, elem.ToString())
+		path = append(path, elem.String())
 	}
-	return "." + strings.Join(path, ".")
+
+	result := "." + strings.Join(path, ".")
+	if r.ColumnName != "" {
+		result = r.ColumnName + ":" + result
+	}
+	if r.FieldFormatter != nil {
+		result += ":" + r.FieldFormatter.Name()
+	}
+
+	return result
 }
 
-func (r PathElem) ToString() string {
+func (r PathElem) String() string {
 	if r.HasArraySelector {
 		return fmt.Sprintf("%s[%d]", r.FieldName, r.ArrayIndex)
+	} else if r.HasArrayMapping {
+		return fmt.Sprintf("%s[]", r.FieldName)
 	}
 	return r.FieldName
 }

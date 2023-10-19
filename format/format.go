@@ -125,7 +125,12 @@ func valueAsString(value reflect.Value, ff FieldFormatter) (string, error) {
 		a := make([]string, value.Len())
 		for i := 0; i < value.Len(); i++ {
 			x := value.Index(i)
-			a[i] = fmt.Sprintf("%v", x)
+			parsed, err := valueAsString(x, ff)
+			if err != nil {
+				a[i] = fmt.Sprintf("%v", x)
+			} else {
+				a[i] = parsed
+			}
 		}
 
 		return strings.Join(a, ", "), nil
