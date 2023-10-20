@@ -16,6 +16,14 @@ func ByName[T NameGetter](n1, n2 T) bool {
 	return n1.GetName() < n2.GetName()
 }
 
+type TagNameGetter interface {
+	GetTagName() string
+}
+
+func ByTagName[T TagNameGetter](n1, n2 T) bool {
+	return n1.GetTagName() < n2.GetTagName()
+}
+
 type RoleNameGetter interface {
 	GetRoleName() string
 }

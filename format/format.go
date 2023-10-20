@@ -89,6 +89,8 @@ func defaultSelectorFor(f any) (DefaultSelector, error) {
 		return QueryDefaultSelector, nil
 	case openapi.QueryLambda:
 		return QueryLambdaDefaultSelector, nil
+	case openapi.QueryLambdaVersion:
+		return QueryLambdaVersionDefaultSelector, nil
 	case openapi.QueryLambdaTag:
 		return QueryLambdaTagDefaultSelector, nil
 	case openapi.View:

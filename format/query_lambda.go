@@ -6,7 +6,6 @@ var QueryLambdaDefaultSelector = DefaultSelector{
 	Normal: []FieldSelection{
 		NewFieldSelection("Workspace", "workspace"),
 		NewFieldSelection("Name", "name"),
-		NewFieldSelection("Last Updated By", "last_updated_by"),
 		{
 			ColumnName:     "Last Updated",
 			Path:           []PathElem{{FieldName: "last_updated"}},
@@ -14,7 +13,8 @@ var QueryLambdaDefaultSelector = DefaultSelector{
 		},
 		NewFieldSelection("Latest Version", "latest_version", "version"),
 		NewFieldSelection("Version Count", "version_count"),
-		NewFieldSelection("Collections", "collections"),
+		// TODO show the number of collections
+		//NewFieldSelection("Collections", "collections"),
 	},
 	Wide: []FieldSelection{
 		NewFieldSelection("Workspace", "workspace"),
@@ -65,13 +65,18 @@ var _ = openapi.QueryLambda{
 
 var QueryLambdaTagDefaultSelector = DefaultSelector{
 	Normal: []FieldSelection{
+		NewFieldSelection("Workspace", "version", "workspace"),
 		NewFieldSelection("Tag", "tag_name"),
+		NewFieldSelection("Version", "version", "version"),
 		NewFieldSelection("State", "version", "state"),
 	},
 	Wide: []FieldSelection{
+		NewFieldSelection("Workspace", "version", "workspace"),
 		NewFieldSelection("Tag", "tag_name"),
 		NewFieldSelection("State", "version", "state"),
 		NewFieldSelection("Description", "version", "description"),
+		NewFieldSelection("Version", "version", "version"),
+		NewFieldSelection("State", "version", "state"),
 	},
 }
 
@@ -99,4 +104,43 @@ var _ = openapi.QueryLambdaTag{
 		Version:   nil,
 		Workspace: nil,
 	},
+}
+
+var QueryLambdaVersionDefaultSelector = DefaultSelector{
+	Normal: []FieldSelection{
+		NewFieldSelection("Workspace", "workspace"),
+		NewFieldSelection("Name", "name"),
+		NewFieldSelection("Version", "version"),
+		NewFieldSelection("State", "state"),
+	},
+	Wide: []FieldSelection{
+		NewFieldSelection("Workspace", "workspace"),
+		NewFieldSelection("Name", "name"),
+		NewFieldSelection("Version", "version"),
+		NewFieldSelection("State", "state"),
+		NewFieldSelection("Description", "description"),
+	},
+}
+
+var _ = openapi.QueryLambdaVersion{
+	Collections:         nil,
+	CreatedAt:           nil,
+	CreatedBy:           nil,
+	CreatedByApikeyName: nil,
+	Description:         nil,
+	Name:                nil,
+	PublicAccessId:      nil,
+	Sql: &openapi.QueryLambdaSql{
+		DefaultParameters: nil,
+		Query:             "",
+	},
+	State: nil,
+	Stats: &openapi.QueryLambdaStats{
+		LastExecuted:              nil,
+		LastExecutedBy:            nil,
+		LastExecutionError:        nil,
+		LastExecutionErrorMessage: nil,
+	},
+	Version:   nil,
+	Workspace: nil,
 }

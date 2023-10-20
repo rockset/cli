@@ -146,7 +146,7 @@ func addVerbs(root *cobra.Command) {
 	createCmd.AddCommand(newCreateQueryLambdaCmd())
 	executeCmd.AddCommand(newExecuteQueryLambdaCmd())
 	getCmd.AddCommand(newGetQueryLambdaCmd())
-	listCmd.AddCommand(newListQueryLambdaCmd())
+	listCmd.AddCommand(newListQueryLambdasCmd())
 
 	// documents
 	deleteCmd.AddCommand(newDeleteDocumentsCmd())
