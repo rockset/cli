@@ -1,4 +1,4 @@
-Output vhs/demo.gif
+Output vhs/quickstart.gif
 
 # Set up a 1200x600 terminal with 14px font
 Set FontSize 14
@@ -8,30 +8,30 @@ Set Height 600
 Type "rockset version"
 Sleep 500ms
 Enter
-Sleep 1s
+Sleep 2s
 
 Type "rockset get org"
 Sleep 500ms
 Enter
-Sleep 1s
+Sleep 2s
 
 Type "rockset list workspaces"
 Sleep 500ms
 Enter
 
-Sleep 1s
+Sleep 2s
 
 Type "rockset create workspace demo --description 'for demos'"
 Sleep 500ms
 Enter
 
-Sleep 3s
+Sleep 5s
 
 Type "clear"
 Enter
 
 Type "cat vhs/movie_releases_ingest_transform.sql"
-Sleep 1s
+Sleep 2s
 Enter
 
 # create movie collection with
