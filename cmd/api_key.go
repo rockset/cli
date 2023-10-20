@@ -9,6 +9,9 @@ import (
 	"github.com/rockset/rockset-go-client/option"
 )
 
+// TODO when implementing create apikey:
+//  the role should have auto-completion for the list of roles the user has access to
+
 func newListAPIKeysCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:         "apikeys [USER]",
