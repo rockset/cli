@@ -7,6 +7,7 @@ import (
 	"github.com/rockset/rockset-go-client/option"
 	"io"
 	"log/slog"
+	"os"
 	"strings"
 	"time"
 
@@ -18,8 +19,6 @@ import (
 	"github.com/rockset/cli/config"
 	"github.com/rockset/cli/tui"
 )
-
-const Auth0ClientID = "0dJNiGWClbLjg7AdtXtAyPCeE0jKOFet"
 
 func newAuthLoginCmd() *cobra.Command {
 	cmd := cobra.Command{
@@ -207,12 +206,33 @@ func newAuthKeyCmd() *cobra.Command {
 	return &cmd
 }
 
+const (
+	DefaultAuthProvider = "auth0"
+	DefaultAuthServer   = "auth.rockset.com"
+	DefaultClientID     = "0dJNiGWClbLjg7AdtXtAyPCeE0jKOFet"
+)
+
 func auth(ctx context.Context, out io.Writer) (devauth.AuthorizationResponse, error) {
-	p := devauth.NewProvider("auth0")
-	authCfg := p.Config("rockset", Auth0ClientID)
+	provider := DefaultAuthProvider
+	if p := os.Getenv("AUTH_PROVIDER"); p != "" {
+		provider = p
+	}
+
+	server := DefaultAuthServer
+	if s := os.Getenv("AUTH_SERVER"); s != "" {
+		server = s
+	}
+
+	clientID := DefaultClientID
+	if id := os.Getenv("CLIENT_ID"); id != "" {
+		clientID = id
+	}
+
+	p := devauth.NewProvider(provider)
+	authCfg := p.Config("rockset", clientID)
 	authCfg.Audience = "https://rockset.sh/"
-	authCfg.OAuth2Config.Endpoint.AuthURL = "https://auth.rockset.com/oauth/device/code"
-	authCfg.OAuth2Config.Endpoint.TokenURL = "https://auth.rockset.com/oauth/token"
+	authCfg.OAuth2Config.Endpoint.AuthURL = fmt.Sprintf("https://%s/oauth/device/code", server)
+	authCfg.OAuth2Config.Endpoint.TokenURL = fmt.Sprintf("https://%s/oauth/token", server)
 	authCfg.OAuth2Config.Scopes = append(authCfg.OAuth2Config.Scopes, "email")
 
 	a := devauth.NewAuthorizer(authCfg)
