@@ -5,7 +5,15 @@ import "github.com/rockset/rockset-go-client/openapi"
 var IntegrationDefaultSelector = DefaultSelector{
 	Normal: []FieldSelection{
 		NewFieldSelection("Name", "name"),
-		// TODO need a selector for collections
+		{
+			ColumnName: "Collections",
+			Path: []PathElem{{
+				FieldName:       "collections",
+				HasArrayMapping: true,
+			}, {
+				FieldName: "name",
+			}},
+		},
 		// TODO need a selector which shows the type
 	},
 	Wide: []FieldSelection{
