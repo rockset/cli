@@ -69,7 +69,8 @@ func NewGetAliasCmd() *cobra.Command {
 
 	# Documentation URL
 	https://docs.rockset.com/documentation/reference/getalias`,
-		Annotations: group("alias"),
+		Annotations:       group("alias"),
+		ValidArgsFunction: aliasCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 
@@ -141,7 +142,8 @@ func NewUpdateAliasCmd() *cobra.Command {
 	# Documentation URL
 	https://docs.rockset.com/documentation/reference/updatealias`,
 
-		Annotations: group("alias"),
+		Annotations:       group("alias"),
+		ValidArgsFunction: aliasCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 			collections := args[1:]
@@ -178,7 +180,8 @@ func NewDeleteAliasCmd() *cobra.Command {
 
 	# Documentation URL
 	https://docs.rockset.com/documentation/reference/deletealias`,
-		Annotations: group("alias"),
+		Annotations:       group("alias"),
+		ValidArgsFunction: aliasCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)

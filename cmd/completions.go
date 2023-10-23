@@ -68,7 +68,6 @@ func workspaceCompletion(cmd *cobra.Command, args []string, toComplete string) (
 }
 
 func lambdaCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	logger.Info("completion")
 	ws, err := cmd.Flags().GetString(WorkspaceFlag)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
@@ -85,6 +84,35 @@ func lambdaCompletion(cmd *cobra.Command, args []string, toComplete string) ([]s
 	}
 
 	versions, err := rs.ListQueryLambdas(cmd.Context(), options...)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	list := make([]string, len(versions))
+	for i, v := range versions {
+		list[i] = v.GetName()
+	}
+
+	return list, cobra.ShellCompDirectiveNoFileComp
+}
+
+func aliasCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ws, err := cmd.Flags().GetString(WorkspaceFlag)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	rs, err := rockClient(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	var options []option.ListAliasesOption
+	if ws != "" {
+		options = append(options, option.WithAliasWorkspace(ws))
+	}
+
+	versions, err := rs.ListAliases(cmd.Context(), options...)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
