@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/rockset/rockset-go-client"
 	"github.com/rockset/rockset-go-client/dataset"
@@ -334,6 +335,81 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 	addCommonCollectionFlags(&cmd)
 
 	return &cmd
+}
+
+func newCreateTailCollectionCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:         "collection NAME",
+		Aliases:     []string{"t"},
+		Annotations: group("collection"),
+		Args:        cobra.ExactArgs(1),
+		Short:       "tail a collection",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+			name := args[0]
+			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			frequency, _ := cmd.Flags().GetDuration("frequency")
+			timeField, _ := cmd.Flags().GetString("time-field")
+
+			rs, err := rockClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			// use a large window in the beginning
+			when := fmt.Sprintf("CURRENT_TIMESTAMP - SECONDS(10)")
+			timer := time.NewTimer(frequency)
+			defer timer.Stop()
+
+			for {
+				sql := fmt.Sprintf(`SELECT *
+FROM %s.%s c
+WHERE c.%s > %s
+ORDER BY c.%s ASC`,
+					ws, name, timeField, when, timeField)
+				logger.Debug("getting records", "sql", sql)
+				result, err := rs.Query(ctx, sql)
+				if err != nil {
+					return err
+				}
+
+				for _, r := range result.Results {
+					// TODO make sure _event_time exists
+					t := r[timeField].(string)
+					// TODO error handling
+					c := r["collections"].([]any)
+
+					fmt.Printf("%s: %v\n", t, strings.Join(Map(c, func(a any) string { return a.(string) }), ", "))
+					when = fmt.Sprintf("PARSE_TIMESTAMP_ISO8601('%s')", t)
+				}
+				select {
+				case <-timer.C:
+					timer.Reset(frequency)
+				case <-ctx.Done():
+					// return nil to avoid triggering the error handling in main
+					return nil
+				}
+			}
+		},
+	}
+
+	cmd.Flags().Duration("frequency", time.Second, "polling frequency to get new documents")
+	cmd.Flags().String("time-field", "_event_time", "field name for the time")
+
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+
+	return &cmd
+}
+
+func Map[IN, OUT any](array []IN, fn func(IN) OUT) []OUT {
+	var result = make([]OUT, len(array))
+
+	for i, a := range array {
+		result[i] = fn(a)
+	}
+
+	return result
 }
 
 func waitForCollection(ctx context.Context, cmd *cobra.Command, rs *rockset.RockClient, ws, name string) error {

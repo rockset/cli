@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
+	"os/signal"
 	"runtime/debug"
 	"time"
 
@@ -18,7 +20,7 @@ const publicDsn = "___PUBLIC_DSN___"
 var dsn = publicDsn
 
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	sigs := make(chan os.Signal, 1)
 
 	go func() {
@@ -68,8 +70,10 @@ func main() {
 		// TODO allow users to override the error reporting
 		// TODO log a message that we sent the error
 		// TODO there are expected errors, e.g. "collection not found", those should be filtered out
-		sentry.CaptureException(err)
-		errorf(err.Error())
+		if !errors.Is(err, context.Canceled) {
+			sentry.CaptureException(err)
+			errorf(err.Error())
+		}
 		os.Exit(1)
 	}
 

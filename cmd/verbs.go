@@ -57,6 +57,12 @@ func addVerbs(root *cobra.Command) {
 		Long:  "suspend Rockset resources",
 	}
 
+	tailCmd := cobra.Command{
+		Use:   "tail",
+		Short: "tail collections",
+		Long:  "tail Rockset collections",
+	}
+
 	updateCmd := cobra.Command{
 		Use:   "update",
 		Short: "update resources",
@@ -101,6 +107,7 @@ func addVerbs(root *cobra.Command) {
 	listCmd.AddCommand(newListCollectionsCmd())
 	listCmd.AddCommand(newListQueryCmd())
 	sampleCmd.AddCommand(newCreateSampleCollectionCmd())
+	tailCmd.AddCommand(newCreateTailCollectionCmd())
 
 	// integrations
 	deleteCmd.AddCommand(newDeleteIntegrationsCmd())
@@ -170,6 +177,7 @@ func addVerbs(root *cobra.Command) {
 	root.AddCommand(&listCmd)
 	root.AddCommand(&resumeCmd)
 	root.AddCommand(&suspendCmd)
+	root.AddCommand(&tailCmd)
 	root.AddCommand(&updateCmd)
 	root.AddCommand(&useCmd)
 	root.AddCommand(newVersionCmd())
