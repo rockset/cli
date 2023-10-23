@@ -26,7 +26,7 @@ func collectionCompletion(cmd *cobra.Command, args []string, toComplete string) 
 		list[i] = ws.GetName()
 	}
 
-	return list, cobra.ShellCompDirectiveDefault
+	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
 func integrationCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -45,7 +45,7 @@ func integrationCompletion(cmd *cobra.Command, args []string, toComplete string)
 		list[i] = ws.GetName()
 	}
 
-	return list, cobra.ShellCompDirectiveDefault
+	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
 func workspaceCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -64,7 +64,37 @@ func workspaceCompletion(cmd *cobra.Command, args []string, toComplete string) (
 		list[i] = ws.GetName()
 	}
 
-	return list, cobra.ShellCompDirectiveDefault
+	return list, cobra.ShellCompDirectiveNoFileComp
+}
+
+func lambdaCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	logger.Info("completion")
+	ws, err := cmd.Flags().GetString(WorkspaceFlag)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	rs, err := rockClient(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	var options []option.ListQueryLambdaOption
+	if ws != "" {
+		options = append(options, option.WithQueryLambdaWorkspace(ws))
+	}
+
+	versions, err := rs.ListQueryLambdas(cmd.Context(), options...)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	list := make([]string, len(versions))
+	for i, v := range versions {
+		list[i] = v.GetName()
+	}
+
+	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
 func lambdaVersionsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -88,7 +118,7 @@ func lambdaVersionsCompletion(cmd *cobra.Command, args []string, toComplete stri
 		list[i] = v.GetName()
 	}
 
-	return list, cobra.ShellCompDirectiveDefault
+	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
 func lambdaTagsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -112,5 +142,5 @@ func lambdaTagsCompletion(cmd *cobra.Command, args []string, toComplete string) 
 		list[i] = v.GetTagName()
 	}
 
-	return list, cobra.ShellCompDirectiveDefault
+	return list, cobra.ShellCompDirectiveNoFileComp
 }

@@ -40,6 +40,7 @@ func newListQueryLambdasCmd() *cobra.Command {
 
 			ms := sort.Multi[openapi.QueryLambda]{
 				LessFuncs: []func(p1 *openapi.QueryLambda, p2 *openapi.QueryLambda) bool{
+					sort.ByWorkspace[*openapi.QueryLambda],
 					sort.ByName[*openapi.QueryLambda],
 				},
 			}
@@ -61,8 +62,9 @@ func newGetQueryLambdaCmd() *cobra.Command {
 		Short:   "get query lambda",
 		Long: `get query lambda information, has options to get a specific tag or version,
 or to get all tags or versions`,
-		Args:        cobra.ExactArgs(1),
-		Annotations: group("lambda"),
+		Args:              cobra.ExactArgs(1),
+		Annotations:       group("lambda"),
+		ValidArgsFunction: lambdaCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 			tag, _ := cmd.Flags().GetString(TagFlag)
@@ -140,12 +142,13 @@ or to get all tags or versions`,
 
 func newExecuteQueryLambdaCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "lambda",
-		Aliases:     []string{"ql"},
-		Short:       "execute lambda",
-		Long:        "execute Rockset query lambda",
-		Args:        cobra.ExactArgs(1),
-		Annotations: group("lambda"),
+		Use:               "lambda NAME",
+		Aliases:           []string{"ql"},
+		Short:             "execute lambda",
+		Long:              "execute Rockset query lambda",
+		Args:              cobra.ExactArgs(1),
+		ValidArgsFunction: lambdaCompletion,
+		Annotations:       group("lambda"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
@@ -188,8 +191,7 @@ func newExecuteQueryLambdaCmd() *cobra.Command {
 				return err
 			}
 
-			showQueryResult(cmd.OutOrStdout(), resp)
-			return nil
+			return showQueryResult(cmd.OutOrStdout(), resp)
 		},
 	}
 
@@ -215,13 +217,18 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 			sql, _ := cmd.Flags().GetString(SQLFlag)
+			description, _ := cmd.Flags().GetString(DescriptionFlag)
 
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
 			if err != nil {
 				return err
 			}
+
 			var options []option.CreateQueryLambdaOption
+			if description != "" {
+				options = append(options, option.WithQueryLambdaDescription(description))
+			}
 
 			ql, err := rs.CreateQueryLambda(ctx, ws, args[0], sql, options...)
 			if err != nil {
@@ -235,6 +242,89 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 	}
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show query lambdas for the selected workspace")
 	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+
+	cmd.Flags().String(DescriptionFlag, "", "description of the query lambda")
+
+	cmd.Flags().String(SQLFlag, "", "file containing SQL")
+	_ = cobra.MarkFlagRequired(cmd.Flags(), SQLFlag)
+	_ = cobra.MarkFlagFilename(cmd.Flags(), SQLFlag, ".sql")
+
+	return &cmd
+}
+
+func newDeleteQueryLambdaCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:               "lambda",
+		Aliases:           []string{"ql"},
+		Args:              cobra.ExactArgs(1),
+		Short:             "delete query lambda",
+		Annotations:       group("lambda"),
+		ValidArgsFunction: lambdaCompletion,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+
+			ctx := cmd.Context()
+			rs, err := rockClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			err = rs.DeleteQueryLambda(ctx, ws, args[0])
+			if err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "deleted query lambda %s in %s", args[0], ws)
+
+			return nil
+		},
+	}
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show query lambdas for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+
+	cmd.Flags().String(DescriptionFlag, "", "description of the query lambda")
+
+	return &cmd
+}
+
+func newUpdateQueryLambdaCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:               "lambda",
+		Aliases:           []string{"ql"},
+		Args:              cobra.ExactArgs(1),
+		Short:             "update query lambda",
+		Annotations:       group("lambda"),
+		ValidArgsFunction: lambdaCompletion,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			sql, _ := cmd.Flags().GetString(SQLFlag)
+			description, _ := cmd.Flags().GetString(DescriptionFlag)
+
+			ctx := cmd.Context()
+			rs, err := rockClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			var options []option.CreateQueryLambdaOption
+			if description != "" {
+				options = append(options, option.WithQueryLambdaDescription(description))
+			}
+
+			ql, err := rs.UpdateQueryLambda(ctx, ws, args[0], sql, options...)
+			if err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "updated query lambda %s in %s", ql.GetName(), ql.GetWorkspace())
+
+			return nil
+		},
+	}
+	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show query lambdas for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+
+	cmd.Flags().String(DescriptionFlag, "", "description of the query lambda")
 
 	cmd.Flags().String(SQLFlag, "", "file containing SQL")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), SQLFlag)
