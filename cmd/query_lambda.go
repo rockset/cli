@@ -2,23 +2,24 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/rockset/cli/format"
-	"github.com/rockset/cli/sort"
-	"github.com/rockset/rockset-go-client/openapi"
-	"github.com/spf13/cobra"
 	"os"
 	"strings"
 
+	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/rockset/rockset-go-client/option"
+	"github.com/spf13/cobra"
+
+	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
 )
 
-func newListQueryLambdaCmd() *cobra.Command {
+func newListQueryLambdasCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:         "lambdas",
 		Aliases:     []string{"ql", "qls", "querylambdas"},
 		Args:        cobra.NoArgs,
-		Short:       "list lambda",
 		Annotations: group("lambda"),
+		Short:       "list query lambdas",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 
@@ -55,14 +56,19 @@ func newListQueryLambdaCmd() *cobra.Command {
 
 func newGetQueryLambdaCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "lambda",
-		Aliases:     []string{"ql"},
+		Use:     "lambda",
+		Aliases: []string{"ql"},
+		Short:   "get query lambda",
+		Long: `get query lambda information, has options to get a specific tag or version,
+or to get all tags or versions`,
 		Args:        cobra.ExactArgs(1),
-		Short:       "get query lambda",
 		Annotations: group("lambda"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
-			tag, _ := cmd.Flags().GetString("tag")
+			tag, _ := cmd.Flags().GetString(TagFlag)
+			tags, _ := cmd.Flags().GetBool(TagsFlag)
+			version, _ := cmd.Flags().GetString(VersionFlag)
+			versions, _ := cmd.Flags().GetBool(VersionsFlag)
 
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -70,7 +76,43 @@ func newGetQueryLambdaCmd() *cobra.Command {
 				return err
 			}
 
-			ql, err := rs.GetQueryLambdaVersionByTag(ctx, ws, args[0], tag)
+			if tag != "" {
+				ql, err := rs.GetQueryLambdaVersionByTag(ctx, ws, args[0], tag)
+				if err != nil {
+					return err
+				}
+
+				return formatOne(cmd, ql)
+			}
+
+			if version != "" {
+				ql, err := rs.GetQueryLambdaVersion(ctx, ws, args[0], version)
+				if err != nil {
+					return err
+				}
+
+				return formatOne(cmd, ql)
+			}
+
+			if tags {
+				list, err := rs.ListQueryLambdaTags(ctx, ws, args[0])
+				if err != nil {
+					return err
+				}
+
+				return formatList(cmd, format.ToInterfaceArray(list))
+			}
+
+			if versions {
+				list, err := rs.ListQueryLambdaVersions(ctx, ws, args[0])
+				if err != nil {
+					return err
+				}
+
+				return formatList(cmd, format.ToInterfaceArray(list))
+			}
+
+			ql, err := rs.GetQueryLambdaVersionByTag(ctx, ws, args[0], "latest")
 			if err != nil {
 				return err
 			}
@@ -78,10 +120,20 @@ func newGetQueryLambdaCmd() *cobra.Command {
 			return formatOne(cmd, ql)
 		},
 	}
+
 	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show query lambdas for the selected workspace")
 	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
 
-	cmd.Flags().String("tag", "latest", "query lambda tag")
+	cmd.Flags().Bool(VersionsFlag, false, "show all versions of this query lambda")
+	cmd.Flags().Bool(TagsFlag, false, "show all tags for this query lambda")
+
+	cmd.Flags().String(TagFlag, "", "only show this query lambda tag")
+	_ = cmd.RegisterFlagCompletionFunc("tag", lambdaTagsCompletion)
+
+	cmd.Flags().String(VersionFlag, "", "only show this query lambda version")
+	_ = cmd.RegisterFlagCompletionFunc(VersionFlag, lambdaVersionsCompletion)
+
+	cmd.MarkFlagsMutuallyExclusive(VersionFlag, "versions", "tag", "tags")
 
 	return &cmd
 }

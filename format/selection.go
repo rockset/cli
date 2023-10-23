@@ -215,11 +215,12 @@ func (r FieldSelection) doSelect(obj any, curPath []PathElem) (any, error) {
 		curPath = rest
 	}
 
+	cur = reflect.Indirect(cur)
 	if !cur.IsValid() {
-		return nil, makeError(nil)
+		return nil, nil
 	}
 
-	return reflect.Indirect(cur).Interface(), nil
+	return cur.Interface(), nil
 }
 
 func (r FieldSelection) Select(obj any) (any, error) {

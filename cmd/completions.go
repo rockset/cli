@@ -66,3 +66,51 @@ func workspaceCompletion(cmd *cobra.Command, args []string, toComplete string) (
 
 	return list, cobra.ShellCompDirectiveDefault
 }
+
+func lambdaVersionsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ws, err := cmd.Flags().GetString(WorkspaceFlag)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	rs, err := rockClient(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	versions, err := rs.ListQueryLambdaVersions(cmd.Context(), ws, args[0])
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	list := make([]string, len(versions))
+	for i, v := range versions {
+		list[i] = v.GetName()
+	}
+
+	return list, cobra.ShellCompDirectiveDefault
+}
+
+func lambdaTagsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ws, err := cmd.Flags().GetString(WorkspaceFlag)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	rs, err := rockClient(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	versions, err := rs.ListQueryLambdaTags(cmd.Context(), ws, args[0])
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	list := make([]string, len(versions))
+	for i, v := range versions {
+		list[i] = v.GetTagName()
+	}
+
+	return list, cobra.ShellCompDirectiveDefault
+}

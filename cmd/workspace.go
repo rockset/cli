@@ -117,7 +117,7 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 					_, _ = fmt.Fprintf(cmd.OutOrStdout(), "deleted alias %s\n", alias.GetName())
 				}
 
-				// wait until all resources are gone...
+				_, _ = fmt.Fprintf(cmd.OutOrStdout(), "waiting for all resources to be gone...\n")
 
 				for _, collection := range collections {
 					if err = rs.Wait.UntilCollectionGone(ctx, ws, collection.GetName()); err != nil {
