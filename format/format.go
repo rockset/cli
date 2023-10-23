@@ -142,6 +142,9 @@ func valueAsString(value reflect.Value, ff FieldFormatter) (string, error) {
 		}
 		return valueAsString(reflect.Indirect(value), ff)
 	case reflect.Struct:
+		if ff != nil {
+			return ff.FormatField(value.Interface())
+		}
 		out, err := json.Marshal(value.Interface())
 		if err != nil {
 			return "", err

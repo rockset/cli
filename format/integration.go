@@ -14,7 +14,11 @@ var IntegrationDefaultSelector = DefaultSelector{
 				FieldName: "name",
 			}},
 		},
-		// TODO need a selector which shows the type
+		{
+			ColumnName:     "Integration Type",
+			Path:           []PathElem{},
+			FieldFormatter: FieldFormatters[IntegrationType],
+		},
 	},
 	Wide: []FieldSelection{
 		NewFieldSelection("Name", "name"),
