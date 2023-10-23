@@ -164,8 +164,9 @@ func addVerbs(root *cobra.Command) {
 	getCmd.AddCommand(newGetWorkspaceCmd())
 	listCmd.AddCommand(newListWorkspacesCmd())
 
-	// config
+	// context
 	createCmd.AddCommand(newCreateContextCmd())
+	deleteCmd.AddCommand(newDeleteContextCmd())
 	listCmd.AddCommand(newListContextsCmd())
 	useCmd.AddCommand(newUseContextCmd())
 

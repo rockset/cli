@@ -70,6 +70,36 @@ func listContext[T apiserver](out io.Writer, current string, m map[string]T) {
 	}
 }
 
+func newDeleteContextCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:         "context NAME",
+		Aliases:     []string{"ctx"},
+		Short:       "delete an authentication context",
+		Annotations: group("context"),
+		Args:        cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cfg, err := config.Load()
+			if err != nil {
+				return err
+			}
+
+			if err = cfg.DeleteContext(args[0]); err != nil {
+				return err
+			}
+
+			if err = config.Store(cfg); err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "context %s deleted\n", args[0])
+
+			return nil
+		},
+	}
+
+	return &cmd
+}
+
 func newCreateContextCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:         "context NAME",

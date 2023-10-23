@@ -77,6 +77,20 @@ func (c *Config) AsOptions(override string) ([]rockset.RockOption, error) {
 	return nil, fmt.Errorf("%w", NotFoundErr)
 }
 
+func (c *Config) DeleteContext(name string) error {
+	if _, found := c.Tokens[name]; found {
+		delete(c.Tokens, name)
+		return nil
+	}
+
+	if _, found := c.Keys[name]; found {
+		delete(c.Keys, name)
+		return nil
+	}
+
+	return fmt.Errorf("context %s: %w", name, NotFoundErr)
+}
+
 func (c *Config) AddToken(name string, token Token) error {
 	if _, found := c.Tokens[name]; found {
 		return ContextAlreadyExistErr
