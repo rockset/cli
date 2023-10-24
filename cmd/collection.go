@@ -19,12 +19,13 @@ import (
 
 func newDeleteCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "collection",
-		Aliases:     []string{"coll", "c"},
-		Short:       "delete collection",
-		Long:        "delete Rockset collection",
-		Annotations: group("collection"),
-		Args:        cobra.ExactArgs(1),
+		Use:               "collection",
+		Aliases:           []string{"coll", "c"},
+		Short:             "delete collection",
+		Long:              "delete Rockset collection",
+		Annotations:       group("collection"),
+		Args:              cobra.ExactArgs(1),
+		ValidArgsFunction: collectionCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -53,12 +54,13 @@ func newDeleteCollectionCmd() *cobra.Command {
 
 func newGetCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "collection",
-		Aliases:     []string{"coll", "c"},
-		Short:       "get collection",
-		Long:        "get Rockset collection",
-		Annotations: group("collection"),
-		Args:        cobra.ExactArgs(1),
+		Use:               "collection",
+		Aliases:           []string{"coll", "c"},
+		Short:             "get collection",
+		Long:              "get Rockset collection",
+		Annotations:       group("collection"),
+		Args:              cobra.ExactArgs(1),
+		ValidArgsFunction: collectionCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
