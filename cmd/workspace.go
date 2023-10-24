@@ -50,12 +50,13 @@ func newCreateWorkspaceCmd() *cobra.Command {
 
 func newDeleteWorkspaceCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "workspace",
-		Aliases:     []string{"ws"},
-		Short:       "delete workspace",
-		Long:        "delete Rockset workspace",
-		Args:        cobra.ExactArgs(1),
-		Annotations: group("workspace"),
+		Use:               "workspace",
+		Aliases:           []string{"ws"},
+		Short:             "delete workspace",
+		Long:              "delete Rockset workspace",
+		Args:              cobra.ExactArgs(1),
+		Annotations:       group("workspace"),
+		ValidArgsFunction: workspaceCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			ws := args[0]
@@ -157,12 +158,13 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 
 func newGetWorkspaceCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:         "workspace",
-		Aliases:     []string{"ws"},
-		Short:       "get workspace",
-		Long:        "get Rockset workspace",
-		Args:        cobra.ExactArgs(1),
-		Annotations: group("workspace"),
+		Use:               "workspace",
+		Aliases:           []string{"ws"},
+		Short:             "get workspace",
+		Long:              "get Rockset workspace",
+		Args:              cobra.ExactArgs(1),
+		Annotations:       group("workspace"),
+		ValidArgsFunction: workspaceCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
