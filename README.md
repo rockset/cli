@@ -1,6 +1,5 @@
 # Rockset CLI
 [![Build status](https://github.com/rockset/cli/actions/workflows/build.yaml/badge.svg)](https://github.com/rockset/cli/actions/workflows/build.yaml)
-[![CircleCI](https://circleci.com/gh/rockset/cli.svg?style=shield)](https://circleci.com/gh/rockset/cli)
 [![Documentation](https://godoc.org/github.com/rockset/rockset-go-cli?status.svg)](http://godoc.org/github.com/rockset/rockset-go-cli)
 [![License](https://img.shields.io/github/license/rockset/cli.svg?maxAge=2592000)](https://github.com/rockset/rockset-go-cli/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/rockset/cli.svg)](https://github.com/rockset/rockset-go-cli/issues)
@@ -11,7 +10,7 @@
 The Rockset cli can be used as an alternative to the [console](https://console.rockset.com/),
 and is built as a UNIX tool to allow it to be used in pipes.
 
-![screen recording](vhs/demo.gif)
+![screen recording](vhs/quickstart.gif)
 
 ### Query
 
@@ -21,12 +20,12 @@ There are three ways to query a collection, either using the first argument as t
 
 ```shell
 $ rockset query 'SELECT COUNT(*) FROM _events'
-+--------+
-| ?COUNT |
-+--------+
-|   1016 |
-+--------+
-Elapsed time: 26 ms
+┌────────┐
+│ ?COUNT │
+├────────┤
+│  2488  │
+└────────┘
+Elapsed time: 22 ms
 ```
 
 Or using interactive mode
@@ -35,11 +34,11 @@ Or using interactive mode
 $ rockset query
 [R]> SELECT COUNT(*)
 >>> FROM _events;
-+--------+
-| ?COUNT |
-+--------+
-|   1016 |
-+--------+
+┌────────┐
+│ ?COUNT │
+├────────┤
+│  2488  │
+└────────┘
 Elapsed time: 26 ms
 ^D
 ```
@@ -48,12 +47,12 @@ And reading the SQL from stdin
 
 ```shell
 $ rockset query < query.sql
-+--------+
-| ?COUNT |
-+--------+
-|   1016 |
-+--------+
-Elapsed time: 26 ms
+┌────────┐
+│ ?COUNT │
+├────────┤
+│  2488  │
+└────────┘
+Elapsed time: 24 ms
 ```
 
 ### Cloning a collection

@@ -9,7 +9,7 @@ Type "rockset query 'SELECT COUNT(*) FROM demo.movies'"
 Sleep 500ms
 Enter
 
-Sleep 2s
+Sleep 3s
 
 Type "rockset query"
 Sleep 500ms
@@ -30,7 +30,7 @@ Sleep 500ms
 Enter
 Ctrl+D
 
-Sleep 2s
+Sleep 3s
 
 Type "echo 'SELECT COUNT(*) FROM demo.movies;' | rockset query"
 Sleep 500ms
