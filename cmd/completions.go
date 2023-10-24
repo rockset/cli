@@ -172,3 +172,22 @@ func lambdaTagsCompletion(cmd *cobra.Command, args []string, toComplete string) 
 
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
+
+func roleCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := rockClient(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	versions, err := rs.ListRoles(cmd.Context())
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	list := make([]string, len(versions))
+	for i, v := range versions {
+		list[i] = v.GetRoleName()
+	}
+
+	return list, cobra.ShellCompDirectiveNoFileComp
+}

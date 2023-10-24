@@ -42,11 +42,12 @@ func newListRolesCommand() *cobra.Command {
 
 func newGetRoleCommand() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "role NAME",
-		Aliases:     []string{"r"},
-		Args:        cobra.ExactArgs(1),
-		Short:       "get role information",
-		Annotations: group("role"),
+		Use:               "role NAME",
+		Aliases:           []string{"r"},
+		Args:              cobra.ExactArgs(1),
+		Short:             "get role information",
+		Annotations:       group("role"),
+		ValidArgsFunction: roleCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
