@@ -66,12 +66,13 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 
 func newUpdateVirtualInstanceCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "virtualinstance ID|NAME",
-		Aliases:     []string{"vi"},
-		Short:       "update a virtual instance",
-		Long:        "update a Rockset virtual instance",
-		Args:        cobra.ExactArgs(1),
-		Annotations: group("virtual instance"),
+		Use:               "virtualinstance ID|NAME",
+		Aliases:           []string{"vi"},
+		Short:             "update a virtual instance",
+		Long:              "update a Rockset virtual instance",
+		Args:              cobra.ExactArgs(1),
+		Annotations:       group("virtual instance"),
+		ValidArgsFunction: virtualInstanceCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			size, _ := cmd.Flags().GetString(SizeFlag)
@@ -154,12 +155,13 @@ func newListVirtualInstancesCmd() *cobra.Command {
 
 func newGetVirtualInstancesCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "virtualinstance ID|NAME",
-		Aliases:     []string{"vi"},
-		Args:        cobra.ExactArgs(1),
-		Short:       "get virtual instance",
-		Long:        "get Rockset virtual instances",
-		Annotations: group("virtual instance"),
+		Use:               "virtualinstance ID|NAME",
+		Aliases:           []string{"vi"},
+		Args:              cobra.ExactArgs(1),
+		Short:             "get virtual instance",
+		Long:              "get Rockset virtual instances",
+		Annotations:       group("virtual instance"),
+		ValidArgsFunction: virtualInstanceCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -189,12 +191,13 @@ func newGetVirtualInstancesCmd() *cobra.Command {
 
 func newDeleteVirtualInstanceCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "virtualinstance ID|NAME",
-		Aliases:     []string{"vi"},
-		Short:       "delete virtual instance",
-		Long:        "delete Rockset virtual instance",
-		Args:        cobra.ExactArgs(1),
-		Annotations: group("virtual instance"),
+		Use:               "virtualinstance ID|NAME",
+		Aliases:           []string{"vi"},
+		Short:             "delete virtual instance",
+		Long:              "delete Rockset virtual instance",
+		Args:              cobra.ExactArgs(1),
+		Annotations:       group("virtual instance"),
+		ValidArgsFunction: virtualInstanceCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -224,12 +227,13 @@ func newDeleteVirtualInstanceCmd() *cobra.Command {
 
 func newSuspendVirtualInstanceCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "virtualinstance ID|NAME",
-		Aliases:     []string{"vi"},
-		Short:       "suspend virtual instance",
-		Long:        "suspend Rockset virtual instance",
-		Args:        cobra.ExactArgs(1),
-		Annotations: group("virtual instance"),
+		Use:               "virtualinstance ID|NAME",
+		Aliases:           []string{"vi"},
+		Short:             "suspend virtual instance",
+		Long:              "suspend Rockset virtual instance",
+		Args:              cobra.ExactArgs(1),
+		Annotations:       group("virtual instance"),
+		ValidArgsFunction: virtualInstanceCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -259,12 +263,13 @@ func newSuspendVirtualInstanceCmd() *cobra.Command {
 
 func newResumeVirtualInstanceCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "virtualinstance ID|NAME",
-		Aliases:     []string{"vi"},
-		Short:       "resume virtual instance",
-		Long:        "resume Rockset virtual instance",
-		Args:        cobra.ExactArgs(1),
-		Annotations: group("virtual instance"),
+		Use:               "virtualinstance ID|NAME",
+		Aliases:           []string{"vi"},
+		Short:             "resume virtual instance",
+		Long:              "resume Rockset virtual instance",
+		Args:              cobra.ExactArgs(1),
+		Annotations:       group("virtual instance"),
+		ValidArgsFunction: virtualInstanceCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
