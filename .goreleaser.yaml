@@ -42,10 +42,7 @@ brews:
   - name: rockset
     homepage: https://github.com/rockset/cli
     description: 'Rockset CLI'
-    skip_upload: true
     repository:
       owner: rockset
       name: homebrew
       branch: main
-      pull_request:
-        enabled: true
