@@ -1,26 +1,30 @@
 //go:build integration
 
-package cmd
+package cmd_test
 
 import (
 	"bytes"
-	"github.com/rockset/cli/internal/cluster"
-	"github.com/rockset/cli/internal/test"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
+
+	"github.com/rockset/cli/cmd"
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/internal/test"
 )
 
 func TestGetWorkspaceCmd(t *testing.T) {
 	test.SkipUnlessIntegrationTest(t)
 
 	buf := &bytes.Buffer{}
-	cmd := newGetWorkspaceCmd()
-	cmd.SetArgs([]string{DefaultWorkspace})
-	cmd.Flags().Set("region", cluster.Use1a1)
-	cmd.SetOut(buf)
+	c := cmd.NewGetWorkspaceCmd()
+	c.SetArgs([]string{cmd.DefaultWorkspace})
+	err := c.Flags().Set("region", config.Use1a1)
+	require.NoError(t, err)
+	c.SetOut(buf)
 
-	err := cmd.Execute()
+	err = c.Execute()
 
 	require.Nil(t, err)
 	assert.Equal(t,

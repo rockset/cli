@@ -140,7 +140,7 @@ or to get all tags or versions`,
 	return &cmd
 }
 
-func newExecuteQueryLambdaCmd() *cobra.Command {
+func NewExecuteQueryLambdaCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:               "lambda NAME",
 		Aliases:           []string{"ql"},

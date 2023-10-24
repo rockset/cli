@@ -153,7 +153,7 @@ func addVerbs(root *cobra.Command) {
 	createCmd.AddCommand(newCreateQueryLambdaCmd())
 	deleteCmd.AddCommand(newDeleteQueryLambdaCmd())
 	updateCmd.AddCommand(newUpdateQueryLambdaCmd())
-	executeCmd.AddCommand(newExecuteQueryLambdaCmd())
+	executeCmd.AddCommand(NewExecuteQueryLambdaCmd())
 	getCmd.AddCommand(newGetQueryLambdaCmd())
 	listCmd.AddCommand(newListQueryLambdasCmd())
 
@@ -163,7 +163,7 @@ func addVerbs(root *cobra.Command) {
 	// workspace
 	createCmd.AddCommand(newCreateWorkspaceCmd())
 	deleteCmd.AddCommand(newDeleteWorkspaceCmd())
-	getCmd.AddCommand(newGetWorkspaceCmd())
+	getCmd.AddCommand(NewGetWorkspaceCmd())
 	listCmd.AddCommand(newListWorkspacesCmd())
 
 	// context

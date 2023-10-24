@@ -17,9 +17,14 @@ import (
 const (
 	FileName        = "config.yaml"
 	HistoryFileName = "cli.hist"
+
+	Usw2a1 = "usw2a1"
+	Use1a1 = "use1a1"
+	Euc1a1 = "euc1a1"
+	Apt2a1 = "apt2a1"
 )
 
-var Clusters = []string{"usw2a1", "use1a1", "euc1a1", "apt2a1"}
+var Clusters = []string{Usw2a1, Use1a1, Euc1a1, Apt2a1}
 
 func init() {
 	sort.Strings(Clusters)

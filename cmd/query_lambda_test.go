@@ -1,14 +1,17 @@
 //go:build integration
 
-package cmd
+package cmd_test
 
 import (
 	"bytes"
-	"github.com/rockset/cli/internal/cluster"
-	"github.com/rockset/cli/internal/test"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
+
+	"github.com/rockset/cli/cmd"
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/internal/test"
 )
 
 func TestExecuteLambdaCmd(t *testing.T) {
@@ -16,12 +19,13 @@ func TestExecuteLambdaCmd(t *testing.T) {
 
 	params := "testdata/params.json"
 	buf := bytes.NewBufferString("")
-	cmd := newExecuteQueryLambdaCmd()
-	cmd.Flags().Set("region", cluster.Usw2a1)
-	cmd.SetArgs([]string{"--params", params, "commons.events2"})
-	cmd.SetOut(buf)
+	c := cmd.NewExecuteQueryLambdaCmd()
+	err := c.Flags().Set("region", config.Usw2a1)
+	require.NoError(t, err)
+	c.SetArgs([]string{"--params", params, "commons.events2"})
+	c.SetOut(buf)
 
-	err := cmd.Execute()
+	err = c.Execute()
 
 	require.Nil(t, err)
 	assert.Equal(t, ``, buf.String())

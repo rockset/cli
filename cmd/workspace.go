@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/rockset/cli/format"
-	"github.com/rockset/cli/sort"
-	"github.com/rockset/rockset-go-client/openapi"
 
+	"github.com/rockset/rockset-go-client/openapi"
+	"github.com/rockset/rockset-go-client/option"
 	"github.com/spf13/cobra"
 
-	"github.com/rockset/rockset-go-client/option"
+	"github.com/rockset/cli/format"
+	"github.com/rockset/cli/sort"
 )
 
 func newCreateWorkspaceCmd() *cobra.Command {
@@ -156,7 +156,7 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 	return &cmd
 }
 
-func newGetWorkspaceCmd() *cobra.Command {
+func NewGetWorkspaceCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:               "workspace",
 		Aliases:           []string{"ws"},
