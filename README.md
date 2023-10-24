@@ -136,6 +136,14 @@ go build -o rockset
 go test ./...
 ```
 
+## Releasing
+
+The repo uses `goreleaser` to publish new releases
+
+```shell
+goreleaser release --snapshot
+```
+
 ### Integration testing
 
 Requires the environment variable `ROCKSET_APIKEY` to be set.

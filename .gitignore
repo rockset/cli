@@ -20,3 +20,5 @@
 .idea
 cli
 rock
+
+dist/
