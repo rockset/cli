@@ -210,3 +210,32 @@ func virtualInstanceCompletion(cmd *cobra.Command, args []string, toComplete str
 
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
+
+func viewCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ws, err := cmd.Flags().GetString(WorkspaceFlag)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	rs, err := rockClient(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	var options []option.ListViewOption
+	if ws != "" {
+		options = append(options, option.WithViewWorkspace(ws))
+	}
+
+	versions, err := rs.ListViews(cmd.Context(), options...)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	list := make([]string, len(versions))
+	for i, v := range versions {
+		list[i] = v.GetName()
+	}
+
+	return list, cobra.ShellCompDirectiveNoFileComp
+}

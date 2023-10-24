@@ -53,11 +53,12 @@ func newListViewsCmd() *cobra.Command {
 
 func newGetViewCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "view NAME",
-		Aliases:     []string{"v"},
-		Args:        cobra.ExactArgs(1),
-		Short:       "get view information",
-		Annotations: group("view"),
+		Use:               "view NAME",
+		Aliases:           []string{"v"},
+		Args:              cobra.ExactArgs(1),
+		Short:             "get view information",
+		Annotations:       group("view"),
+		ValidArgsFunction: viewCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
 
