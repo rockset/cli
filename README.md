@@ -1,9 +1,9 @@
 # Rockset CLI
 [![Build status](https://github.com/rockset/cli/actions/workflows/build.yaml/badge.svg)](https://github.com/rockset/cli/actions/workflows/build.yaml)
-[![Documentation](https://godoc.org/github.com/rockset/rockset-go-cli?status.svg)](http://godoc.org/github.com/rockset/rockset-go-cli)
-[![License](https://img.shields.io/github/license/rockset/cli.svg?maxAge=2592000)](https://github.com/rockset/rockset-go-cli/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/rockset/cli.svg)](https://github.com/rockset/rockset-go-cli/issues)
-[![Release](https://img.shields.io/github/release/rockset/cli.svg?label=Release)](https://github.com/rockset/rockset-go-cli/releases)
+[![Documentation](https://godoc.org/github.com/rockset/cli?status.svg)](http://godoc.org/github.com/rockset/cli)
+[![License](https://img.shields.io/github/license/rockset/cli.svg?maxAge=2592000)](https://github.com/rockset/cli/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/rockset/cli.svg)](https://github.com/rockset/cli/issues)
+[![Release](https://img.shields.io/github/release/rockset/cli.svg?label=Release)](https://github.com/rockset/cli/releases)
 
 ## Usage
 
