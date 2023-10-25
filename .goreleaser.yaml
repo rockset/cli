@@ -46,4 +46,4 @@ brews:
       owner: rockset
       name: homebrew
       branch: main
-      token: "{{ .env.HOMEBREW_GITHUB_AUTH_TOKEN }}"
+      token: "{{ .Env.HOMEBREW_GITHUB_AUTH_TOKEN }}"
