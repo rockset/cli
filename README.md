@@ -5,6 +5,13 @@
 [![GitHub issues](https://img.shields.io/github/issues/rockset/cli.svg)](https://github.com/rockset/cli/issues)
 [![Release](https://img.shields.io/github/release/rockset/cli.svg?label=Release)](https://github.com/rockset/cli/releases)
 
+## Installation
+
+```shell
+brew tap rockset/cli
+brew install rockset
+```
+
 ## Usage
 
 The Rockset cli can be used as an alternative to the [console](https://console.rockset.com/),

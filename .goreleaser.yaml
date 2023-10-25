@@ -44,6 +44,6 @@ brews:
     description: 'Rockset CLI'
     repository:
       owner: rockset
-      name: homebrew
+      name: homebrew-cli
       branch: main
       token: "{{ .Env.HOMEBREW_GITHUB_AUTH_TOKEN }}"
