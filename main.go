@@ -63,7 +63,7 @@ func main() {
 	}()
 
 	// kick off a version check in the background that will show up at the end of the run
-	go cmd.VersionCheck(versionCtx, version)
+	go cmd.GithubVersionCheck(versionCtx, version)
 
 	root := cmd.NewRootCmd(Version)
 	if err := root.ExecuteContext(ctx); err != nil {

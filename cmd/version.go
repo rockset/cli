@@ -58,20 +58,16 @@ func newVersionCmd() *cobra.Command {
 	return &cmd
 }
 
-// TODO change to HTTPS
-
-const VersionURL = "http://rockset.sh/install/version.json"
-
-type Versions struct {
-	Stable string `json:"stable"`
-	Beta   string `json:"beta"`
+type githubResponse struct {
+	Name string `json:"name"`
 }
 
-func VersionCheck(ctx context.Context, ch chan string) {
+func GithubVersionCheck(ctx context.Context, ch chan string) {
 	// always send something on the channel
 	defer func() { ch <- "" }()
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, VersionURL, nil)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet,
+		"https://api.github.com/repos/rockset/cli/releases/latest", nil)
 	if err != nil {
 		logger.Error("failed to create http request", "err", err)
 		return
@@ -84,14 +80,14 @@ func VersionCheck(ctx context.Context, ch chan string) {
 		return
 	}
 
-	var v Versions
+	var releases githubResponse
 	dec := json.NewDecoder(response.Body)
-	if err = dec.Decode(&v); err != nil {
+	if err = dec.Decode(&releases); err != nil {
 		logger.Error("failed to unmarshal json", "err", err)
 		return
 	}
 
-	if v.Stable != Version {
-		ch <- fmt.Sprintf("A new release of %s is available: %s → %s", tui.Rockset, Version, v.Stable)
+	if releases.Name != Version {
+		ch <- fmt.Sprintf("A new release of %s is available: %s → %s", tui.Rockset, Version, releases.Name)
 	}
 }
