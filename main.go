@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/getsentry/sentry-go"
+	rockerr "github.com/rockset/rockset-go-client/errors"
 
 	"github.com/rockset/cli/cmd"
 	"github.com/rockset/cli/tui"
@@ -69,11 +70,18 @@ func main() {
 	if err := root.ExecuteContext(ctx); err != nil {
 		// TODO allow users to override the error reporting
 		// TODO log a message that we sent the error
-		// TODO there are expected errors, e.g. "collection not found", those should be filtered out
 		if !errors.Is(err, context.Canceled) {
-			sentry.CaptureException(err)
-			errorf(err.Error())
+			// we don't capture errors from the Rockset API
+			var re rockerr.Error
+			if errors.As(err, &re) {
+				_, _ = fmt.Fprintf(os.Stderr, "%s\n", tui.RocksetStyle.Render("Rockset error:", err.Error()))
+			} else {
+				// this captures usage errors too, as there is no way to distinguish it from other errors
+				sentry.CaptureException(err)
+				errorf(err.Error())
+			}
 		}
+
 		os.Exit(1)
 	}
 
@@ -86,5 +94,5 @@ func main() {
 
 func errorf(msg string) {
 	// bold too?
-	_, _ = fmt.Fprintf(os.Stderr, "\n%s\n", tui.WarningStyle.Render("ERROR:", msg))
+	_, _ = fmt.Fprintf(os.Stderr, "%s\n", tui.ErrorStyle.Render("ERROR:", msg))
 }

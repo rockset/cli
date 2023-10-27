@@ -147,7 +147,7 @@ func (i *Input) View() string {
 	if err == nil {
 		_, _ = fmt.Fprintf(&b, "\n\n")
 	} else {
-		_, _ = fmt.Fprintf(&b, "\n%s\n", errorStyle.Render(err.Error()))
+		_, _ = fmt.Fprintf(&b, "\n%s\n", ErrorStyle.Render(err.Error()))
 	}
 
 	button := blurredButton

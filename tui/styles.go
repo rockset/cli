@@ -6,12 +6,17 @@ import (
 )
 
 var (
-	focusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("13"))
+	Red    = lipgloss.Color("9")
+	Purple = lipgloss.Color("13")
+	Cyan   = lipgloss.Color("14")
+	Yellow = lipgloss.Color("11")
+
+	focusedStyle = lipgloss.NewStyle().Foreground(Purple)
 	blurredStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
-	errorStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("9"))
-	WarningStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("11"))
-	BracketStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("14"))
-	RocksetStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("13"))
+	ErrorStyle   = lipgloss.NewStyle().Foreground(Red)
+	WarningStyle = lipgloss.NewStyle().Foreground(Yellow)
+	BracketStyle = lipgloss.NewStyle().Foreground(Cyan)
+	RocksetStyle = lipgloss.NewStyle().Foreground(Purple)
 	cursorStyle  = focusedStyle.Copy()
 	noStyle      = lipgloss.NewStyle()
 	helpStyle    = blurredStyle.Copy()

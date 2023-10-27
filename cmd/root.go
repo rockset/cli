@@ -41,6 +41,9 @@ For more configuration options, see the 'rockset create config' command.`, confi
 		Example: `	## Create a sample collection and run a query against it
 	rockset create sample collection --wait --dataset movies movies
 	rockset query "SELECT COUNT(*) FROM movies"`,
+		// silence the root command and all children inherit the same behavior
+		SilenceUsage:  true,
+		SilenceErrors: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if debug, _ := cmd.Flags().GetBool(DebugFlag); debug {
 				logger = slog.New(slog.NewTextHandler(cmd.ErrOrStderr(), &slog.HandlerOptions{
