@@ -197,7 +197,7 @@ func NewExecuteQueryLambdaCmd() *cobra.Command {
 				return err
 			}
 
-			return showQueryResult(cmd.OutOrStdout(), resp)
+			return showQueryResponse(cmd.OutOrStdout(), resp)
 		},
 	}
 

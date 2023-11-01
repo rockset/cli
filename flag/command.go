@@ -1,16 +1,20 @@
 package flag
 
 const (
+	Async                = "async"
 	Bucket               = "bucket"
 	Compression          = "compression"
 	Collection           = "collection"
+	Cursor               = "cursor"
 	Dataset              = "dataset"
 	Description          = "description"
+	Docs                 = "docs"
 	Email                = "email"
 	File                 = "file"
 	Force                = "force"
 	IngestTransformation = "ingest-transformation"
 	Integration          = "integration"
+	Offset               = "offset"
 	Pattern              = "pattern"
 	Region               = "region"
 	Retention            = "retention"
