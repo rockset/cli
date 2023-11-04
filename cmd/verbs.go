@@ -146,8 +146,11 @@ func addVerbs(root *cobra.Command) {
 	listCmd.AddCommand(newListRolesCommand())
 
 	// API keys
+	createCmd.AddCommand(newCreateAPIKeyCmd())
+	deleteCmd.AddCommand(newDeleteAPIKeyCmd())
 	getCmd.AddCommand(newGetAPIKeyCmd())
 	listCmd.AddCommand(newListAPIKeysCmd())
+	updateCmd.AddCommand(newUpdateAPIKeyCmd())
 
 	// query lambda
 	createCmd.AddCommand(newCreateQueryLambdaCmd())

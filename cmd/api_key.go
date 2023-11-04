@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/sort"
 	"github.com/rockset/rockset-go-client/openapi"
@@ -14,11 +15,12 @@ import (
 
 func newListAPIKeysCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "apikeys [USER]",
-		Aliases:     []string{"ak", "api", "apikey"},
-		Args:        cobra.RangeArgs(0, 1),
-		Short:       "list apikeys for the current user, or the specified USER",
-		Annotations: group("apikey"),
+		Use:               "apikeys [USER]",
+		Aliases:           []string{"ak", "api", "apikey"},
+		Args:              cobra.RangeArgs(0, 1),
+		Short:             "list apikeys for the current user, or the specified USER",
+		Annotations:       group("apikey"),
+		ValidArgsFunction: emailCompletion,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			rs, err := rockClient(cmd)
@@ -52,10 +54,82 @@ func newListAPIKeysCmd() *cobra.Command {
 
 func newGetAPIKeyCmd() *cobra.Command {
 	cmd := cobra.Command{
+		Use:               "apikey NAME",
+		Aliases:           []string{"ak"},
+		Args:              cobra.ExactArgs(1),
+		Short:             "get apikey information",
+		Annotations:       group("apikey"),
+		ValidArgsFunction: apikeyCompletion,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+			rs, err := rockClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			var options []option.APIKeyOption
+			if email, _ := cmd.Flags().GetString(EmailFlag); email != "" {
+				options = append(options, option.ForUser(email))
+			}
+
+			apikey, err := rs.GetAPIKey(ctx, args[0], options...)
+			if err != nil {
+				return err
+			}
+
+			return formatOne(cmd, apikey)
+		},
+	}
+
+	cmd.Flags().String(EmailFlag, "", "the email address of the user who's key to get, defaults to self")
+	_ = cmd.RegisterFlagCompletionFunc(EmailFlag, emailCompletion)
+
+	return &cmd
+}
+
+func newDeleteAPIKeyCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:               "apikey NAME",
+		Aliases:           []string{"ak"},
+		Args:              cobra.ExactArgs(1),
+		Short:             "delete an apikey",
+		Annotations:       group("apikey"),
+		ValidArgsFunction: apikeyCompletion,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+			rs, err := rockClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			var options []option.APIKeyOption
+			if email, _ := cmd.Flags().GetString(EmailFlag); email != "" {
+				options = append(options, option.ForUser(email))
+			}
+
+			err = rs.DeleteAPIKey(ctx, args[0], options...)
+			if err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "deleted %s\n", args[0])
+
+			return nil
+		},
+	}
+
+	cmd.Flags().String(EmailFlag, "", "the email address of the user who's key to delete, defaults to self")
+	_ = cmd.RegisterFlagCompletionFunc(EmailFlag, emailCompletion)
+
+	return &cmd
+}
+
+func newCreateAPIKeyCmd() *cobra.Command {
+	cmd := cobra.Command{
 		Use:         "apikey NAME",
 		Aliases:     []string{"ak"},
 		Args:        cobra.ExactArgs(1),
-		Short:       "get apikey information",
+		Short:       "create apikey",
 		Annotations: group("apikey"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
@@ -64,14 +138,71 @@ func newGetAPIKeyCmd() *cobra.Command {
 				return err
 			}
 
-			apikey, err := rs.GetAPIKey(ctx, args[0])
+			var options []option.APIKeyRoleOption
+			if role, _ := cmd.Flags().GetString(RoleFlag); role != "" {
+				options = append(options, option.WithRole(role))
+			}
+
+			apikey, err := rs.CreateAPIKey(ctx, args[0], options...)
 			if err != nil {
 				return err
 			}
 
-			return formatOne(cmd, apikey)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "created %s\n", apikey.GetName())
+
+			return nil
 		},
 	}
+
+	cmd.Flags().String(RoleFlag, "", "role for the apikey")
+	_ = cmd.RegisterFlagCompletionFunc(RoleFlag, roleCompletion)
+
+	return &cmd
+}
+
+func newUpdateAPIKeyCmd() *cobra.Command {
+	cmd := cobra.Command{
+		Use:               "apikey NAME",
+		Aliases:           []string{"ak"},
+		Args:              cobra.ExactArgs(1),
+		Short:             "update the state of an apikey",
+		Annotations:       group("apikey"),
+		ValidArgsFunction: apikeyCompletion,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+			rs, err := rockClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			var options []option.APIKeyOption
+			if email, _ := cmd.Flags().GetString(EmailFlag); email != "" {
+				options = append(options, option.ForUser(email))
+			}
+			state, _ := cmd.Flags().GetString(StateFlag)
+			options = append(options, option.State(option.KeyState(state)))
+
+			apikey, err := rs.UpdateAPIKey(ctx, args[0], options...)
+			if err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "updated %s to %s\n", apikey.GetName(), apikey.GetState())
+
+			return nil
+		},
+	}
+
+	cmd.Flags().String(EmailFlag, "", "the email address of the user who's key to update, defaults to self")
+	_ = cmd.RegisterFlagCompletionFunc(EmailFlag, emailCompletion)
+
+	cmd.Flags().String(StateFlag, "",
+		fmt.Sprintf("the state of the apikey, either %s or %s", option.KeyActive, option.KeySuspended))
+	_ = cmd.RegisterFlagCompletionFunc(StateFlag,
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{option.KeyActive.String(), option.KeySuspended.String()}, cobra.ShellCompDirectiveNoFileComp
+		})
+	_ = cobra.MarkFlagRequired(cmd.Flags(), StateFlag)
 
 	return &cmd
 }

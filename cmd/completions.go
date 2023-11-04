@@ -239,3 +239,46 @@ func viewCompletion(cmd *cobra.Command, args []string, toComplete string) ([]str
 
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
+
+func emailCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := rockClient(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	users, err := rs.ListUsers(cmd.Context())
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	list := make([]string, len(users))
+	for i, user := range users {
+		list[i] = user.GetEmail()
+	}
+
+	return list, cobra.ShellCompDirectiveNoFileComp
+}
+
+func apikeyCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := rockClient(cmd)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	var options []option.APIKeyOption
+	if email, _ := cmd.Flags().GetString(EmailFlag); email != "" {
+		options = append(options, option.ForUser(email))
+	}
+
+	keys, err := rs.ListAPIKeys(cmd.Context(), options...)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	list := make([]string, len(keys))
+	for i, key := range keys {
+		list[i] = key.GetName()
+	}
+
+	return list, cobra.ShellCompDirectiveNoFileComp
+}
