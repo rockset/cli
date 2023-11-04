@@ -6,10 +6,14 @@ import (
 )
 
 var (
-	Red    = lipgloss.Color("9")
-	Purple = lipgloss.Color("13")
+	Red = lipgloss.Color("9")
+	//Purple = lipgloss.Color("13")
+	Purple = lipgloss.Color("93")
+
 	Cyan   = lipgloss.Color("14")
 	Yellow = lipgloss.Color("11")
+	White  = lipgloss.Color("252")
+	Grey   = lipgloss.Color("245")
 
 	focusedStyle = lipgloss.NewStyle().Foreground(Purple)
 	blurredStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
