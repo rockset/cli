@@ -21,7 +21,7 @@ import (
 
 func newListQueryCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "query [virtual instance ID]",
+		Use:         "query [virtual instance ID|NAME]",
 		Aliases:     []string{"queries", "q"},
 		Short:       "list queries",
 		Long:        "list all active queries, or on a specific virtual instance",
@@ -39,7 +39,12 @@ func newListQueryCmd() *cobra.Command {
 			if len(args) == 0 {
 				list, err = rs.ListActiveQueries(ctx)
 			} else {
-				list, err = rs.ListVirtualInstanceQueries(ctx, args[0])
+				id, err := viNameOrIDtoID(ctx, rs, args[0])
+				if err != nil {
+					return err
+				}
+
+				list, err = rs.ListVirtualInstanceQueries(ctx, id)
 			}
 			if err != nil {
 				return err
@@ -147,9 +152,7 @@ func showQueryResult(out io.Writer, result openapi.QueryResponse) error {
 		t := tui.NewTable(out)
 
 		if len(result.GetColumnFields()) == 0 {
-			// in a "SELECT *" query the ColumnFields isn't populated
-			// what order should the columns be presented in?
-
+			// pick out the headers from the first doc
 			var headers []string
 			for k := range result.Results[0] {
 				headers = append(headers, k)
