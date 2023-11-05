@@ -2,6 +2,7 @@ package cmd_test
 
 import (
 	"context"
+	"github.com/rockset/cli/flag"
 	"os"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestStreamDocuments(t *testing.T) {
 	f := &fake{t}
 
 	s := cmd.NewStreamer(f, cmd.StreamConfig{
-		Workspace:  cmd.DefaultWorkspace,
+		Workspace:  flag.DefaultWorkspace,
 		Collection: "writetest",
 		BatchSize:  3,
 	})

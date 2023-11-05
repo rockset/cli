@@ -2,6 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/rockset/cli/completion"
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/rockset/rockset-go-client/option"
 	"github.com/spf13/cobra"
@@ -24,16 +27,16 @@ func NewListAliasesCmd() *cobra.Command {
 	https://docs.rockset.com/documentation/reference/workspacealiases`,
 		Annotations: group("alias"),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
 
 			var opts []option.ListAliasesOption
-			if ws != "" && ws != AllWorkspaces {
+			if ws != "" && ws != flag.AllWorkspaces {
 				opts = append(opts, option.WithAliasWorkspace(ws))
 			}
 
@@ -53,8 +56,8 @@ func NewListAliasesCmd() *cobra.Command {
 			return formatList(cmd, format.ToInterfaceArray(aliases))
 		},
 	}
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show aliases for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.AllWorkspaces, "only show aliases for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	return &cmd
 }
@@ -70,12 +73,12 @@ func NewGetAliasCmd() *cobra.Command {
 	# Documentation URL
 	https://docs.rockset.com/documentation/reference/getalias`,
 		Annotations:       group("alias"),
-		ValidArgsFunction: aliasCompletion,
+		ValidArgsFunction: completion.Alias,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -88,8 +91,8 @@ func NewGetAliasCmd() *cobra.Command {
 			return formatOne(cmd, alias)
 		},
 	}
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "get an alias for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "get an alias for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	return &cmd
 }
@@ -108,10 +111,10 @@ func NewCreateAliasCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 			collections := args[1:]
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -125,8 +128,8 @@ func NewCreateAliasCmd() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "create alias in the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "create alias in the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	return &cmd
 }
@@ -143,14 +146,14 @@ func NewUpdateAliasCmd() *cobra.Command {
 	https://docs.rockset.com/documentation/reference/updatealias`,
 
 		Annotations:       group("alias"),
-		ValidArgsFunction: aliasCompletion,
+		ValidArgsFunction: completion.Alias,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 			collections := args[1:]
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -164,8 +167,8 @@ func NewUpdateAliasCmd() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "create alias in the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "create alias in the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	return &cmd
 }
@@ -181,13 +184,13 @@ func NewDeleteAliasCmd() *cobra.Command {
 	# Documentation URL
 	https://docs.rockset.com/documentation/reference/deletealias`,
 		Annotations:       group("alias"),
-		ValidArgsFunction: aliasCompletion,
+		ValidArgsFunction: completion.Alias,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -201,8 +204,8 @@ func NewDeleteAliasCmd() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "delete alias for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "delete alias for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	return &cmd
 }

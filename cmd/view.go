@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"github.com/rockset/cli/completion"
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/sort"
 	"github.com/rockset/rockset-go-client/openapi"
@@ -17,16 +20,16 @@ func newListViewsCmd() *cobra.Command {
 		Short:       "list views",
 		Annotations: group("view"),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
 
 			var opts []option.ListViewOption
-			if ws != "" && ws != AllWorkspaces {
+			if ws != "" && ws != flag.AllWorkspaces {
 				opts = append(opts, option.WithViewWorkspace(ws))
 			}
 
@@ -45,8 +48,8 @@ func newListViewsCmd() *cobra.Command {
 			return formatList(cmd, format.ToInterfaceArray(views))
 		},
 	}
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "only show views for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.AllWorkspaces, "only show views for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	return &cmd
 }
@@ -58,12 +61,12 @@ func newGetViewCmd() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Short:             "get view information",
 		Annotations:       group("view"),
-		ValidArgsFunction: viewCompletion,
+		ValidArgsFunction: completion.View,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -76,8 +79,8 @@ func newGetViewCmd() *cobra.Command {
 			return formatOne(cmd, view)
 		},
 	}
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "only show views for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "only show views for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	return &cmd
 }

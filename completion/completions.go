@@ -1,18 +1,21 @@
-package cmd
+package completion
 
 import (
 	"github.com/rockset/rockset-go-client/option"
 	"github.com/spf13/cobra"
+
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 )
 
-func collectionCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := rockClient(cmd)
+func Collection(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
 	var options []option.ListCollectionOption
-	if ws, _ := cmd.Flags().GetString(WorkspaceFlag); ws != "" {
+	if ws, _ := cmd.Flags().GetString(flag.Workspace); ws != "" {
 		options = append(options, option.WithWorkspace(ws))
 	}
 
@@ -29,8 +32,8 @@ func collectionCompletion(cmd *cobra.Command, args []string, toComplete string) 
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func integrationCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := rockClient(cmd)
+func Integration(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -48,8 +51,8 @@ func integrationCompletion(cmd *cobra.Command, args []string, toComplete string)
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func workspaceCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := rockClient(cmd)
+func Workspace(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -67,13 +70,13 @@ func workspaceCompletion(cmd *cobra.Command, args []string, toComplete string) (
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func lambdaCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ws, err := cmd.Flags().GetString(WorkspaceFlag)
+func Lambda(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ws, err := cmd.Flags().GetString(flag.Workspace)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	rs, err := rockClient(cmd)
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -96,13 +99,13 @@ func lambdaCompletion(cmd *cobra.Command, args []string, toComplete string) ([]s
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func aliasCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ws, err := cmd.Flags().GetString(WorkspaceFlag)
+func Alias(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ws, err := cmd.Flags().GetString(flag.Workspace)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	rs, err := rockClient(cmd)
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -125,13 +128,13 @@ func aliasCompletion(cmd *cobra.Command, args []string, toComplete string) ([]st
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func lambdaVersionsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ws, err := cmd.Flags().GetString(WorkspaceFlag)
+func LambdaVersion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ws, err := cmd.Flags().GetString(flag.Workspace)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	rs, err := rockClient(cmd)
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -149,13 +152,13 @@ func lambdaVersionsCompletion(cmd *cobra.Command, args []string, toComplete stri
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func lambdaTagsCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ws, err := cmd.Flags().GetString(WorkspaceFlag)
+func LambdaTag(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ws, err := cmd.Flags().GetString(flag.Workspace)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	rs, err := rockClient(cmd)
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -173,8 +176,8 @@ func lambdaTagsCompletion(cmd *cobra.Command, args []string, toComplete string) 
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func roleCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := rockClient(cmd)
+func Role(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -192,8 +195,8 @@ func roleCompletion(cmd *cobra.Command, args []string, toComplete string) ([]str
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func virtualInstanceCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := rockClient(cmd)
+func VirtualInstance(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -211,13 +214,13 @@ func virtualInstanceCompletion(cmd *cobra.Command, args []string, toComplete str
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func viewCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ws, err := cmd.Flags().GetString(WorkspaceFlag)
+func View(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ws, err := cmd.Flags().GetString(flag.Workspace)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	rs, err := rockClient(cmd)
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -240,8 +243,8 @@ func viewCompletion(cmd *cobra.Command, args []string, toComplete string) ([]str
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func emailCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := rockClient(cmd)
+func Email(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -259,14 +262,14 @@ func emailCompletion(cmd *cobra.Command, args []string, toComplete string) ([]st
 	return list, cobra.ShellCompDirectiveNoFileComp
 }
 
-func apikeyCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := rockClient(cmd)
+func APIKey(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	rs, err := config.Client(cmd)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
 	var options []option.APIKeyOption
-	if email, _ := cmd.Flags().GetString(EmailFlag); email != "" {
+	if email, _ := cmd.Flags().GetString(flag.Email); email != "" {
 		options = append(options, option.ForUser(email))
 	}
 

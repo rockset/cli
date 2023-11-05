@@ -2,6 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/rockset/cli/completion"
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slog"
 )
@@ -14,11 +17,11 @@ func newDeleteDocumentsCmd() *cobra.Command {
 		Long:    "delete documents from a collection",
 		Args:    cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 			coll, _ := cmd.Flags().GetString("collection")
 
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -47,12 +50,12 @@ func newDeleteDocumentsCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace name")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "workspace name")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
-	cmd.Flags().String(CollectionFlag, "", "collection name")
-	_ = cmd.MarkFlagRequired(CollectionFlag)
-	_ = cmd.RegisterFlagCompletionFunc(CollectionFlag, collectionCompletion)
+	cmd.Flags().String(flag.Collection, "", "collection name")
+	_ = cmd.MarkFlagRequired(flag.Collection)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Collection, completion.Collection)
 
 	return &cmd
 }
@@ -63,12 +66,12 @@ func newIngestCmd() *cobra.Command {
 		Short: "ingest documents to a collection",
 		Long:  "ingest documents to a collection from either a list of files or from stdin",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
-			collection, _ := cmd.Flags().GetString(CollectionFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
+			collection, _ := cmd.Flags().GetString(flag.Collection)
 			batchSize, _ := cmd.Flags().GetUint64("batch-size")
 
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -101,12 +104,12 @@ func newIngestCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace name")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "workspace name")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
-	cmd.Flags().String(CollectionFlag, "", "collection name")
-	_ = cobra.MarkFlagRequired(cmd.Flags(), CollectionFlag)
-	_ = cmd.RegisterFlagCompletionFunc(CollectionFlag, collectionCompletion)
+	cmd.Flags().String(flag.Collection, "", "collection name")
+	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.Collection)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Collection, completion.Collection)
 
 	cmd.Flags().Uint64("batch-size", 100,
 		"number of documents to batch together each write")

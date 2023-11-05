@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/rockset/cli/completion"
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/sort"
 	"github.com/rockset/rockset-go-client/openapi"
@@ -24,9 +27,9 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 		Annotations: group("virtual instance"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			size, _ := cmd.Flags().GetString(SizeFlag)
+			size, _ := cmd.Flags().GetString(flag.Size)
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -36,7 +39,7 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 			}
 
 			// TODO uncomment after go client supports setting it
-			//if desc, _ := cmd.Flags().GetString(DescriptionFlag); desc != "" {
+			//if desc, _ := cmd.Flags().GetString(flag.Description); desc != "" {
 			//options = append(options, option.WithVirtualInstanceDescription(desc))
 			//}
 
@@ -55,10 +58,10 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 	}
 
 	// TODO uncomment after go client supports setting it
-	//cmd.Flags().StringP(DescriptionFlag, "d", "", "virtual instance description")
-	cmd.Flags().Bool(WaitFlag, false, "wait until virtual instance is active")
-	cmd.Flags().String(SizeFlag, "", "virtual instance size")
-	_ = cobra.MarkFlagRequired(cmd.Flags(), SizeFlag)
+	//cmd.Flags().StringP(flag.Description, "d", "", "virtual instance description")
+	cmd.Flags().Bool(flag.Wait, false, "wait until virtual instance is active")
+	cmd.Flags().String(flag.Size, "", "virtual instance size")
+	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.Size)
 	// TODO completion of sizes
 
 	return &cmd
@@ -72,12 +75,12 @@ func newUpdateVirtualInstanceCmd() *cobra.Command {
 		Long:              "update a Rockset virtual instance",
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("virtual instance"),
-		ValidArgsFunction: virtualInstanceCompletion,
+		ValidArgsFunction: completion.VirtualInstance,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			size, _ := cmd.Flags().GetString(SizeFlag)
+			size, _ := cmd.Flags().GetString(flag.Size)
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -107,10 +110,10 @@ func newUpdateVirtualInstanceCmd() *cobra.Command {
 	}
 
 	// TODO uncomment after go client supports setting it
-	//cmd.Flags().StringP(DescriptionFlag, "d", "", "virtual instance description")
-	cmd.Flags().String(SizeFlag, "", "virtual instance size")
-	cmd.Flags().Bool(WaitFlag, false, "wait until virtual instance is active")
-	_ = cobra.MarkFlagRequired(cmd.Flags(), SizeFlag)
+	//cmd.Flags().StringP(flag.Description, "d", "", "virtual instance description")
+	cmd.Flags().String(flag.Size, "", "virtual instance size")
+	cmd.Flags().Bool(flag.Wait, false, "wait until virtual instance is active")
+	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.Size)
 	// TODO completion of sizes
 
 	return &cmd
@@ -127,7 +130,7 @@ func newListVirtualInstancesCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -148,7 +151,7 @@ func newListVirtualInstancesCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(WideFlag, false, "display more information")
+	cmd.Flags().Bool(flag.Wide, false, "display more information")
 
 	return &cmd
 }
@@ -161,11 +164,11 @@ func newGetVirtualInstancesCmd() *cobra.Command {
 		Short:             "get virtual instance",
 		Long:              "get Rockset virtual instances",
 		Annotations:       group("virtual instance"),
-		ValidArgsFunction: virtualInstanceCompletion,
+		ValidArgsFunction: completion.VirtualInstance,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -184,7 +187,7 @@ func newGetVirtualInstancesCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(WideFlag, false, "display more information")
+	cmd.Flags().Bool(flag.Wide, false, "display more information")
 
 	return &cmd
 }
@@ -197,11 +200,11 @@ func newDeleteVirtualInstanceCmd() *cobra.Command {
 		Long:              "delete Rockset virtual instance",
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("virtual instance"),
-		ValidArgsFunction: virtualInstanceCompletion,
+		ValidArgsFunction: completion.VirtualInstance,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -233,11 +236,11 @@ func newSuspendVirtualInstanceCmd() *cobra.Command {
 		Long:              "suspend Rockset virtual instance",
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("virtual instance"),
-		ValidArgsFunction: virtualInstanceCompletion,
+		ValidArgsFunction: completion.VirtualInstance,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -269,11 +272,11 @@ func newResumeVirtualInstanceCmd() *cobra.Command {
 		Long:              "resume Rockset virtual instance",
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("virtual instance"),
-		ValidArgsFunction: virtualInstanceCompletion,
+		ValidArgsFunction: completion.VirtualInstance,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -298,7 +301,7 @@ func newResumeVirtualInstanceCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(WaitFlag, false, "wait until virtual instance is ready")
+	cmd.Flags().Bool(flag.Wait, false, "wait until virtual instance is ready")
 
 	return &cmd
 }
@@ -341,7 +344,7 @@ func viNameToID(ctx context.Context, rs *rockset.RockClient, name string) (strin
 var VINotFoundErr = errors.New("virtual instance not found")
 
 func waitUntilVIActive(rs *rockset.RockClient, cmd *cobra.Command, vID string) error {
-	wait, err := cmd.Flags().GetBool(WaitFlag)
+	wait, err := cmd.Flags().GetBool(flag.Wait)
 	if err != nil {
 		return err
 	}

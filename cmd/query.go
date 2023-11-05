@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/rockset/cli/flag"
 	"io"
 	"os"
 	"strings"
@@ -30,7 +31,7 @@ func newListQueryCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -54,7 +55,7 @@ func newListQueryCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(WideFlag, false, "display more information")
+	cmd.Flags().Bool(flag.Wide, false, "display more information")
 
 	return &cmd
 }
@@ -67,14 +68,14 @@ func newQueryCmd() *cobra.Command {
 		Annotations: group("query"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
 
 			vi, _ := cmd.Flags().GetString("vi")
-			file, _ := cmd.Flags().GetString(FileFlag)
-			validate, _ := cmd.Flags().GetBool(ValidateFlag)
+			file, _ := cmd.Flags().GetString(flag.File)
+			validate, _ := cmd.Flags().GetBool(flag.Validate)
 
 			// TODO handle a parameterized query
 			var sql string
@@ -130,10 +131,10 @@ func newQueryCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(ValidateFlag, false, "validate SQL")
-	cmd.Flags().String(FileFlag, "", "read SQL from file")
+	cmd.Flags().Bool(flag.Validate, false, "validate SQL")
+	cmd.Flags().String(flag.File, "", "read SQL from file")
 	cmd.Flags().String("vi", "", "execute query on virtual instance")
-	_ = cobra.MarkFlagFilename(cmd.Flags(), FileFlag, ".sql")
+	_ = cobra.MarkFlagFilename(cmd.Flags(), flag.File, ".sql")
 
 	return &cmd
 }

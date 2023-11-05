@@ -3,8 +3,8 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/rockset/cli/flag"
 	"io"
-	"log/slog"
 	"os"
 	"sort"
 
@@ -111,7 +111,7 @@ func newCreateContextCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			key, _ := cmd.Flags().GetString("apikey")
 			server, _ := cmd.Flags().GetString("server")
-			force, _ := cmd.Flags().GetBool(ForceFlag)
+			force, _ := cmd.Flags().GetBool(flag.Force)
 
 			if key == "" || server == "" {
 				// TODO open up a form
@@ -163,7 +163,7 @@ func newCreateContextCmd() *cobra.Command {
 
 	cmd.Flags().String("server", "", "api server name")
 	cmd.Flags().String("apikey", "", "apikey")
-	cmd.Flags().Bool(ForceFlag, false, "force add the context even if the name exists or the credentials can't be used connect to the API server")
+	cmd.Flags().Bool(flag.Force, false, "force add the context even if the name exists or the credentials can't be used connect to the API server")
 
 	return &cmd
 }
@@ -198,31 +198,4 @@ func newUseContextCmd() *cobra.Command {
 	}
 
 	return &cmd
-}
-
-func rockClient(cmd *cobra.Command) (*rockset.RockClient, error) {
-	// load from config, ok if none is found
-	cfg, err := config.Load()
-	if err != nil {
-		if !errors.Is(err, config.NotFoundErr) {
-			return nil, err
-		}
-	}
-
-	override, _ := cmd.Flags().GetString(ContextFLag)
-	if override != "" {
-		slog.Debug("using override", "name", override)
-	}
-
-	var options = []rockset.RockOption{
-		rockset.WithUserAgent("rockset-go-cli/" + Version),
-	}
-
-	opts, err := cfg.AsOptions(override)
-	if err != nil {
-		return nil, err
-	}
-	options = append(options, opts...)
-
-	return rockset.NewClient(options...)
 }

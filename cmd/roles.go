@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/rockset/cli/completion"
+	"github.com/rockset/cli/config"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/sort"
 	"github.com/rockset/rockset-go-client/openapi"
@@ -16,7 +18,7 @@ func newListRolesCommand() *cobra.Command {
 		Annotations: group("role"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -47,10 +49,10 @@ func newGetRoleCommand() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Short:             "get role information",
 		Annotations:       group("role"),
-		ValidArgsFunction: roleCompletion,
+		ValidArgsFunction: completion.Role,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}

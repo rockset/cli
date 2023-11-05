@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/mitchellh/go-homedir"
+	"github.com/rockset/cli/flag"
 	"os"
 	"path"
 	"strings"
@@ -45,7 +46,7 @@ For more configuration options, see the 'rockset create config' command.`, confi
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if debug, _ := cmd.Flags().GetBool(DebugFlag); debug {
+			if debug, _ := cmd.Flags().GetBool(flag.Debug); debug {
 				logger = slog.New(slog.NewTextHandler(cmd.ErrOrStderr(), &slog.HandlerOptions{
 					Level: slog.LevelDebug,
 				}))
@@ -66,17 +67,17 @@ For more configuration options, see the 'rockset create config' command.`, confi
 
 	// any persistent flag defined here will be visible in all commands
 	root.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/rockset/config.yaml)")
-	root.PersistentFlags().Bool(DebugFlag, false, "enable debug output")
+	root.PersistentFlags().Bool(flag.Debug, false, "enable debug output")
 
-	root.PersistentFlags().String(FormatFlag, DefaultFormat, fmt.Sprintf("output format (%s)",
+	root.PersistentFlags().String(flag.Format, flag.DefaultFormat, fmt.Sprintf("output format (%s)",
 		strings.Join(format.SupportedFormats.ToStringArray(), ", ")))
-	root.PersistentFlags().Bool(HeaderFlag, true, "show header")
-	root.PersistentFlags().Bool(WideFlag, false, "show extended fields")
-	root.PersistentFlags().String(SelectorFlag, "", fmt.Sprintf(`Allows displaying custom values in tables (ignored if --%s is anything other than "%s" or "%s"). Has the format "Column Name:.Field1.Subfield,Column 2 Name:.Selector" etc. The column name and colon can be ommitted, in which case the column and selector will be identical.`, FormatFlag, format.TableFormat, format.CSVFormat))
+	root.PersistentFlags().Bool(flag.Header, true, "show header")
+	root.PersistentFlags().Bool(flag.Wide, false, "show extended fields")
+	root.PersistentFlags().String(flag.Selector, "", fmt.Sprintf(`Allows displaying custom values in tables (ignored if --%s is anything other than "%s" or "%s"). Has the format "Column Name:.Field1.Subfield,Column 2 Name:.Selector" etc. The column name and colon can be ommitted, in which case the column and selector will be identical.`, flag.Format, format.TableFormat, format.CSVFormat))
 
-	root.PersistentFlags().String(ContextFLag, "", fmt.Sprintf("override currently selected configuration context %s", currentContext))
+	root.PersistentFlags().String(flag.Context, "", fmt.Sprintf("override currently selected configuration context %s", currentContext))
 	// TODO add convenience function to map usw2a1 -> api.usw2a1.rockset.com
-	root.PersistentFlags().String(ClusterFLag, "",
+	root.PersistentFlags().String(flag.Cluster, "",
 		fmt.Sprintf("override Rockset cluster for the current context: %s", strings.Join(config.Clusters, ", ")))
 
 	// this binds the environment variable DEBUG to the flag debug

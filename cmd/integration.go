@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/sort"
 	"github.com/rockset/rockset-go-client/openapi"
@@ -19,7 +21,7 @@ func newGetIntegrationCmd() *cobra.Command {
 		Args:        cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -44,7 +46,7 @@ func newListIntegrationsCmd() *cobra.Command {
 		Annotations: group("integration"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -75,12 +77,12 @@ func newCreateS3IntegrationsCmd() *cobra.Command {
 		Annotations: group("integration"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
 
-			role, _ := cmd.Flags().GetString(RoleARNFlag)
+			role, _ := cmd.Flags().GetString(flag.RoleARN)
 			result, err := rs.CreateS3Integration(ctx, args[0], option.AWSRole(role))
 			if err != nil {
 				return err
@@ -92,8 +94,8 @@ func newCreateS3IntegrationsCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(RoleARNFlag, "", "AWS IAM role ARN")
-	_ = cobra.MarkFlagRequired(cmd.Flags(), RoleARNFlag)
+	cmd.Flags().String(flag.RoleARN, "", "AWS IAM role ARN")
+	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.RoleARN)
 
 	return &cmd
 }
@@ -107,7 +109,7 @@ func newDeleteIntegrationsCmd() *cobra.Command {
 		Annotations: group("integration"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}

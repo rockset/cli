@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/rockset/cli/config"
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +16,7 @@ func newGetOrganizationCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}

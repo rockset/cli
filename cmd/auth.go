@@ -173,7 +173,7 @@ func newAuthKeyCmd() *cobra.Command {
 			name := args[0]
 			role := args[1]
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}

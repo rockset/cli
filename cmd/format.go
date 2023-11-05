@@ -1,14 +1,15 @@
 package cmd
 
 import (
+	"github.com/rockset/cli/flag"
 	"github.com/spf13/cobra"
 
 	"github.com/rockset/cli/format"
 )
 
 func formatOne(cmd *cobra.Command, a any) error {
-	wide, _ := cmd.Flags().GetBool(HeaderFlag)
-	selector, _ := cmd.Flags().GetString(SelectorFlag)
+	wide, _ := cmd.Flags().GetBool(flag.Header)
+	selector, _ := cmd.Flags().GetString(flag.Selector)
 
 	f, err := formatterFor(cmd)
 	if err != nil {
@@ -26,8 +27,8 @@ func formatOne(cmd *cobra.Command, a any) error {
 }
 
 func formatList(cmd *cobra.Command, a []any) error {
-	wide, _ := cmd.Flags().GetBool(WideFlag)
-	selector, _ := cmd.Flags().GetString(SelectorFlag)
+	wide, _ := cmd.Flags().GetBool(flag.Wide)
+	selector, _ := cmd.Flags().GetString(flag.Selector)
 
 	f, err := formatterFor(cmd)
 	if err != nil {
@@ -46,8 +47,8 @@ func formatList(cmd *cobra.Command, a []any) error {
 }
 
 func formatterFor(cmd *cobra.Command) (format.Formatter, error) {
-	f, _ := cmd.Flags().GetString(FormatFlag)
-	header, _ := cmd.Flags().GetBool(HeaderFlag)
+	f, _ := cmd.Flags().GetString(flag.Format)
+	header, _ := cmd.Flags().GetBool(flag.Header)
 
 	return format.FormatterFor(cmd.OutOrStdout(), format.Format(f), header)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/tui"
 	"github.com/spf13/cobra"
 	"net/http"
@@ -19,7 +20,7 @@ func newVersionCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "%s version %s\n", tui.Rockset, Version)
 
-			if d, _ := cmd.Flags().GetBool(DebugFlag); !d {
+			if d, _ := cmd.Flags().GetBool(flag.Debug); !d {
 				return nil
 			}
 

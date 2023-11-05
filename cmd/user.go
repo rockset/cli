@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/sort"
 	"github.com/spf13/cobra"
@@ -18,7 +20,7 @@ func newListUsersCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -39,7 +41,7 @@ func newListUsersCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(WideFlag, false, "display more information")
+	cmd.Flags().Bool(flag.Wide, false, "display more information")
 
 	return &cmd
 }
@@ -54,7 +56,7 @@ func newGetUserCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -73,7 +75,7 @@ func newGetUserCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(WideFlag, false, "display more information")
+	cmd.Flags().Bool(flag.Wide, false, "display more information")
 
 	return &cmd
 }

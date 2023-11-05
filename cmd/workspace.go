@@ -2,6 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/rockset/cli/completion"
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 
 	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/rockset/rockset-go-client/option"
@@ -21,7 +24,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 		Annotations: group("workspace"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -29,7 +32,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 			var opts []option.WorkspaceOption
 
 			// safe to ignore the error it is added below
-			desc, _ := cmd.Flags().GetString(DescriptionFlag)
+			desc, _ := cmd.Flags().GetString(flag.Description)
 			if desc != "" {
 				opts = append(opts, option.WithWorkspaceDescription(desc))
 			}
@@ -44,7 +47,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(DescriptionFlag, "d", "", "workspace description")
+	cmd.Flags().StringP(flag.Description, "d", "", "workspace description")
 	return &cmd
 }
 
@@ -56,13 +59,13 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 		Long:              "delete Rockset workspace",
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("workspace"),
-		ValidArgsFunction: workspaceCompletion,
+		ValidArgsFunction: completion.Workspace,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			ws := args[0]
 			recurse, _ := cmd.Flags().GetBool("recurse")
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -164,10 +167,10 @@ func NewGetWorkspaceCmd() *cobra.Command {
 		Long:              "get Rockset workspace",
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("workspace"),
-		ValidArgsFunction: workspaceCompletion,
+		ValidArgsFunction: completion.Workspace,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -192,7 +195,7 @@ func newListWorkspacesCmd() *cobra.Command {
 		Annotations: group("workspace"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}

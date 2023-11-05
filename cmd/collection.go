@@ -4,6 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/rockset/cli/completion"
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/sort"
 	"github.com/spf13/cobra"
@@ -25,15 +28,15 @@ func newDeleteCollectionCmd() *cobra.Command {
 		Long:              "delete Rockset collection",
 		Annotations:       group("collection"),
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: collectionCompletion,
+		ValidArgsFunction: completion.Collection,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
 
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 			name := args[0]
 
 			err = rs.DeleteCollection(ctx, ws, name)
@@ -46,8 +49,8 @@ func newDeleteCollectionCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace for the collection")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	return &cmd
 }
@@ -60,14 +63,14 @@ func newGetCollectionCmd() *cobra.Command {
 		Long:              "get Rockset collection",
 		Annotations:       group("collection"),
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: collectionCompletion,
+		ValidArgsFunction: completion.Collection,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 			output, _ := cmd.Flags().GetString("output")
 			name := args[0]
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -94,9 +97,9 @@ func newGetCollectionCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(WideFlag, false, "display more information")
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().Bool(flag.Wide, false, "display more information")
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace for the collection")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	cmd.Flags().String("output", "", "save json for create collection request to output file, use `-` for stdout")
 	_ = cobra.MarkFlagFilename(cmd.Flags(), "output")
@@ -114,15 +117,15 @@ func newListCollectionsCmd() *cobra.Command {
 		Args:        cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
 
 			var list []openapi.Collection
-			if ws == "" || ws == AllWorkspaces {
+			if ws == "" || ws == flag.AllWorkspaces {
 				list, err = rs.ListCollections(ctx)
 			} else {
 				list, err = rs.ListCollections(ctx, option.WithWorkspace(ws))
@@ -143,9 +146,9 @@ func newListCollectionsCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(WideFlag, false, "display more information")
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, AllWorkspaces, "workspace for the collection")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().Bool(flag.Wide, false, "display more information")
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.AllWorkspaces, "workspace for the collection")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	return &cmd
 }
@@ -161,15 +164,15 @@ func newCreateCollectionCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			name := args[0]
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
-			retention, _ := cmd.Flags().GetDuration(RetentionFlag)
-			transform, _ := cmd.Flags().GetString(IngestTransformation)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
+			retention, _ := cmd.Flags().GetDuration(flag.Retention)
+			transform, _ := cmd.Flags().GetString(flag.IngestTransformation)
 
 			input, _ := cmd.Flags().GetString("input")
 
 			options := getCommonCollectionFlags(cmd)
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -232,24 +235,24 @@ func newCreateS3CollectionCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			name := args[0]
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			options := getCommonCollectionFlags(cmd)
 
-			integration, _ := cmd.Flags().GetString(IntegrationFlag)
-			bucket, _ := cmd.Flags().GetString(BucketFlag)
+			integration, _ := cmd.Flags().GetString(flag.Integration)
+			bucket, _ := cmd.Flags().GetString(flag.Bucket)
 
 			var s3Opts []option.S3SourceOption
-			if region, _ := cmd.Flags().GetString(RegionFlag); region != "" {
+			if region, _ := cmd.Flags().GetString(flag.Region); region != "" {
 				s3Opts = append(s3Opts, option.WithS3Region(region))
 			}
-			if pattern, _ := cmd.Flags().GetString(PatternFlag); pattern != "" {
+			if pattern, _ := cmd.Flags().GetString(flag.Pattern); pattern != "" {
 				s3Opts = append(s3Opts, option.WithS3Pattern(pattern))
 			}
 
 			options = append(options, option.WithS3Source(integration, bucket, option.WithJSONFormat(), s3Opts...))
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -265,16 +268,16 @@ func newCreateS3CollectionCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(IntegrationFlag, "", "integration name")
-	cmd.Flags().String(BucketFlag, "", "S3 bucket")
-	cmd.Flags().String(PatternFlag, "", "S3 pattern")
-	cmd.Flags().String(RegionFlag, "", "AWS region of the S3 bucket")
+	cmd.Flags().String(flag.Integration, "", "integration name")
+	cmd.Flags().String(flag.Bucket, "", "S3 bucket")
+	cmd.Flags().String(flag.Pattern, "", "S3 pattern")
+	cmd.Flags().String(flag.Region, "", "AWS region of the S3 bucket")
 	cmd.Flags().String("source-format", "json", "data source format")
 
-	_ = cobra.MarkFlagRequired(cmd.Flags(), IntegrationFlag)
-	_ = cmd.RegisterFlagCompletionFunc(IntegrationFlag, integrationCompletion)
+	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.Integration)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Integration, completion.Integration)
 
-	_ = cobra.MarkFlagRequired(cmd.Flags(), BucketFlag)
+	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.Bucket)
 
 	addCommonCollectionFlags(&cmd)
 
@@ -298,8 +301,8 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			name := args[0]
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
-			from, _ := cmd.Flags().GetString(DatasetFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
+			from, _ := cmd.Flags().GetString(flag.Dataset)
 			ds := dataset.Sample(from)
 
 			options := getCommonCollectionFlags(cmd)
@@ -311,7 +314,7 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 
 			options = append(options, option.WithSampleDataset(ds), option.WithSampleDatasetPattern(pattern))
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -330,8 +333,8 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(DatasetFlag, "", "create sample collection from this dataset")
-	_ = cobra.MarkFlagRequired(cmd.Flags(), DatasetFlag)
+	cmd.Flags().String(flag.Dataset, "", "create sample collection from this dataset")
+	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.Dataset)
 	// TODO add completion
 
 	addCommonCollectionFlags(&cmd)
@@ -349,11 +352,11 @@ func newCreateTailCollectionCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			name := args[0]
-			ws, _ := cmd.Flags().GetString(WorkspaceFlag)
+			ws, _ := cmd.Flags().GetString(flag.Workspace)
 			frequency, _ := cmd.Flags().GetDuration("frequency")
 			timeField, _ := cmd.Flags().GetString("time-field")
 
-			rs, err := rockClient(cmd)
+			rs, err := config.Client(cmd)
 			if err != nil {
 				return err
 			}
@@ -398,8 +401,8 @@ ORDER BY c.%s ASC`,
 	cmd.Flags().Duration("frequency", time.Second, "polling frequency to get new documents")
 	cmd.Flags().String("time-field", "_event_time", "field name for the time")
 
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace for the collection")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
 	return &cmd
 }
@@ -415,7 +418,7 @@ func Map[IN, OUT any](array []IN, fn func(IN) OUT) []OUT {
 }
 
 func waitForCollection(ctx context.Context, cmd *cobra.Command, rs *rockset.RockClient, ws, name string) error {
-	wait, _ := cmd.Flags().GetBool(WaitFlag)
+	wait, _ := cmd.Flags().GetBool(flag.Wait)
 
 	if wait {
 		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "waiting for collection '%s.%s' to be READY\n", ws, name)
@@ -428,27 +431,27 @@ func waitForCollection(ctx context.Context, cmd *cobra.Command, rs *rockset.Rock
 }
 
 func addCommonCollectionFlags(cmd *cobra.Command) {
-	cmd.Flags().StringP(WorkspaceFlag, WorkspaceShortFlag, DefaultWorkspace, "workspace for the collection")
-	_ = cmd.RegisterFlagCompletionFunc(WorkspaceFlag, workspaceCompletion)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace for the collection")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
 
-	cmd.Flags().String(DescriptionFlag, "", "collection description")
-	cmd.Flags().Duration(RetentionFlag, 0, "collection retention")
+	cmd.Flags().String(flag.Description, "", "collection description")
+	cmd.Flags().Duration(flag.Retention, 0, "collection retention")
 
-	cmd.Flags().String(IngestTransformation, "", "ingest transformation SQL")
+	cmd.Flags().String(flag.IngestTransformation, "", "ingest transformation SQL")
 	cmd.Flags().StringP("ingest-transformation-file", "I", "", "read ingest transformation SQL from file")
-	cmd.Flags().Bool(WaitFlag, false, "wait until collection is ready")
+	cmd.Flags().Bool(flag.Wait, false, "wait until collection is ready")
 }
 
 func getCommonCollectionFlags(cmd *cobra.Command) []option.CollectionOption {
 	var options []option.CollectionOption
 
-	if retention, _ := cmd.Flags().GetDuration(RetentionFlag); retention != 0 {
+	if retention, _ := cmd.Flags().GetDuration(flag.Retention); retention != 0 {
 		options = append(options, option.WithCollectionRetention(retention))
 	}
-	if description, _ := cmd.Flags().GetString(DescriptionFlag); description != "" {
+	if description, _ := cmd.Flags().GetString(flag.Description); description != "" {
 		options = append(options, option.WithCollectionDescription(description))
 	}
-	if compression, _ := cmd.Flags().GetString(CompressionFlag); compression != "" {
+	if compression, _ := cmd.Flags().GetString(flag.Compression); compression != "" {
 		// TODO validate compression
 		options = append(options, option.WithStorageCompressionType(option.StorageCompressionType(compression)))
 	}
