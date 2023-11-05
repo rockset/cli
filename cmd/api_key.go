@@ -13,7 +13,7 @@ import (
 // TODO when implementing create apikey:
 //  the role should have auto-completion for the list of roles the user has access to
 
-func newListAPIKeysCmd() *cobra.Command {
+func NewListAPIKeysCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:               "apikeys [USER]",
 		Aliases:           []string{"ak", "api", "apikey"},
@@ -28,6 +28,7 @@ func newListAPIKeysCmd() *cobra.Command {
 				return err
 			}
 
+			logger.Info("args", "args", args)
 			var opts []option.APIKeyOption
 			if len(args) > 0 {
 				opts = append(opts, option.ForUser(args[0]))
@@ -52,7 +53,7 @@ func newListAPIKeysCmd() *cobra.Command {
 	return &cmd
 }
 
-func newGetAPIKeyCmd() *cobra.Command {
+func NewGetAPIKeyCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:               "apikey NAME",
 		Aliases:           []string{"ak"},
@@ -87,7 +88,7 @@ func newGetAPIKeyCmd() *cobra.Command {
 	return &cmd
 }
 
-func newDeleteAPIKeyCmd() *cobra.Command {
+func NewDeleteAPIKeyCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:               "apikey NAME",
 		Aliases:           []string{"ak"},
@@ -112,7 +113,7 @@ func newDeleteAPIKeyCmd() *cobra.Command {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "deleted %s\n", args[0])
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "apikey %s deleted\n", args[0])
 
 			return nil
 		},
@@ -124,7 +125,7 @@ func newDeleteAPIKeyCmd() *cobra.Command {
 	return &cmd
 }
 
-func newCreateAPIKeyCmd() *cobra.Command {
+func NewCreateAPIKeyCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:         "apikey NAME",
 		Aliases:     []string{"ak"},
@@ -148,7 +149,7 @@ func newCreateAPIKeyCmd() *cobra.Command {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "created %s\n", apikey.GetName())
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "apikey %s created\n", apikey.GetName())
 
 			return nil
 		},
@@ -187,7 +188,7 @@ func newUpdateAPIKeyCmd() *cobra.Command {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "updated %s to %s\n", apikey.GetName(), apikey.GetState())
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "apikey %s updated to %s\n", apikey.GetName(), apikey.GetState())
 
 			return nil
 		},
@@ -200,7 +201,7 @@ func newUpdateAPIKeyCmd() *cobra.Command {
 		fmt.Sprintf("the state of the apikey, either %s or %s", option.KeyActive, option.KeySuspended))
 	_ = cmd.RegisterFlagCompletionFunc(StateFlag,
 		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-			return []string{option.KeyActive.String(), option.KeySuspended.String()}, cobra.ShellCompDirectiveNoFileComp
+			return []string{string(option.KeyActive), string(option.KeySuspended)}, cobra.ShellCompDirectiveNoFileComp
 		})
 	_ = cobra.MarkFlagRequired(cmd.Flags(), StateFlag)
 

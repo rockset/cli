@@ -121,7 +121,7 @@ func NewCreateAliasCmd() *cobra.Command {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "alias %s created", alias.GetName())
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "alias %s created\n", alias.GetName())
 			return nil
 		},
 	}
@@ -160,7 +160,7 @@ func NewUpdateAliasCmd() *cobra.Command {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "alias %s updated", name)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "alias %s updated\n", name)
 			return nil
 		},
 	}
@@ -197,7 +197,7 @@ func NewDeleteAliasCmd() *cobra.Command {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "alias %s deleted", name)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "alias %s deleted\n", name)
 			return nil
 		},
 	}

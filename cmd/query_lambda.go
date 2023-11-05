@@ -181,7 +181,7 @@ func NewExecuteQueryLambdaCmd() *cobra.Command {
 				panic("not implemented - need to define file format")
 			} else {
 				for _, p := range params {
-					fields := strings.SplitN(p, ":", 1)
+					fields := strings.SplitN(p, ":", 2)
 					opts = append(opts, option.WithQueryLambdaParameter(fields[0], "", fields[1]))
 				}
 			}

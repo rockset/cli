@@ -25,43 +25,36 @@ func TestAliasSuite(t *testing.T) {
 }
 
 func (s *AliasTestSuite) Test_0_Create() {
-	c := cmd.NewCreateAliasCmd()
-	out := test.Wrapper(c, []string{s.name, "commons._events"})
-	err := c.Execute()
-	s.Require().NoError(err)
-	s.Equal(fmt.Sprintf("alias %s created", s.name), out.String())
+	c := cmd.NewRootCmd("test")
+	out := test.WrapAndExecute(s.T(), c, "create", "alias", s.name, "commons._events")
+
+	s.Equal(fmt.Sprintf("alias %s created\n", s.name), out.String())
 }
 
 func (s *AliasTestSuite) Test_1_Get() {
-	c := cmd.NewGetAliasCmd()
-	out := test.Wrapper(c, []string{s.name})
+	c := cmd.NewRootCmd("test")
+	out := test.WrapAndExecute(s.T(), c, "get", "alias", s.name)
 
-	err := c.Execute()
-	s.Require().NoError(err)
 	s.NotEmpty(out.String())
 }
 
 func (s *AliasTestSuite) Test_2_List() {
-	c := cmd.NewListAliasesCmd()
-	out := test.Wrapper(c, []string{})
+	c := cmd.NewRootCmd("test")
+	out := test.WrapAndExecute(s.T(), c, "list", "aliases")
 
-	err := c.Execute()
-	s.Require().NoError(err)
 	s.NotEmpty(out.String())
 }
 
 func (s *AliasTestSuite) Test_3_Update() {
-	c := cmd.NewUpdateAliasCmd()
-	out := test.Wrapper(c, []string{s.name, "commons._events"})
-	err := c.Execute()
-	s.Require().NoError(err)
-	s.NotEmpty(fmt.Sprintf("alias %s deleted", s.name), out.String())
+	c := cmd.NewRootCmd("test")
+	out := test.WrapAndExecute(s.T(), c, "update", "alias", s.name, "commons._events")
+
+	s.Equal(fmt.Sprintf("alias %s updated\n", s.name), out.String())
 }
 
 func (s *AliasTestSuite) Test_4_Delete() {
-	c := cmd.NewDeleteAliasCmd()
-	out := test.Wrapper(c, []string{s.name})
-	err := c.Execute()
-	s.Require().NoError(err)
-	s.NotEmpty(fmt.Sprintf("alias %s deleted", s.name), out.String())
+	c := cmd.NewRootCmd("test")
+	out := test.WrapAndExecute(s.T(), c, "delete", "alias", s.name)
+
+	s.Equal(fmt.Sprintf("alias %s deleted\n", s.name), out.String())
 }
