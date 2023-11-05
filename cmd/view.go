@@ -23,7 +23,7 @@ func newListViewsCmd() *cobra.Command {
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -49,7 +49,7 @@ func newListViewsCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.AllWorkspaces, "only show views for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	return &cmd
 }
@@ -61,12 +61,12 @@ func newGetViewCmd() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Short:             "get view information",
 		Annotations:       group("view"),
-		ValidArgsFunction: completion.View,
+		ValidArgsFunction: completion.View(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -79,8 +79,8 @@ func newGetViewCmd() *cobra.Command {
 			return formatOne(cmd, view)
 		},
 	}
-	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "only show views for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "only show views for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	return &cmd
 }

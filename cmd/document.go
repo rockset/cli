@@ -23,7 +23,7 @@ func newDeleteDocumentsCmd() *cobra.Command {
 			coll, _ := cmd.Flags().GetString("collection")
 
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -52,12 +52,12 @@ func newDeleteDocumentsCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "workspace name")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace name")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().String(flag.Collection, "", "collection name")
 	_ = cmd.MarkFlagRequired(flag.Collection)
-	_ = cmd.RegisterFlagCompletionFunc(flag.Collection, completion.Collection)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Collection, completion.Collection(Version))
 
 	return &cmd
 }
@@ -73,7 +73,7 @@ func newIngestCmd() *cobra.Command {
 			batchSize, _ := cmd.Flags().GetUint64("batch-size")
 
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -106,12 +106,12 @@ func newIngestCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "workspace name")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace name")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().String(flag.Collection, "", "collection name")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.Collection)
-	_ = cmd.RegisterFlagCompletionFunc(flag.Collection, completion.Collection)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Collection, completion.Collection(Version))
 
 	cmd.Flags().Uint64("batch-size", 100,
 		"number of documents to batch together each write")

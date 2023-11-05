@@ -30,7 +30,7 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 			ctx := cmd.Context()
 			size, _ := cmd.Flags().GetString(flag.Size)
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -76,12 +76,12 @@ func newUpdateVirtualInstanceCmd() *cobra.Command {
 		Long:              "update a Rockset virtual instance",
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("virtual instance"),
-		ValidArgsFunction: completion.VirtualInstance,
+		ValidArgsFunction: completion.VirtualInstance(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			size, _ := cmd.Flags().GetString(flag.Size)
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -131,7 +131,7 @@ func newListVirtualInstancesCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -165,11 +165,11 @@ func newGetVirtualInstancesCmd() *cobra.Command {
 		Short:             "get virtual instance",
 		Long:              "get Rockset virtual instances",
 		Annotations:       group("virtual instance"),
-		ValidArgsFunction: completion.VirtualInstance,
+		ValidArgsFunction: completion.VirtualInstance(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -201,11 +201,11 @@ func newDeleteVirtualInstanceCmd() *cobra.Command {
 		Long:              "delete Rockset virtual instance",
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("virtual instance"),
-		ValidArgsFunction: completion.VirtualInstance,
+		ValidArgsFunction: completion.VirtualInstance(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -237,11 +237,11 @@ func newSuspendVirtualInstanceCmd() *cobra.Command {
 		Long:              "suspend Rockset virtual instance",
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("virtual instance"),
-		ValidArgsFunction: completion.VirtualInstance,
+		ValidArgsFunction: completion.VirtualInstance(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -273,11 +273,11 @@ func newResumeVirtualInstanceCmd() *cobra.Command {
 		Long:              "resume Rockset virtual instance",
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("virtual instance"),
-		ValidArgsFunction: completion.VirtualInstance,
+		ValidArgsFunction: completion.VirtualInstance(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}

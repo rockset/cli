@@ -10,7 +10,7 @@ import (
 	"github.com/rockset/cli/flag"
 )
 
-func Client(cmd *cobra.Command) (*rockset.RockClient, error) {
+func Client(cmd *cobra.Command, version string) (*rockset.RockClient, error) {
 	// load from config, ok if none is found
 	cfg, err := Load()
 	if err != nil {
@@ -25,7 +25,7 @@ func Client(cmd *cobra.Command) (*rockset.RockClient, error) {
 	}
 
 	var options = []rockset.RockOption{
-		rockset.WithUserAgent("rockset-go-cli/" + "Version"), // TODO how to inject the version from the caller
+		rockset.WithUserAgent("rockset-go-cli/" + version),
 	}
 
 	opts, err := cfg.AsOptions(override)

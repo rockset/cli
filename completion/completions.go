@@ -8,280 +8,305 @@ import (
 	"github.com/rockset/cli/flag"
 )
 
-func Collection(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func Collection(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 
-	var options []option.ListCollectionOption
-	if ws, _ := cmd.Flags().GetString(flag.Workspace); ws != "" {
-		options = append(options, option.WithWorkspace(ws))
-	}
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	collections, err := rs.ListCollections(cmd.Context(), options...)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		var options []option.ListCollectionOption
+		if ws, _ := cmd.Flags().GetString(flag.Workspace); ws != "" {
+			options = append(options, option.WithWorkspace(ws))
+		}
 
-	list := make([]string, len(collections))
-	for i, ws := range collections {
-		list[i] = ws.GetName()
-	}
+		collections, err := rs.ListCollections(cmd.Context(), options...)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		list := make([]string, len(collections))
+		for i, ws := range collections {
+			list[i] = ws.GetName()
+		}
+
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func Integration(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func Integration(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	integrations, err := rs.ListIntegrations(cmd.Context())
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		integrations, err := rs.ListIntegrations(cmd.Context())
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(integrations))
-	for i, ws := range integrations {
-		list[i] = ws.GetName()
-	}
+		list := make([]string, len(integrations))
+		for i, ws := range integrations {
+			list[i] = ws.GetName()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func Workspace(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func Workspace(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	workspaces, err := rs.ListWorkspaces(cmd.Context())
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		workspaces, err := rs.ListWorkspaces(cmd.Context())
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(workspaces))
-	for i, ws := range workspaces {
-		list[i] = ws.GetName()
-	}
+		list := make([]string, len(workspaces))
+		for i, ws := range workspaces {
+			list[i] = ws.GetName()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func Lambda(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ws, err := cmd.Flags().GetString(flag.Workspace)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func Lambda(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		ws, err := cmd.Flags().GetString(flag.Workspace)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	var options []option.ListQueryLambdaOption
-	if ws != "" {
-		options = append(options, option.WithQueryLambdaWorkspace(ws))
-	}
+		var options []option.ListQueryLambdaOption
+		if ws != "" {
+			options = append(options, option.WithQueryLambdaWorkspace(ws))
+		}
 
-	versions, err := rs.ListQueryLambdas(cmd.Context(), options...)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		versions, err := rs.ListQueryLambdas(cmd.Context(), options...)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(versions))
-	for i, v := range versions {
-		list[i] = v.GetName()
-	}
+		list := make([]string, len(versions))
+		for i, v := range versions {
+			list[i] = v.GetName()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func Alias(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ws, err := cmd.Flags().GetString(flag.Workspace)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func Alias(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		ws, err := cmd.Flags().GetString(flag.Workspace)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	var options []option.ListAliasesOption
-	if ws != "" {
-		options = append(options, option.WithAliasWorkspace(ws))
-	}
+		var options []option.ListAliasesOption
+		if ws != "" {
+			options = append(options, option.WithAliasWorkspace(ws))
+		}
 
-	versions, err := rs.ListAliases(cmd.Context(), options...)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		versions, err := rs.ListAliases(cmd.Context(), options...)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(versions))
-	for i, v := range versions {
-		list[i] = v.GetName()
-	}
+		list := make([]string, len(versions))
+		for i, v := range versions {
+			list[i] = v.GetName()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func LambdaVersion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ws, err := cmd.Flags().GetString(flag.Workspace)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func LambdaVersion(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		ws, err := cmd.Flags().GetString(flag.Workspace)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	versions, err := rs.ListQueryLambdaVersions(cmd.Context(), ws, args[0])
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		versions, err := rs.ListQueryLambdaVersions(cmd.Context(), ws, args[0])
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(versions))
-	for i, v := range versions {
-		list[i] = v.GetName()
-	}
+		list := make([]string, len(versions))
+		for i, v := range versions {
+			list[i] = v.GetName()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func LambdaTag(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ws, err := cmd.Flags().GetString(flag.Workspace)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func LambdaTag(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		ws, err := cmd.Flags().GetString(flag.Workspace)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	versions, err := rs.ListQueryLambdaTags(cmd.Context(), ws, args[0])
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		versions, err := rs.ListQueryLambdaTags(cmd.Context(), ws, args[0])
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(versions))
-	for i, v := range versions {
-		list[i] = v.GetTagName()
-	}
+		list := make([]string, len(versions))
+		for i, v := range versions {
+			list[i] = v.GetTagName()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func Role(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func Role(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	versions, err := rs.ListRoles(cmd.Context())
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		versions, err := rs.ListRoles(cmd.Context())
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(versions))
-	for i, v := range versions {
-		list[i] = v.GetRoleName()
-	}
+		list := make([]string, len(versions))
+		for i, v := range versions {
+			list[i] = v.GetRoleName()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func VirtualInstance(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func VirtualInstance(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	versions, err := rs.ListVirtualInstances(cmd.Context())
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		versions, err := rs.ListVirtualInstances(cmd.Context())
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(versions))
-	for i, v := range versions {
-		list[i] = v.GetName()
-	}
+		list := make([]string, len(versions))
+		for i, v := range versions {
+			list[i] = v.GetName()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func View(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ws, err := cmd.Flags().GetString(flag.Workspace)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func View(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		ws, err := cmd.Flags().GetString(flag.Workspace)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	var options []option.ListViewOption
-	if ws != "" {
-		options = append(options, option.WithViewWorkspace(ws))
-	}
+		var options []option.ListViewOption
+		if ws != "" {
+			options = append(options, option.WithViewWorkspace(ws))
+		}
 
-	versions, err := rs.ListViews(cmd.Context(), options...)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		versions, err := rs.ListViews(cmd.Context(), options...)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(versions))
-	for i, v := range versions {
-		list[i] = v.GetName()
-	}
+		list := make([]string, len(versions))
+		for i, v := range versions {
+			list[i] = v.GetName()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func Email(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func Email(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	users, err := rs.ListUsers(cmd.Context())
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		users, err := rs.ListUsers(cmd.Context())
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(users))
-	for i, user := range users {
-		list[i] = user.GetEmail()
-	}
+		list := make([]string, len(users))
+		for i, user := range users {
+			list[i] = user.GetEmail()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }
 
-func APIKey(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	rs, err := config.Client(cmd)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+func APIKey(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	var options []option.APIKeyOption
-	if email, _ := cmd.Flags().GetString(flag.Email); email != "" {
-		options = append(options, option.ForUser(email))
-	}
+		var options []option.APIKeyOption
+		if email, _ := cmd.Flags().GetString(flag.Email); email != "" {
+			options = append(options, option.ForUser(email))
+		}
 
-	keys, err := rs.ListAPIKeys(cmd.Context(), options...)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
+		keys, err := rs.ListAPIKeys(cmd.Context(), options...)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 
-	list := make([]string, len(keys))
-	for i, key := range keys {
-		list[i] = key.GetName()
-	}
+		list := make([]string, len(keys))
+		for i, key := range keys {
+			list[i] = key.GetName()
+		}
 
-	return list, cobra.ShellCompDirectiveNoFileComp
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
 }

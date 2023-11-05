@@ -19,7 +19,7 @@ func newListRolesCommand() *cobra.Command {
 		Annotations: group("role"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -50,10 +50,10 @@ func newGetRoleCommand() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Short:             "get role information",
 		Annotations:       group("role"),
-		ValidArgsFunction: completion.Role,
+		ValidArgsFunction: completion.Alias(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}

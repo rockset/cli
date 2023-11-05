@@ -27,7 +27,7 @@ func newListQueryLambdasCmd() *cobra.Command {
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -53,7 +53,7 @@ func newListQueryLambdasCmd() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.AllWorkspaces, "only show query lambdas for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	return &cmd
 }
@@ -67,7 +67,7 @@ func newGetQueryLambdaCmd() *cobra.Command {
 or to get all tags or versions`,
 		Args:              cobra.ExactArgs(1),
 		Annotations:       group("lambda"),
-		ValidArgsFunction: completion.Lambda,
+		ValidArgsFunction: completion.Alias(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
 			tag, _ := cmd.Flags().GetString(flag.Tag)
@@ -76,7 +76,7 @@ or to get all tags or versions`,
 			versions, _ := cmd.Flags().GetBool(flag.Versions)
 
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -126,17 +126,17 @@ or to get all tags or versions`,
 		},
 	}
 
-	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "only show query lambdas for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "only show query lambdas for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().Bool(flag.Versions, false, "show all versions of this query lambda")
 	cmd.Flags().Bool(flag.Tags, false, "show all tags for this query lambda")
 
 	cmd.Flags().String(flag.Tag, "", "only show this query lambda tag")
-	_ = cmd.RegisterFlagCompletionFunc("tag", completion.LambdaTag)
+	_ = cmd.RegisterFlagCompletionFunc("tag", completion.LambdaTag(Version))
 
 	cmd.Flags().String(flag.Version, "", "only show this query lambda version")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Version, completion.LambdaVersion)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Version, completion.LambdaVersion(Version))
 
 	cmd.MarkFlagsMutuallyExclusive(flag.Version, "versions", "tag", "tags")
 
@@ -150,13 +150,13 @@ func NewExecuteQueryLambdaCmd() *cobra.Command {
 		Short:             "execute lambda",
 		Long:              "execute Rockset query lambda",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completion.Lambda,
+		ValidArgsFunction: completion.Alias(Version),
 		Annotations:       group("lambda"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -198,8 +198,8 @@ func NewExecuteQueryLambdaCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "workspace name")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace name")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().String(flag.Version, "", "query lambda version")
 	cmd.Flags().String("tag", "", "query lambda tag")
@@ -223,7 +223,7 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 			description, _ := cmd.Flags().GetString(flag.Description)
 
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -243,8 +243,8 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "only show query lambdas for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "only show query lambdas for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().String(flag.Description, "", "description of the query lambda")
 
@@ -262,12 +262,12 @@ func newDeleteQueryLambdaCmd() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Short:             "delete query lambda",
 		Annotations:       group("lambda"),
-		ValidArgsFunction: completion.Lambda,
+		ValidArgsFunction: completion.Alias(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -282,8 +282,8 @@ func newDeleteQueryLambdaCmd() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "only show query lambdas for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "only show query lambdas for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().String(flag.Description, "", "description of the query lambda")
 
@@ -297,14 +297,14 @@ func newUpdateQueryLambdaCmd() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Short:             "update query lambda",
 		Annotations:       group("lambda"),
-		ValidArgsFunction: completion.Lambda,
+		ValidArgsFunction: completion.Lambda(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
 			sql, _ := cmd.Flags().GetString(flag.SQL)
 			description, _ := cmd.Flags().GetString(flag.Description)
 
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -324,8 +324,8 @@ func newUpdateQueryLambdaCmd() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.Description, "only show query lambdas for the selected workspace")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "only show query lambdas for the selected workspace")
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().String(flag.Description, "", "description of the query lambda")
 

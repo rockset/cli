@@ -173,7 +173,7 @@ func newAuthKeyCmd() *cobra.Command {
 			name := args[0]
 			role := args[1]
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}

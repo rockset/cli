@@ -29,10 +29,10 @@ func newDeleteCollectionCmd() *cobra.Command {
 		Long:              "delete Rockset collection",
 		Annotations:       group("collection"),
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completion.Collection,
+		ValidArgsFunction: completion.Collection(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -51,7 +51,7 @@ func newDeleteCollectionCmd() *cobra.Command {
 	}
 
 	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace for the collection")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	return &cmd
 }
@@ -64,14 +64,14 @@ func newGetCollectionCmd() *cobra.Command {
 		Long:              "get Rockset collection",
 		Annotations:       group("collection"),
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completion.Collection,
+		ValidArgsFunction: completion.Collection(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
 			output, _ := cmd.Flags().GetString("output")
 			name := args[0]
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -100,7 +100,7 @@ func newGetCollectionCmd() *cobra.Command {
 
 	cmd.Flags().Bool(flag.Wide, false, "display more information")
 	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace for the collection")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().String("output", "", "save json for create collection request to output file, use `-` for stdout")
 	_ = cobra.MarkFlagFilename(cmd.Flags(), "output")
@@ -120,7 +120,7 @@ func newListCollectionsCmd() *cobra.Command {
 			ctx := cmd.Context()
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -149,7 +149,7 @@ func newListCollectionsCmd() *cobra.Command {
 
 	cmd.Flags().Bool(flag.Wide, false, "display more information")
 	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.AllWorkspaces, "workspace for the collection")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	return &cmd
 }
@@ -173,7 +173,7 @@ func newCreateCollectionCmd() *cobra.Command {
 
 			options := getCommonCollectionFlags(cmd)
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -253,7 +253,7 @@ func newCreateS3CollectionCmd() *cobra.Command {
 
 			options = append(options, option.WithS3Source(integration, bucket, option.WithJSONFormat(), s3Opts...))
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -276,7 +276,7 @@ func newCreateS3CollectionCmd() *cobra.Command {
 	cmd.Flags().String("source-format", "json", "data source format")
 
 	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.Integration)
-	_ = cmd.RegisterFlagCompletionFunc(flag.Integration, completion.Integration)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Integration, completion.Integration(Version))
 
 	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.Bucket)
 
@@ -315,7 +315,7 @@ func newCreateSampleCollectionCmd() *cobra.Command {
 
 			options = append(options, option.WithSampleDataset(ds), option.WithSampleDatasetPattern(pattern))
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -357,7 +357,7 @@ func newCreateTailCollectionCmd() *cobra.Command {
 			frequency, _ := cmd.Flags().GetDuration("frequency")
 			timeField, _ := cmd.Flags().GetString("time-field")
 
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -403,7 +403,7 @@ ORDER BY c.%s ASC`,
 	cmd.Flags().String("time-field", "_event_time", "field name for the time")
 
 	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace for the collection")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	return &cmd
 }
@@ -433,7 +433,7 @@ func waitForCollection(ctx context.Context, cmd *cobra.Command, rs *rockset.Rock
 
 func addCommonCollectionFlags(cmd *cobra.Command) {
 	cmd.Flags().StringP(flag.Workspace, flag.WorkspaceShort, flag.DefaultWorkspace, "workspace for the collection")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().String(flag.Description, "", "collection description")
 	cmd.Flags().Duration(flag.Retention, 0, "collection retention")

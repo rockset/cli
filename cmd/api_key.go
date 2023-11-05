@@ -24,10 +24,10 @@ func NewListAPIKeysCmd() *cobra.Command {
 		Args:              cobra.RangeArgs(0, 1),
 		Short:             "list apikeys for the current user, or the specified USER",
 		Annotations:       group("apikey"),
-		ValidArgsFunction: completion.Email,
+		ValidArgsFunction: completion.Alias(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -64,10 +64,10 @@ func NewGetAPIKeyCmd() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Short:             "get apikey information",
 		Annotations:       group("apikey"),
-		ValidArgsFunction: completion.APIKey,
+		ValidArgsFunction: completion.Alias(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -87,7 +87,7 @@ func NewGetAPIKeyCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String(flag.Email, "", "the email address of the user who's key to get, defaults to self")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Email, completion.Email)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Email, completion.Alias(Version))
 
 	return &cmd
 }
@@ -99,10 +99,10 @@ func NewDeleteAPIKeyCmd() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Short:             "delete an apikey",
 		Annotations:       group("apikey"),
-		ValidArgsFunction: completion.APIKey,
+		ValidArgsFunction: completion.Alias(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -124,7 +124,7 @@ func NewDeleteAPIKeyCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String(flag.Email, "", "the email address of the user who's key to delete, defaults to self")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Email, completion.Email)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Email, completion.Alias(Version))
 
 	return &cmd
 }
@@ -138,7 +138,7 @@ func NewCreateAPIKeyCmd() *cobra.Command {
 		Annotations: group("apikey"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -160,7 +160,7 @@ func NewCreateAPIKeyCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String(flag.Role, "", "role for the apikey")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Role, completion.Role)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Role, completion.Role(Version))
 
 	return &cmd
 }
@@ -172,10 +172,10 @@ func newUpdateAPIKeyCmd() *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		Short:             "update the state of an apikey",
 		Annotations:       group("apikey"),
-		ValidArgsFunction: completion.APIKey,
+		ValidArgsFunction: completion.Alias(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rs, err := config.Client(cmd)
+			rs, err := config.Client(cmd, Version)
 			if err != nil {
 				return err
 			}
@@ -199,7 +199,7 @@ func newUpdateAPIKeyCmd() *cobra.Command {
 	}
 
 	cmd.Flags().String(flag.Email, "", "the email address of the user who's key to update, defaults to self")
-	_ = cmd.RegisterFlagCompletionFunc(flag.Email, completion.Email)
+	_ = cmd.RegisterFlagCompletionFunc(flag.Email, completion.Alias(Version))
 
 	cmd.Flags().String(flag.State, "",
 		fmt.Sprintf("the state of the apikey, either %s or %s", option.KeyActive, option.KeySuspended))
