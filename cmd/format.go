@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/rockset/cli/flag"
 	"github.com/spf13/cobra"
 
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 )
 

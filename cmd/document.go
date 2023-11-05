@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"fmt"
+
+	"github.com/spf13/cobra"
+	"log/slog"
+
 	"github.com/rockset/cli/completion"
 	"github.com/rockset/cli/config"
 	"github.com/rockset/cli/flag"
-	"github.com/spf13/cobra"
-	"golang.org/x/exp/slog"
 )
 
 func newDeleteDocumentsCmd() *cobra.Command {

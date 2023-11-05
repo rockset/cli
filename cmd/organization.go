@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/rockset/cli/config"
 	"github.com/spf13/cobra"
+
+	"github.com/rockset/cli/config"
 )
 
 func newGetOrganizationCmd() *cobra.Command {

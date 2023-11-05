@@ -4,12 +4,14 @@ package cmd_test
 
 import (
 	"fmt"
-	"github.com/rockset/cli/cmd"
-	"github.com/rockset/cli/internal/test"
+	"testing"
+
 	"github.com/rockset/rockset-go-client"
 	"github.com/rockset/rockset-go-client/option"
 	"github.com/stretchr/testify/suite"
-	"testing"
+
+	"github.com/rockset/cli/cmd"
+	"github.com/rockset/cli/internal/test"
 )
 
 type APIKeySuite struct {

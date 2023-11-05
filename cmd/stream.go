@@ -5,8 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-
-	"golang.org/x/exp/slog"
+	"log/slog"
 
 	"github.com/rockset/rockset-go-client/openapi"
 )

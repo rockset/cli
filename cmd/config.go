@@ -3,14 +3,15 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/rockset/cli/flag"
 	"io"
 	"os"
 	"sort"
 
-	"github.com/rockset/cli/config"
 	"github.com/rockset/rockset-go-client"
 	"github.com/spf13/cobra"
+
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 )
 
 // config is the file containing the auth contexts

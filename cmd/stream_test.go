@@ -2,16 +2,15 @@ package cmd_test
 
 import (
 	"context"
-	"github.com/rockset/cli/flag"
 	"os"
 	"testing"
 
+	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/rockset/cli/cmd"
-
-	"github.com/rockset/rockset-go-client/openapi"
+	"github.com/rockset/cli/flag"
 )
 
 func TestStreamDocuments(t *testing.T) {

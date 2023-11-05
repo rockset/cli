@@ -3,11 +3,12 @@
 package cmd_test
 
 import (
-	"github.com/rockset/cli/flag"
-	"github.com/stretchr/testify/assert"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/rockset/cli/cmd"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/internal/test"
 )
 

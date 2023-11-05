@@ -3,12 +3,14 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/rockset/cli/config"
-	"github.com/rockset/cli/tui"
-	"github.com/spf13/cobra"
 	"strings"
 	"time"
+
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/spf13/cobra"
+
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/tui"
 )
 
 func newTestCmd() *cobra.Command {

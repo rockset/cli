@@ -3,8 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/dustin/go-humanize"
-	"github.com/rockset/rockset-go-client/option"
 	"io"
 	"log/slog"
 	"os"
@@ -12,8 +10,10 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/dustin/go-humanize"
 	"github.com/pkg/browser"
 	devauth "github.com/rockset/device-authorization"
+	"github.com/rockset/rockset-go-client/option"
 	"github.com/spf13/cobra"
 
 	"github.com/rockset/cli/config"

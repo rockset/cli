@@ -2,17 +2,17 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/mitchellh/go-homedir"
-	"github.com/rockset/cli/flag"
 	"os"
 	"path"
 	"strings"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/exp/slog"
+	"log/slog"
 
 	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 )
 

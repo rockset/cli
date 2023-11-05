@@ -5,9 +5,10 @@ package cmd_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/rockset/cli/cmd"
 	"github.com/rockset/cli/internal/test"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestExecuteLambdaCmd(t *testing.T) {

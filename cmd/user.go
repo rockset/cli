@@ -1,13 +1,13 @@
 package cmd
 
 import (
+	"github.com/rockset/rockset-go-client/openapi"
+	"github.com/spf13/cobra"
+
 	"github.com/rockset/cli/config"
 	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/sort"
-	"github.com/spf13/cobra"
-
-	"github.com/rockset/rockset-go-client/openapi"
 )
 
 func newListUsersCmd() *cobra.Command {

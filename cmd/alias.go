@@ -2,13 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/rockset/cli/completion"
-	"github.com/rockset/cli/config"
-	"github.com/rockset/cli/flag"
+
 	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/rockset/rockset-go-client/option"
 	"github.com/spf13/cobra"
 
+	"github.com/rockset/cli/completion"
+	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/sort"
 )

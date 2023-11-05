@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/rockset/cli/flag"
-	"github.com/rockset/cli/tui"
-	"github.com/spf13/cobra"
 	"net/http"
 	"runtime/debug"
+
+	"github.com/spf13/cobra"
+
+	"github.com/rockset/cli/flag"
+	"github.com/rockset/cli/tui"
 )
 
 func newVersionCmd() *cobra.Command {

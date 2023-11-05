@@ -3,19 +3,19 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/rockset/cli/flag"
 	"io"
 	"os"
 	"strings"
 
 	"github.com/chzyer/readline"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slog"
+	"log/slog"
 
 	"github.com/rockset/rockset-go-client"
 	"github.com/rockset/rockset-go-client/openapi"
 
 	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/tui"
 )
