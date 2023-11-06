@@ -245,13 +245,12 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "created query lambda %s.%s:%s\n",
+				ql.GetWorkspace(), ql.GetName(), ql.GetVersion())
 
 			if err = waitUntilQLActive(rs, cmd, ws, args[0], ql.GetVersion()); err != nil {
 				return err
 			}
-
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "created query lambda %s.%s:%s\n",
-				ql.GetWorkspace(), ql.GetName(), ql.GetVersion())
 
 			return nil
 		},
@@ -337,13 +336,12 @@ func newUpdateQueryLambdaCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "updated query lambda %s.%s:%s",
+				ql.GetWorkspace(), ql.GetName(), ql.GetVersion())
 
 			if err = waitUntilQLActive(rs, cmd, ws, args[0], ql.GetVersion()); err != nil {
 				return err
 			}
-
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "updated query lambda %s.%s:%s",
-				ql.GetWorkspace(), ql.GetName(), ql.GetVersion())
 
 			return nil
 		},
@@ -367,7 +365,7 @@ func waitUntilQLActive(rs *rockset.RockClient, cmd *cobra.Command, ws, name, ver
 		return err
 	}
 	if wait {
-		// TODO notify the user that we're waiting
+		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "waiting until query lambda is ready...")
 		if err := rs.Wait.UntilQueryLambdaVersionActive(cmd.Context(), ws, name, version); err != nil {
 			return fmt.Errorf("failed to wait for %s.%s:%s to be active: %v", ws, name, version, err)
 		}

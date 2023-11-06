@@ -48,12 +48,12 @@ func newCreateVirtualInstanceCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' created\n", result.GetName())
 
 			if err = waitUntilVIActive(rs, cmd, result.GetId()); err != nil {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' created\n", result.GetName())
 			return nil
 		},
 	}
@@ -100,12 +100,12 @@ func newUpdateVirtualInstanceCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' updated\n", result.GetName())
 
 			if err = waitUntilVIActive(rs, cmd, result.GetId()); err != nil {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' updated\n", result.GetName())
 			return nil
 		},
 	}
@@ -291,12 +291,11 @@ func newResumeVirtualInstanceCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' resumed\n", result.GetName())
 
 			if err = waitUntilVIActive(rs, cmd, id); err != nil {
 				return err
 			}
-
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "virtual instance '%s' resumed\n", result.GetName())
 
 			return nil
 		},
@@ -350,7 +349,8 @@ func waitUntilVIActive(rs *rockset.RockClient, cmd *cobra.Command, vID string) e
 		return err
 	}
 	if wait {
-		// TODO notify the user that we're waiting
+		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "waiting for virtual instance to be ready...\n")
+
 		if err := rs.Wait.UntilVirtualInstanceActive(cmd.Context(), vID); err != nil {
 			return fmt.Errorf("failed to wait for %s to be active: %v", vID, err)
 		}
