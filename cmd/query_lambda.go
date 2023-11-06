@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/rockset/rockset-go-client"
 	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/rockset/rockset-go-client/option"
 	"github.com/spf13/cobra"
@@ -163,10 +164,12 @@ func NewExecuteQueryLambdaCmd() *cobra.Command {
 
 			var opts []option.QueryLambdaOption
 			if version, _ := cmd.Flags().GetString(flag.Version); version != "" {
+				logger.Info("executing ql with", "version", version)
 				opts = []option.QueryLambdaOption{option.WithVersion(version)}
 			}
 			if tag, _ := cmd.Flags().GetString("tag"); tag != "" {
 				opts = []option.QueryLambdaOption{option.WithTag(tag)}
+				logger.Info("executing ql with", "tag", tag)
 			}
 
 			params, _ := cmd.Flags().GetStringArray("param")
@@ -219,8 +222,13 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 		Annotations: group("lambda"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
-			sql, _ := cmd.Flags().GetString(flag.SQL)
+			sqlFile, _ := cmd.Flags().GetString(flag.SQL)
 			description, _ := cmd.Flags().GetString(flag.Description)
+
+			sql, err := os.ReadFile(sqlFile)
+			if err != nil {
+				return err
+			}
 
 			ctx := cmd.Context()
 			rs, err := config.Client(cmd, Version)
@@ -233,12 +241,17 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 				options = append(options, option.WithQueryLambdaDescription(description))
 			}
 
-			ql, err := rs.CreateQueryLambda(ctx, ws, args[0], sql, options...)
+			ql, err := rs.CreateQueryLambda(ctx, ws, args[0], string(sql), options...)
 			if err != nil {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "created query lambda %s in %s", ql.GetName(), ql.GetWorkspace())
+			if err = waitUntilQLActive(rs, cmd, ws, args[0], ql.GetVersion()); err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "created query lambda %s.%s:%s\n",
+				ql.GetWorkspace(), ql.GetName(), ql.GetVersion())
 
 			return nil
 		},
@@ -247,6 +260,7 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().String(flag.Description, "", "description of the query lambda")
+	cmd.Flags().Bool(flag.Wait, false, "wait until query lambda is ready")
 
 	cmd.Flags().String(flag.SQL, "", "file containing SQL")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.SQL)
@@ -277,7 +291,7 @@ func newDeleteQueryLambdaCmd() *cobra.Command {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "deleted query lambda %s in %s", args[0], ws)
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "deleted query lambda %s in %s\n", args[0], ws)
 
 			return nil
 		},
@@ -300,8 +314,13 @@ func newUpdateQueryLambdaCmd() *cobra.Command {
 		ValidArgsFunction: completion.Lambda(Version),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ws, _ := cmd.Flags().GetString(flag.Workspace)
-			sql, _ := cmd.Flags().GetString(flag.SQL)
+			sqlFile, _ := cmd.Flags().GetString(flag.SQL)
 			description, _ := cmd.Flags().GetString(flag.Description)
+
+			sql, err := os.ReadFile(sqlFile)
+			if err != nil {
+				return err
+			}
 
 			ctx := cmd.Context()
 			rs, err := config.Client(cmd, Version)
@@ -314,12 +333,17 @@ func newUpdateQueryLambdaCmd() *cobra.Command {
 				options = append(options, option.WithQueryLambdaDescription(description))
 			}
 
-			ql, err := rs.UpdateQueryLambda(ctx, ws, args[0], sql, options...)
+			ql, err := rs.UpdateQueryLambda(ctx, ws, args[0], string(sql), options...)
 			if err != nil {
 				return err
 			}
 
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "updated query lambda %s in %s", ql.GetName(), ql.GetWorkspace())
+			if err = waitUntilQLActive(rs, cmd, ws, args[0], ql.GetVersion()); err != nil {
+				return err
+			}
+
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "updated query lambda %s.%s:%s",
+				ql.GetWorkspace(), ql.GetName(), ql.GetVersion())
 
 			return nil
 		},
@@ -328,10 +352,26 @@ func newUpdateQueryLambdaCmd() *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc(flag.Workspace, completion.Workspace(Version))
 
 	cmd.Flags().String(flag.Description, "", "description of the query lambda")
+	cmd.Flags().Bool(flag.Wait, false, "wait until query lambda is ready")
 
 	cmd.Flags().String(flag.SQL, "", "file containing SQL")
 	_ = cobra.MarkFlagRequired(cmd.Flags(), flag.SQL)
 	_ = cobra.MarkFlagFilename(cmd.Flags(), flag.SQL, ".sql")
 
 	return &cmd
+}
+
+func waitUntilQLActive(rs *rockset.RockClient, cmd *cobra.Command, ws, name, version string) error {
+	wait, err := cmd.Flags().GetBool(flag.Wait)
+	if err != nil {
+		return err
+	}
+	if wait {
+		// TODO notify the user that we're waiting
+		if err := rs.Wait.UntilQueryLambdaVersionActive(cmd.Context(), ws, name, version); err != nil {
+			return fmt.Errorf("failed to wait for %s.%s:%s to be active: %v", ws, name, version, err)
+		}
+	}
+
+	return nil
 }

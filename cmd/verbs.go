@@ -26,7 +26,7 @@ func addVerbs(root *cobra.Command) {
 
 	executeCmd := cobra.Command{
 		Use:     "execute",
-		Aliases: []string{"e"},
+		Aliases: []string{"exec", "e"},
 		Short:   "execute query",
 		Long:    "execute Rockset query",
 	}

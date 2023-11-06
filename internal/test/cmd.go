@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"github.com/rockset/cli/config"
 	"github.com/stretchr/testify/require"
-	"log"
 	"testing"
 
 	"github.com/spf13/cobra"
@@ -30,7 +29,7 @@ func Wrapper(t *testing.T, c *cobra.Command, args ...string) *bytes.Buffer {
 // WrapAndExecute wraps the command with Wrapper and then executes it
 func WrapAndExecute(t *testing.T, c *cobra.Command, args ...string) *bytes.Buffer {
 	t.Helper()
-	log.Printf("args: %+v", args)
+
 	out := Wrapper(t, c, args...)
 	require.NoError(t, c.Execute())
 
