@@ -336,7 +336,7 @@ func newUpdateQueryLambdaCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "updated query lambda %s.%s:%s",
+			_, _ = fmt.Fprintf(cmd.OutOrStdout(), "updated query lambda %s.%s:%s\n",
 				ql.GetWorkspace(), ql.GetName(), ql.GetVersion())
 
 			if err = waitUntilQLActive(rs, cmd, ws, args[0], ql.GetVersion()); err != nil {

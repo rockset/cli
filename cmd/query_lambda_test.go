@@ -28,9 +28,9 @@ func (s *QueryLambdaSuite) Test_0_Create() {
 	c := cmd.NewRootCmd("test")
 	out := test.WrapAndExecute(s.T(), c, "create", "ql", "--sql", "testdata/query_lambda.sql", "--wait", s.name)
 
-	re := regexp.MustCompile(`created query lambda commons\.\w+:(\w+)`)
+	re := regexp.MustCompile(`created query lambda commons\.\w+:(\w+)\s`)
 	m := re.FindStringSubmatch(out.String())
-	s.NotNil(m)
+	s.Require().NotNil(m, "no regexp match")
 	s.version = m[1]
 }
 
@@ -59,9 +59,9 @@ func (s *QueryLambdaSuite) Test_4_Update() {
 	c := cmd.NewRootCmd("test")
 	out := test.WrapAndExecute(s.T(), c, "update", "ql", "--sql", "testdata/query_lambda_updated.sql", "--wait", s.name)
 
-	re := regexp.MustCompile(`updated query lambda commons\.\w+:(\w+)`)
+	re := regexp.MustCompile(`updated query lambda commons\.\w+:(\w+)\s`)
 	m := re.FindStringSubmatch(out.String())
-	s.NotNil(m)
+	s.Require().NotNil(m, "no regexp match")
 	s.version = m[1]
 }
 
