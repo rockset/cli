@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/rockset/cli/flag"
 	"os"
 	"os/signal"
 	"runtime/debug"
@@ -75,6 +76,10 @@ func main() {
 			var re rockerr.Error
 			if errors.As(err, &re) {
 				_, _ = fmt.Fprintf(os.Stderr, "%s\n", tui.RocksetStyle.Render("Rockset error:", err.Error()))
+				dbg, _ := root.PersistentFlags().GetBool(flag.Debug)
+				if id := re.GetTraceId(); id != "" && dbg {
+					_, _ = fmt.Fprintf(os.Stderr, "%s\n", tui.RocksetStyle.Render("Trace ID:", id))
+				}
 			} else {
 				// this captures usage errors too, as there is no way to distinguish it from other errors
 				sentry.CaptureException(err)
