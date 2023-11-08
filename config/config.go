@@ -54,9 +54,11 @@ func New() Config {
 }
 
 func (c *Config) AsOptions(override string) ([]rockset.RockOption, error) {
-	name := override
+	var name string
 	if c.Current == "" && override == "" {
 		return nil, NoSelectionErr
+	} else if override != "" {
+		name = override
 	} else if c.Current != "" {
 		name = c.Current
 	}
