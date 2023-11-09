@@ -1,5 +1,7 @@
 package sort
 
+// TODO should this file be generated instead?
+
 type WorkspaceGetter interface {
 	GetWorkspace() string
 }
@@ -38,4 +40,12 @@ type EmailGetter interface {
 
 func ByEmail[T EmailGetter](n1, n2 T) bool {
 	return n1.GetEmail() < n2.GetEmail()
+}
+
+type CollectionPathGetter interface {
+	GetCollectionPath() string
+}
+
+func ByCollectionPath[T CollectionPathGetter](n1, n2 T) bool {
+	return n1.GetCollectionPath() < n2.GetCollectionPath()
 }

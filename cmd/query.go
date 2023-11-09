@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/rockset/cli/lookup"
 	"io"
 	"os"
 	"strings"
@@ -40,7 +41,7 @@ func newListQueryCmd() *cobra.Command {
 			if len(args) == 0 {
 				list, err = rs.ListActiveQueries(ctx)
 			} else {
-				id, err := viNameOrIDtoID(ctx, rs, args[0])
+				id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, args[0])
 				if err != nil {
 					return err
 				}

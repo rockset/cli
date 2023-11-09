@@ -1,11 +1,8 @@
 package cmd
 
 import (
-	"context"
-	"errors"
 	"fmt"
-	"regexp"
-
+	"github.com/rockset/cli/lookup"
 	"github.com/rockset/rockset-go-client"
 	"github.com/rockset/rockset-go-client/openapi"
 	"github.com/rockset/rockset-go-client/option"
@@ -86,7 +83,7 @@ func newUpdateVirtualInstanceCmd() *cobra.Command {
 				return err
 			}
 
-			id, err := viNameOrIDtoID(ctx, rs, args[0])
+			id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, args[0])
 			if err != nil {
 				return err
 			}
@@ -174,7 +171,7 @@ func newGetVirtualInstancesCmd() *cobra.Command {
 				return err
 			}
 
-			id, err := viNameOrIDtoID(ctx, rs, args[0])
+			id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, args[0])
 			if err != nil {
 				return err
 			}
@@ -210,7 +207,7 @@ func newDeleteVirtualInstanceCmd() *cobra.Command {
 				return err
 			}
 
-			id, err := viNameOrIDtoID(ctx, rs, args[0])
+			id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, args[0])
 			if err != nil {
 				return err
 			}
@@ -246,7 +243,7 @@ func newSuspendVirtualInstanceCmd() *cobra.Command {
 				return err
 			}
 
-			id, err := viNameOrIDtoID(ctx, rs, args[0])
+			id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, args[0])
 			if err != nil {
 				return err
 			}
@@ -282,7 +279,7 @@ func newResumeVirtualInstanceCmd() *cobra.Command {
 				return err
 			}
 
-			id, err := viNameOrIDtoID(ctx, rs, args[0])
+			id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, args[0])
 			if err != nil {
 				return err
 			}
@@ -305,43 +302,6 @@ func newResumeVirtualInstanceCmd() *cobra.Command {
 
 	return &cmd
 }
-
-// TODO should this move to the Rockset go client instead?
-func viNameOrIDtoID(ctx context.Context, rs *rockset.RockClient, nameOrID string) (string, error) {
-	if !isUUID(nameOrID) {
-		id, err := viNameToID(ctx, rs, nameOrID)
-		if err != nil {
-			return "", fmt.Errorf("failed to get virtual instance id for %s: %v", nameOrID, err)
-		}
-
-		return id, nil
-	}
-
-	return nameOrID, nil
-}
-
-var uuidRe = regexp.MustCompile(`[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4-[[:xdigit:]]{12`)
-
-func isUUID(id string) bool {
-	return uuidRe.MatchString(id)
-}
-
-func viNameToID(ctx context.Context, rs *rockset.RockClient, name string) (string, error) {
-	vis, err := rs.ListVirtualInstances(ctx)
-	if err != nil {
-		return "", err
-	}
-
-	for _, vi := range vis {
-		if vi.GetName() == name {
-			return vi.GetId(), nil
-		}
-	}
-
-	return "", VINotFoundErr
-}
-
-var VINotFoundErr = errors.New("virtual instance not found")
 
 func waitUntilVIActive(rs *rockset.RockClient, cmd *cobra.Command, vID string) error {
 	wait, err := cmd.Flags().GetBool(flag.Wait)

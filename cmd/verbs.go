@@ -141,6 +141,12 @@ func addVerbs(root *cobra.Command) {
 	deleteCmd.AddCommand(NewDeleteAliasCmd())
 	updateCmd.AddCommand(NewUpdateAliasCmd())
 
+	// mounts
+	listCmd.AddCommand(NewListMountsCmd())
+	getCmd.AddCommand(NewGetMountCmd())
+	root.AddCommand(NewMountCollectionsCmd())
+	root.AddCommand(NewUnmountCollectionCmd())
+
 	// roles
 	getCmd.AddCommand(newGetRoleCommand())
 	listCmd.AddCommand(newListRolesCommand())

@@ -1,11 +1,11 @@
 package completion
 
 import (
-	"github.com/rockset/rockset-go-client/option"
-	"github.com/spf13/cobra"
-
 	"github.com/rockset/cli/config"
 	"github.com/rockset/cli/flag"
+	"github.com/rockset/cli/lookup"
+	"github.com/rockset/rockset-go-client/option"
+	"github.com/spf13/cobra"
 )
 
 func Collection(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -305,6 +305,31 @@ func APIKey(version string) func(cmd *cobra.Command, args []string, toComplete s
 		list := make([]string, len(keys))
 		for i, key := range keys {
 			list[i] = key.GetName()
+		}
+
+		return list, cobra.ShellCompDirectiveNoFileComp
+	}
+}
+
+func CollectionMount(version string) func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		ctx := cmd.Context()
+		rs, err := config.Client(cmd, version)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+
+		vi, _ := cmd.Flags().GetString("vi")
+		id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, vi)
+
+		mounts, err := rs.ListCollectionMounts(ctx, id)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+
+		list := make([]string, len(mounts))
+		for i, mount := range mounts {
+			list[i] = mount.GetCollectionPath()
 		}
 
 		return list, cobra.ShellCompDirectiveNoFileComp

@@ -83,6 +83,8 @@ func defaultSelectorFor(f any) (DefaultSelector, error) {
 		return WorkspaceDefaultSelector, nil
 	case openapi.Collection:
 		return CollectionDefaultSelector, nil
+	case openapi.CollectionMount:
+		return MountDefaultSelector, nil
 	case openapi.Integration:
 		return IntegrationDefaultSelector, nil
 	case openapi.QueryInfo:
