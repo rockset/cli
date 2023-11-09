@@ -22,6 +22,7 @@ const (
 	Tag                  = "tag"
 	Tags                 = "tags"
 	Validate             = "validate"
+	VI                   = "vi"
 	Version              = "version"
 	Versions             = "versions"
 	Wait                 = "wait"

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/rockset/cli/completion"
 	"github.com/rockset/cli/config"
+	"github.com/rockset/cli/flag"
 	"github.com/rockset/cli/format"
 	"github.com/rockset/cli/lookup"
 	"github.com/rockset/cli/sort"
@@ -66,7 +67,7 @@ func NewGetMountCmd() *cobra.Command {
 				return err
 			}
 
-			vi, _ := cmd.Flags().GetString("vi")
+			vi, _ := cmd.Flags().GetString(flag.VI)
 			id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, vi)
 			if err != nil {
 				return err
@@ -81,9 +82,9 @@ func NewGetMountCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String("vi", "", "virtual instance id or name")
-	cmd.MarkFlagRequired("vi")
-	_ = cmd.RegisterFlagCompletionFunc("vi", completion.VirtualInstance(Version))
+	cmd.Flags().String(flag.VI, "", "virtual instance id or name")
+	cmd.MarkFlagRequired(flag.VI)
+	_ = cmd.RegisterFlagCompletionFunc(flag.VI, completion.VirtualInstance(Version))
 
 	return &cmd
 }
@@ -102,7 +103,7 @@ func NewMountCollectionsCmd() *cobra.Command {
 				return err
 			}
 
-			vi, _ := cmd.Flags().GetString("vi")
+			vi, _ := cmd.Flags().GetString(flag.VI)
 			id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, vi)
 			if err != nil {
 				return err
@@ -124,9 +125,9 @@ func NewMountCollectionsCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String("vi", "", "virtual instance id or name")
-	cmd.MarkFlagRequired("vi")
-	_ = cmd.RegisterFlagCompletionFunc("vi", completion.VirtualInstance(Version))
+	cmd.Flags().String(flag.VI, "", "virtual instance id or name")
+	cmd.MarkFlagRequired(flag.VI)
+	_ = cmd.RegisterFlagCompletionFunc(flag.VI, completion.VirtualInstance(Version))
 
 	return &cmd
 }
@@ -146,7 +147,7 @@ func NewUnmountCollectionCmd() *cobra.Command {
 				return err
 			}
 
-			vi, _ := cmd.Flags().GetString("vi")
+			vi, _ := cmd.Flags().GetString(flag.VI)
 			id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, vi)
 			if err != nil {
 				return err
@@ -163,9 +164,9 @@ func NewUnmountCollectionCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String("vi", "", "virtual instance id or name")
-	cmd.MarkFlagRequired("vi")
-	_ = cmd.RegisterFlagCompletionFunc("vi", completion.VirtualInstance(Version))
+	cmd.Flags().String(flag.VI, "", "virtual instance id or name")
+	cmd.MarkFlagRequired(flag.VI)
+	_ = cmd.RegisterFlagCompletionFunc(flag.VI, completion.VirtualInstance(Version))
 
 	return &cmd
 }

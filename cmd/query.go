@@ -74,7 +74,7 @@ func newQueryCmd() *cobra.Command {
 				return err
 			}
 
-			vi, _ := cmd.Flags().GetString("vi")
+			vi, _ := cmd.Flags().GetString(flag.VI)
 			file, _ := cmd.Flags().GetString(flag.File)
 			validate, _ := cmd.Flags().GetBool(flag.Validate)
 
@@ -134,7 +134,7 @@ func newQueryCmd() *cobra.Command {
 
 	cmd.Flags().Bool(flag.Validate, false, "validate SQL")
 	cmd.Flags().String(flag.File, "", "read SQL from file")
-	cmd.Flags().String("vi", "", "execute query on virtual instance")
+	cmd.Flags().String(flag.VI, "", "execute query on virtual instance")
 	_ = cobra.MarkFlagFilename(cmd.Flags(), flag.File, ".sql")
 
 	return &cmd

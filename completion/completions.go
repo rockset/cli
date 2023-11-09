@@ -319,7 +319,7 @@ func CollectionMount(version string) func(cmd *cobra.Command, args []string, toC
 			return nil, cobra.ShellCompDirectiveError
 		}
 
-		vi, _ := cmd.Flags().GetString("vi")
+		vi, _ := cmd.Flags().GetString(flag.VI)
 		id, err := lookup.VirtualInstanceNameOrIDtoID(ctx, rs, vi)
 
 		mounts, err := rs.ListCollectionMounts(ctx, id)
