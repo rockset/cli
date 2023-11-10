@@ -390,7 +390,8 @@ func interactiveQuery(ctx context.Context, in io.ReadCloser, out io.Writer, rs *
 func executeQuery(ctx context.Context, out io.Writer, rs *rockset.RockClient, sql string) {
 	result, err := rs.Query(ctx, sql)
 	if err != nil {
-		slog.Error("query failed", "err", err)
+		// TODO should this use tui.ShowError()?
+		_, _ = fmt.Fprintf(out, "%s\n", tui.ErrorStyle.Render("query failed:", err.Error()))
 		return
 	}
 

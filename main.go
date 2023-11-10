@@ -11,8 +11,6 @@ import (
 	"time"
 
 	"github.com/getsentry/sentry-go"
-	rockerr "github.com/rockset/rockset-go-client/errors"
-
 	"github.com/rockset/cli/cmd"
 	"github.com/rockset/cli/tui"
 )
@@ -54,8 +52,8 @@ func main() {
 				_, _ = fmt.Fprintf(os.Stderr, "%s", string(debug.Stack()))
 			} else {
 				sentry.CurrentHub().Recover(r)
-				errorf(fmt.Sprintf("program crash: %v", r))
 				// TODO log message about the panic being sent to sentry
+				_, _ = fmt.Fprintf(os.Stderr, "%s %v\n", tui.ErrorStyle.Render("program crash:"), r)
 			}
 			os.Exit(1)
 		}
@@ -69,22 +67,14 @@ func main() {
 
 	root := cmd.NewRootCmd(Version)
 	if err := root.ExecuteContext(ctx); err != nil {
-		// TODO allow users to override the error reporting
-		// TODO log a message that we sent the error
 		if !errors.Is(err, context.Canceled) {
-			// we don't capture errors from the Rockset API
-			var re rockerr.Error
-			if errors.As(err, &re) {
-				_, _ = fmt.Fprintf(os.Stderr, "%s\n", tui.RocksetStyle.Render("Rockset error:", err.Error()))
-				dbg, _ := root.PersistentFlags().GetBool(flag.Debug)
-				if id := re.GetTraceId(); id != "" && dbg {
-					_, _ = fmt.Fprintf(os.Stderr, "%s\n", tui.RocksetStyle.Render("Trace ID:", id))
-				}
-			} else {
-				// this captures usage errors too, as there is no way to distinguish it from other errors
-				sentry.CaptureException(err)
-				errorf(err.Error())
-			}
+			// TODO allow users to override the error reporting
+			// TODO log a message that we sent the error
+			// TODO this captures usage errors too, as there is no way to distinguish them from other errors
+			sentry.CaptureException(err)
+
+			dbg, _ := root.PersistentFlags().GetBool(flag.Debug)
+			tui.ShowError(os.Stderr, dbg, err)
 		}
 
 		os.Exit(1)
@@ -95,9 +85,4 @@ func main() {
 	if v := <-version; v != "" {
 		_, _ = fmt.Fprintf(os.Stderr, "\n%s\n", v)
 	}
-}
-
-func errorf(msg string) {
-	// bold too?
-	_, _ = fmt.Fprintf(os.Stderr, "%s\n", tui.ErrorStyle.Render("ERROR:", msg))
 }
