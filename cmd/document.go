@@ -98,7 +98,7 @@ func newIngestCmd() *cobra.Command {
 				count, err := s.Stream(ctx, cmd.InOrStdin())
 				slog.Debug("wrote records", "count", count)
 				if err != nil {
-					slog.Error("failed to write", err)
+					slog.Error("failed to write", "err", err)
 				}
 			}
 

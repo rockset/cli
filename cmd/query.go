@@ -342,7 +342,7 @@ func interactiveQuery(ctx context.Context, in io.ReadCloser, out io.Writer, rs *
 	}
 	defer func() {
 		if err := rl.Close(); err != nil {
-			slog.Error("failed to close readline", err)
+			slog.Error("failed to close readline", "err", err)
 		}
 	}()
 
@@ -378,7 +378,7 @@ func interactiveQuery(ctx context.Context, in io.ReadCloser, out io.Writer, rs *
 		}
 
 		if err = rl.SaveHistory(sql); err != nil {
-			slog.Error("failed to save history", err)
+			slog.Error("failed to save history", "err", err)
 		}
 
 		executeQuery(ctx, out, rs, sql)
@@ -390,11 +390,11 @@ func interactiveQuery(ctx context.Context, in io.ReadCloser, out io.Writer, rs *
 func executeQuery(ctx context.Context, out io.Writer, rs *rockset.RockClient, sql string) {
 	result, err := rs.Query(ctx, sql)
 	if err != nil {
-		slog.Error("query failed", err)
+		slog.Error("query failed", "err", err)
 		return
 	}
 
 	if err = showQueryResponse(out, result); err != nil {
-		slog.Error("failed to show result", err)
+		slog.Error("failed to show result", "err", err)
 	}
 }
