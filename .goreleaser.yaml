@@ -49,3 +49,9 @@ brews:
       name: homebrew-cli
       branch: main
       token: "{{ .Env.HOMEBREW_GITHUB_AUTH_TOKEN }}"
+
+announce:
+  slack:
+    enabled: true
+    channel: '#developer-workflow'
+    icon_emoji: ':rockset:'
