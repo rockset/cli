@@ -8,6 +8,8 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
+    ldflags:
+      - -X main.dsn={{ .Env.SENTRY_DSN }}
     goos:
       - linux
       - windows
