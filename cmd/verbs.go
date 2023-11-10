@@ -45,6 +45,12 @@ func addVerbs(root *cobra.Command) {
 		Long:    "list Rockset resources",
 	}
 
+	queryCmd := cobra.Command{
+		Aliases: []string{"q"},
+		Short:   "query resources",
+		Long:    "query Rockset resources",
+	}
+
 	resumeCmd := cobra.Command{
 		Use:   "resume",
 		Short: "resume resources",
@@ -105,7 +111,6 @@ func addVerbs(root *cobra.Command) {
 	deleteCmd.AddCommand(newDeleteCollectionCmd())
 	getCmd.AddCommand(newGetCollectionCmd())
 	listCmd.AddCommand(newListCollectionsCmd())
-	listCmd.AddCommand(newListQueryCmd())
 	sampleCmd.AddCommand(newCreateSampleCollectionCmd())
 	tailCmd.AddCommand(newCreateTailCollectionCmd())
 
@@ -113,6 +118,13 @@ func addVerbs(root *cobra.Command) {
 	deleteCmd.AddCommand(newDeleteIntegrationsCmd())
 	getCmd.AddCommand(newGetIntegrationCmd())
 	listCmd.AddCommand(newListIntegrationsCmd())
+
+	// query
+	getCmd.AddCommand(&queryCmd)
+	listCmd.AddCommand(newListQueriesCmd())     // list queries
+	queryCmd.AddCommand(newGetQueryInfoCmd())   // get query info
+	queryCmd.AddCommand(newGetQueryResultCmd()) // get query result
+	root.AddCommand(newQueryCmd())              // execute a query
 
 	// org
 	getCmd.AddCommand(newGetOrganizationCmd())
@@ -194,7 +206,6 @@ func addVerbs(root *cobra.Command) {
 	root.AddCommand(&useCmd)
 	root.AddCommand(newVersionCmd())
 
-	root.AddCommand(newQueryCmd())
 	root.AddCommand(newIngestCmd())
 
 	root.AddCommand(newTestCmd())
