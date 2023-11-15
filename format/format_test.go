@@ -73,11 +73,12 @@ func TestFormatter(t *testing.T) {
 				VersionCount:  openapi.PtrInt32(10),
 				Collections:   []string{"a", "b"},
 				LatestVersion: &openapi.QueryLambdaVersion{
+					State:       openapi.PtrString("foo"),
 					Version:     openapi.PtrString("version"),
 					Description: openapi.PtrString("desc"),
 				},
 			},
-			s: "ws,name,updated by,last updated,version,desc,10,\"a, b\"\n",
+			s: "ws,name,foo,updated by,last updated,version,desc,10,\"a, b\"\n",
 		},
 		{
 			i: openapi.Collection{

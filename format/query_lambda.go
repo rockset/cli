@@ -6,6 +6,7 @@ var QueryLambdaDefaultSelector = DefaultSelector{
 	Normal: []FieldSelection{
 		NewFieldSelection("Workspace", "workspace"),
 		NewFieldSelection("Name", "name"),
+		NewFieldSelection("State", "latest_version", "state"),
 		{
 			ColumnName:     "Last Updated",
 			Path:           []PathElem{{FieldName: "last_updated"}},
@@ -19,6 +20,7 @@ var QueryLambdaDefaultSelector = DefaultSelector{
 	Wide: []FieldSelection{
 		NewFieldSelection("Workspace", "workspace"),
 		NewFieldSelection("Name", "name"),
+		NewFieldSelection("State", "latest_version", "state"),
 		NewFieldSelection("Last Updated By", "last_updated_by"),
 		{
 			ColumnName:     "Last Updated",
