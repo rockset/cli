@@ -8,6 +8,15 @@ var QueryLambdaDefaultSelector = DefaultSelector{
 		NewFieldSelection("Name", "name"),
 		NewFieldSelection("State", "latest_version", "state"),
 		{
+			ColumnName: "Last Executed",
+			Path: []PathElem{
+				{FieldName: "latest_version"},
+				{FieldName: "stats"},
+				{FieldName: "last_executed"},
+			},
+			FieldFormatter: TimeSinceFormatter{}, // TODO this doesn't display correctly
+		},
+		{
 			ColumnName:     "Last Updated",
 			Path:           []PathElem{{FieldName: "last_updated"}},
 			FieldFormatter: TimeSinceFormatter{}, // TODO this doesn't display correctly
@@ -114,6 +123,14 @@ var QueryLambdaVersionDefaultSelector = DefaultSelector{
 		NewFieldSelection("Name", "name"),
 		NewFieldSelection("Version", "version"),
 		NewFieldSelection("State", "state"),
+		{
+			ColumnName: "Last Executed",
+			Path: []PathElem{
+				{FieldName: "stats"},
+				{FieldName: "last_executed"},
+			},
+			FieldFormatter: TimeSinceFormatter{}, // TODO this doesn't display correctly
+		},
 	},
 	Wide: []FieldSelection{
 		NewFieldSelection("Workspace", "workspace"),
