@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/spf13/cobra"
-	"log/slog"
 
 	"github.com/rockset/cli/completion"
 	"github.com/rockset/cli/config"
@@ -13,7 +13,7 @@ import (
 
 func newDeleteDocumentsCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "documents",
+		Use:     "documents [id] [id] ...",
 		Aliases: []string{"doc", "docs"},
 		Short:   "delete documents",
 		Long:    "delete documents from a collection",
@@ -28,6 +28,7 @@ func newDeleteDocumentsCmd() *cobra.Command {
 				return err
 			}
 
+			// TODO make it possible to read document IDs from stdin
 			res, err := rs.DeleteDocuments(ctx, ws, coll, args)
 			if err != nil {
 				return err
