@@ -176,7 +176,7 @@ func NewUpdateAliasCmd() *cobra.Command {
 
 func NewDeleteAliasCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "alias NAME ",
+		Use:     "alias NAME",
 		Aliases: []string{"a"},
 		Args:    cobra.ExactArgs(1),
 		Short:   "delete alias",

@@ -15,7 +15,7 @@ import (
 
 func newGetIntegrationCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:         "integration",
+		Use:         "integration NAME",
 		Short:       "get integration",
 		Long:        "get Rockset integration",
 		Annotations: group("integration"),
