@@ -23,7 +23,7 @@ import (
 
 func newDeleteCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:               "collection",
+		Use:               "collection NAME",
 		Aliases:           []string{"coll", "c"},
 		Short:             "delete collection",
 		Long:              "delete Rockset collection",
@@ -58,7 +58,7 @@ func newDeleteCollectionCmd() *cobra.Command {
 
 func newGetCollectionCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:               "collection",
+		Use:               "collection NAME",
 		Aliases:           []string{"coll", "c"},
 		Short:             "get collection",
 		Long:              "get Rockset collection",

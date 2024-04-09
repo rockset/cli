@@ -61,7 +61,7 @@ func newListQueryLambdasCmd() *cobra.Command {
 
 func newGetQueryLambdaCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:     "lambda",
+		Use:     "lambda NAME",
 		Aliases: []string{"ql"},
 		Short:   "get query lambda",
 		Long: `get query lambda information, has options to get a specific tag or version,
@@ -215,7 +215,7 @@ func NewExecuteQueryLambdaCmd() *cobra.Command {
 
 func newCreateQueryLambdaCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "lambda",
+		Use:         "lambda NAME",
 		Aliases:     []string{"ql"},
 		Args:        cobra.ExactArgs(1),
 		Short:       "create query lambda",
@@ -270,7 +270,7 @@ func newCreateQueryLambdaCmd() *cobra.Command {
 
 func newDeleteQueryLambdaCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:               "lambda",
+		Use:               "lambda NAME",
 		Aliases:           []string{"ql"},
 		Args:              cobra.ExactArgs(1),
 		Short:             "delete query lambda",
@@ -305,7 +305,7 @@ func newDeleteQueryLambdaCmd() *cobra.Command {
 
 func newUpdateQueryLambdaCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:               "lambda",
+		Use:               "lambda NAME",
 		Aliases:           []string{"ql"},
 		Args:              cobra.ExactArgs(1),
 		Short:             "update query lambda",

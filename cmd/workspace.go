@@ -16,7 +16,7 @@ import (
 
 func newCreateWorkspaceCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:         "workspace",
+		Use:         "workspace NAME",
 		Aliases:     []string{"ws"},
 		Short:       "create workspace",
 		Long:        "create Rockset workspace",
@@ -53,7 +53,7 @@ func newCreateWorkspaceCmd() *cobra.Command {
 
 func newDeleteWorkspaceCmd() *cobra.Command {
 	cmd := cobra.Command{
-		Use:               "workspace",
+		Use:               "workspace NAME",
 		Aliases:           []string{"ws"},
 		Short:             "delete workspace",
 		Long:              "delete Rockset workspace",
@@ -161,7 +161,7 @@ func newDeleteWorkspaceCmd() *cobra.Command {
 
 func NewGetWorkspaceCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:               "workspace",
+		Use:               "workspace NAME",
 		Aliases:           []string{"ws"},
 		Short:             "get workspace",
 		Long:              "get Rockset workspace",
